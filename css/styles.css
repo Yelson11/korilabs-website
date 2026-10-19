@@ -224,6 +224,15 @@ body {
   animation: zzz 4s ease-in-out infinite;
 }
 
+.zzz {
+  animation: zzz-ciclo 14s ease-in-out infinite;
+}
+
+.eyes-open {
+  opacity: 0;
+  animation: despertar 14s ease-in-out infinite;
+}
+
 .zzz .z2 { animation-delay: 0.8s; }
 .zzz .z3 { animation-delay: 1.6s; }
 
@@ -232,6 +241,19 @@ body {
   25%  { opacity: 1; }
   70%  { opacity: 1; }
   100% { opacity: 0;  transform: translate(8px, -16px); }
+}
+
+/* Ciclo de 14 s: duerme ~10 s, abre los ojos ~1,7 s (las zzz se van) y vuelve a dormir (las zzz regresan) */
+@keyframes despertar {
+  0%, 71% { opacity: 0; }
+  73%, 83% { opacity: 1; }
+  85%, 100% { opacity: 0; }
+}
+
+@keyframes zzz-ciclo {
+  0%, 64% { opacity: 1; }
+  70%, 86% { opacity: 0; }
+  92%, 100% { opacity: 1; }
 }
 
 /* --- Escritorio: texto a la izquierda, escena a la derecha -------------- */
@@ -284,6 +306,10 @@ body {
   *::after {
     animation: none !important;
     transition: none !important;
+  }
+
+  .zzz text {
+    opacity: 1;
   }
 }
 
