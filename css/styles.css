@@ -243,22 +243,22 @@ body {
   100% { opacity: 0;  transform: translate(8px, -16px); }
 }
 
-/* Ciclo de 15 s: duerme ~10 s, despierta ~2,5 s (abre los ojos y parpadea dos veces; las zzz se van)
-   y vuelve a dormir (las zzz regresan). */
+/* Ciclo de 15 s: duerme ~10 s, despierta ~3 s (abre los ojos y parpadea dos veces, con parpadeos
+   bien visibles de ~0,3 s; las zzz se van) y vuelve a dormir (las zzz regresan). */
 @keyframes despertar {
   0%, 66.6% { opacity: 0; }
   67%, 73.3% { opacity: 1; }
-  73.4%, 74.3% { opacity: 0; }   /* parpadeo 1 */
-  74.4%, 78%  { opacity: 1; }
-  78.1%, 79%  { opacity: 0; }   /* parpadeo 2 */
-  79.1%, 83.3% { opacity: 1; }
-  83.8%, 100% { opacity: 0; }
+  73.4%, 75.3% { opacity: 0; }   /* parpadeo 1 */
+  75.4%, 80%  { opacity: 1; }
+  80.1%, 82%  { opacity: 0; }   /* parpadeo 2 */
+  82.1%, 86.7% { opacity: 1; }
+  87.2%, 100% { opacity: 0; }
 }
 
 @keyframes zzz-ciclo {
   0%, 58% { opacity: 1; }
-  64%, 84% { opacity: 0; }
-  90%, 100% { opacity: 1; }
+  64%, 88% { opacity: 0; }
+  94%, 100% { opacity: 1; }
 }
 
 /* --- Escritorio: texto a la izquierda, escena a la derecha -------------- */
