@@ -243,22 +243,43 @@ body {
   100% { opacity: 0;  transform: translate(8px, -16px); }
 }
 
-/* Ciclo de 15 s: duerme ~10 s, despierta ~3 s (abre los ojos y parpadea dos veces, con parpadeos
-   bien visibles de ~0,3 s; las zzz se van) y vuelve a dormir (las zzz regresan). */
+/* Ciclo de 15 s: duerme ~10 s (con zzz); despierta abriendo los ojos despacio, parpadea dos veces
+   (el párpado baja rápido y sube más lento, como un parpadeo real), se va adormilando poco a poco
+   y vuelve a dormir con las zzz. */
+.eyes-lids {
+  transform-box: view-box;
+  transform-origin: 135px 77.5px;
+  animation: despertar 15s linear infinite, parpadeo 15s infinite;
+}
+
 @keyframes despertar {
-  0%, 66.6% { opacity: 0; }
-  67%, 73.3% { opacity: 1; }
-  73.4%, 75.3% { opacity: 0; }   /* parpadeo 1 */
-  75.4%, 80%  { opacity: 1; }
-  80.1%, 82%  { opacity: 0; }   /* parpadeo 2 */
-  82.1%, 86.7% { opacity: 1; }
-  87.2%, 100% { opacity: 0; }
+  0%, 66.5% { opacity: 0; }
+  66.7%, 94.3% { opacity: 1; }
+  94.6%, 100% { opacity: 0; }
+}
+
+@keyframes parpadeo {
+  0%, 66.6% { transform: scaleY(.04); animation-timing-function: ease-out; }
+  68%   { transform: scaleY(.5);  animation-timing-function: ease-out; }
+  70.7% { transform: scaleY(1); }
+  76%   { transform: scaleY(1);   animation-timing-function: ease-in; }
+  76.7% { transform: scaleY(.06); }
+  77.2% { transform: scaleY(.06); animation-timing-function: ease-out; }
+  79%   { transform: scaleY(1); }
+  81.3% { transform: scaleY(1);   animation-timing-function: ease-in; }
+  82%   { transform: scaleY(.06); }
+  82.5% { transform: scaleY(.06); animation-timing-function: ease-out; }
+  84.3% { transform: scaleY(1); }
+  88%   { transform: scaleY(1);   animation-timing-function: ease-in; }
+  91%   { transform: scaleY(.5);  animation-timing-function: ease-in; }
+  94.3% { transform: scaleY(.04); }
+  100%  { transform: scaleY(.04); }
 }
 
 @keyframes zzz-ciclo {
   0%, 58% { opacity: 1; }
-  64%, 88% { opacity: 0; }
-  94%, 100% { opacity: 1; }
+  64%, 92% { opacity: 0; }
+  98%, 100% { opacity: 1; }
 }
 
 /* --- Escritorio: texto a la izquierda, escena a la derecha -------------- */
