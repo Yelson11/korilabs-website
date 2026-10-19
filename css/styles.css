@@ -220,15 +220,18 @@ body {
 /* --- Animación mínima (las "zzz" del gato) ------------------------------- */
 
 .zzz text {
-  animation: zzz 3.2s ease-in-out infinite;
+  opacity: 0;
+  animation: zzz 4s ease-in-out infinite;
 }
 
-.zzz .z2 { animation-delay: 0.5s; }
-.zzz .z3 { animation-delay: 1s; }
+.zzz .z2 { animation-delay: 0.8s; }
+.zzz .z3 { animation-delay: 1.6s; }
 
 @keyframes zzz {
-  0%, 100% { opacity: 0.3; }
-  50%      { opacity: 1; }
+  0%   { opacity: 0;  transform: translate(0, 10px); }
+  25%  { opacity: 1; }
+  70%  { opacity: 1; }
+  100% { opacity: 0;  transform: translate(8px, -16px); }
 }
 
 /* --- Escritorio: texto a la izquierda, escena a la derecha -------------- */
