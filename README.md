@@ -26,6 +26,8 @@ css/pinto.css              Estilos de la página de PINTO
 - **Caja 3D:** son seis imágenes (`img/caja-*.webp`) montadas con CSS 3D. Si cambia el diseño de la caja,
   reemplaza esas imágenes manteniendo las proporciones (ancho 758 · alto 1057 · fondo 244).
 - **Cartas:** `img/cartas/*.webp`, exportadas del "Deck v1.0" de Figma.
+- **Caché:** los enlaces a CSS y JS llevan `?v=N`. Al cambiar esos archivos, sube el número para que los
+  navegadores descarguen la versión nueva en vez de usar la guardada.
 
 ## Cambiar el contenido
 
