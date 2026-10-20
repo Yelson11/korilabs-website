@@ -8,7 +8,9 @@ Sin frameworks, sin JavaScript, sin proceso de compilación.
 ```
 index.html          Contenido de la página (textos, logo, escena, redes sociales)
 css/styles.css      Estilos (colores y tipografía en variables al inicio)
-assets/favicon.svg  Icono de la pestaña
+assets/favicon.svg  Icono de la pestaña: cambia solo de color (verde en navegador claro, crema en oscuro)
+assets/apple-touch-icon.png  Icono al guardar el sitio en la pantalla de inicio del iPhone
+favicon.ico         Respaldo para navegadores que no usan el icono SVG
 assets/pattern.svg  Patrón de gatitos del fondo
 .nojekyll           Evita que GitHub Pages procese el sitio con Jekyll
 
