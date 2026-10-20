@@ -368,6 +368,99 @@
   background: var(--peach);
 }
 
+.h-next a {
+  color: var(--cream);
+  font-weight: 700;
+  text-decoration-color: var(--peach);
+  text-underline-offset: 0.2em;
+}
+
+/* --- Suscripción -------------------------------------------------------- */
+
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+.h-join { padding-top: 0; scroll-margin-top: 1.5rem; }
+
+.h-join__card {
+  position: relative;
+  display: grid;
+  gap: 2rem;
+  padding: clamp(1.75rem, 5vw, 3rem) clamp(1.25rem, 5vw, 3rem);
+  border: 1.5px solid rgb(254 228 193 / 0.35);
+  border-radius: 1.5rem;
+  background:
+    radial-gradient(ellipse 60% 80% at 0% 0%, rgb(254 228 193 / 0.1), transparent 70%),
+    var(--forest-deep);
+  box-shadow: 0 1.5rem 3rem rgb(10 30 20 / 0.35);
+}
+
+.h-join__lead {
+  max-width: 28rem;
+  margin: 1rem 0 0;
+  color: var(--cream-dim);
+  font-size: clamp(1.02rem, 1rem + 0.3vw, 1.15rem);
+  text-wrap: pretty;
+}
+
+.h-join__gift {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: 28rem;
+  margin-top: 1.5rem;
+  padding: 0.85rem 1rem;
+  border-radius: 1rem;
+  background: rgb(247 243 234 / 0.07);
+}
+
+.h-join__gift img {
+  flex: none;
+  width: 2.6rem;
+  height: auto;
+  border-radius: 0.3rem;
+  transform: rotate(-8deg);
+  box-shadow: 0 0.4rem 0.8rem rgb(0 0 0 / 0.35);
+}
+
+.h-join__gift p { margin: 0; font-size: 0.95rem; }
+.h-join__gift strong { color: var(--peach); }
+
+.h-join__form {
+  display: grid;
+  align-content: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+/* Solo se ve mientras no se pegue el formulario real de Sender */
+.h-join__placeholder[data-sender-form-id="PENDIENTE"] {
+  display: grid;
+  place-items: center;
+  min-height: 12rem;
+  padding: 1.5rem;
+  border: 1.5px dashed rgb(247 243 234 / 0.35);
+  border-radius: 1rem;
+  color: var(--cream-dim);
+  text-align: center;
+}
+
+.h-join__note {
+  margin: 0;
+  color: var(--cream-dim);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 30rem) {
+  .site-nav { gap: 0.85rem; }
+  .site-nav__link { letter-spacing: 0.1em; }
+}
+
+/* En pantallas muy angostas el enlace no cabe; la sección sigue en la portada */
+@media (max-width: 22.4rem) {
+  .site-nav__link[href="#suscribete"] { display: none; }
+}
+
 /* --- Valores ------------------------------------------------------------ */
 
 .h-values { border-top: 1px solid var(--line); }
@@ -466,6 +559,12 @@
   }
 
   .h-game__art { width: min(100%, 14rem); }
+
+  .h-join__card {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(2rem, 5vw, 4rem);
+  }
 }
 
 
