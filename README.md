@@ -19,6 +19,8 @@ juegos/pinto/index.html    Página de PINTO (caja 3D, cómo se juega, cartas)
 juegos/pinto/box3d.js      Giro y arrastre de la caja 3D (sin dependencias)
 juegos/pinto/img/          Caras de la caja, cartas, logo e imagen para redes (og-pinto.jpg)
 css/pinto.css              Estilos de la página de PINTO
+css/home.css               Estilos de la portada (se carga después de styles.css)
+assets/pinto-caja.webp     Caja de PINTO para la tarjeta de la portada
 ```
 
 ## Sección Juegos

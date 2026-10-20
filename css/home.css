@@ -1,0 +1,475 @@
+/* ==========================================================================
+   Kori Labs · portada (index.html)
+   Se carga después de styles.css. Mantiene la identidad: verde bosque, crema,
+   durazno y el gato dormilón; suma el patrón de rombos de la marca y una
+   tarjeta de PINTO que lleva su propio "mundo" oscuro de carreras.
+   ========================================================================== */
+
+.home {
+  --forest-deep: #183f2c;
+  --forest-line: #22533a;
+  --kori: #399e5a;
+  --teal: #51a3a3;
+  --asphalt: #16171b;
+  --asphalt-2: #1e1f24;
+  --pinto-red: #e5463b;
+
+  /* rombos de la marca, muy sutiles; un halo cálido detrás del gato */
+  background-color: var(--forest);
+  background-image:
+    radial-gradient(ellipse 55% 45% at 78% 30%, rgb(254 228 193 / 0.07), transparent 70%),
+    conic-gradient(from 45deg, var(--forest-line) 25%, transparent 0 50%, var(--forest-line) 0 75%, transparent 0);
+  background-size: auto, 4.5rem 4.5rem;
+}
+
+/* --- Cabecera ----------------------------------------------------------- */
+
+.home-mark {
+  display: block;
+  color: var(--cream);
+  border-radius: 4px;
+}
+
+.home-mark:focus-visible,
+.site-nav__icon:focus-visible {
+  outline: 3px solid var(--peach);
+  outline-offset: 5px;
+}
+
+.site-nav__icon {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1.5px solid rgb(247 243 234 / 0.4);
+  border-radius: 50%;
+  color: var(--cream);
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.site-nav__icon svg { width: 1.15rem; height: 1.15rem; }
+
+.site-nav__icon:hover {
+  background: var(--cream);
+  border-color: var(--cream);
+  color: var(--forest);
+}
+
+/* --- Textos comunes ----------------------------------------------------- */
+
+.h-eyebrow {
+  margin: 0 0 0.75rem;
+  color: var(--peach);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
+.h-h2 {
+  margin: 0;
+  font-size: clamp(2rem, 1.4rem + 2.6vw, 3rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.accent-inline { color: var(--peach); }
+
+/* --- Portada ------------------------------------------------------------ */
+
+.h-hero {
+  display: grid;
+  justify-items: center;
+  gap: clamp(1.75rem, 5vw, 3rem);
+  padding-block: clamp(2rem, 6vw, 4.5rem) clamp(2.5rem, 6vw, 4rem);
+  text-align: center;
+}
+
+.h-hero__copy { max-width: 34rem; }
+
+.h-hero__title {
+  margin: 0;
+  font-size: clamp(2.5rem, 1.3rem + 5.4vw, 4.75rem);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.h-hero__lead {
+  margin: 1.25rem auto 0;
+  max-width: 30rem;
+  color: var(--cream-dim);
+  font-size: clamp(1.05rem, 1rem + 0.4vw, 1.25rem);
+  text-wrap: pretty;
+}
+
+.h-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+.h-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 3.1rem;
+  padding: 0.75rem 1.4rem;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.h-btn svg { width: 1.2rem; height: 1.2rem; }
+
+.h-btn--primary {
+  background: var(--peach);
+  color: var(--forest);
+}
+
+.h-btn--primary:hover { background: var(--cream); transform: translateY(-2px); }
+
+.h-btn--ghost {
+  border: 2px solid rgb(247 243 234 / 0.45);
+  color: var(--cream);
+}
+
+.h-btn--ghost:hover { border-color: var(--cream); background: rgb(247 243 234 / 0.08); transform: translateY(-2px); }
+
+.h-btn:focus-visible { outline: 3px solid var(--peach); outline-offset: 4px; }
+
+.h-hero__art {
+  margin: 0;
+  width: min(100%, 16rem);
+}
+
+/* Separador de rombos (como en los posts de la marca) */
+.h-diamonds {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding-block: 0.5rem;
+}
+
+.h-diamonds i {
+  width: 0.65rem;
+  height: 0.65rem;
+  transform: rotate(45deg);
+  background: var(--cream);
+}
+
+.h-diamonds i:nth-child(2) { background: var(--kori); width: 0.85rem; height: 0.85rem; }
+.h-diamonds i:nth-child(3) { background: var(--peach); }
+
+/* --- Secciones ---------------------------------------------------------- */
+
+.h-section {
+  padding-block: clamp(3rem, 8vw, 5.5rem);
+}
+
+.h-section__head { margin-bottom: 2rem; }
+.h-section__head--center { text-align: center; margin-bottom: 1.5rem; }
+
+/* --- Tarjeta de PINTO --------------------------------------------------- */
+
+.h-game {
+  position: relative;
+  display: grid;
+  gap: 1.5rem;
+  padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1.25rem, 4vw, 2.75rem) calc(clamp(1.5rem, 4vw, 2.5rem) + 0.5rem);
+  overflow: hidden;
+  border-radius: 1.5rem;
+  background-color: var(--asphalt);
+  background-image:
+    radial-gradient(ellipse 60% 70% at 25% 50%, rgb(229 70 59 / 0.12), transparent 70%),
+    conic-gradient(from 45deg, var(--asphalt-2) 25%, transparent 0 50%, var(--asphalt-2) 0 75%, transparent 0);
+  background-size: auto, 3.5rem 3.5rem;
+  box-shadow: 0 1.5rem 3rem rgb(10 30 20 / 0.45);
+  color: #f5f0e8;
+  text-decoration: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.h-game:hover { transform: translateY(-4px); box-shadow: 0 2rem 3.5rem rgb(10 30 20 / 0.55); }
+.h-game:focus-visible { outline: 3px solid var(--peach); outline-offset: 5px; }
+
+.h-game__art {
+  position: relative;
+  justify-self: center;
+  width: min(13rem, 52vw);
+  margin-block: 0.5rem;
+  aspect-ratio: 560 / 798;
+  max-width: 100%;
+}
+
+.h-game__box {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 1.4rem 1.4rem rgb(0 0 0 / 0.55));
+  animation: h-float 6s ease-in-out infinite;
+}
+
+.h-game__card {
+  position: absolute;
+  z-index: 1;
+  width: 62%;
+  height: auto;
+  top: 8%;
+  border-radius: 6%/4.2%;
+  box-shadow: 0 0.8rem 1.6rem rgb(0 0 0 / 0.5);
+  transition: transform 0.4s ease;
+}
+
+.h-game__card--a { right: -30%; top: 12%; transform: rotate(16deg); }
+.h-game__card--b { left: -30%; top: 12%; transform: rotate(-14deg); }
+
+.h-game:hover .h-game__card--a { transform: rotate(20deg) translateX(5%); }
+.h-game:hover .h-game__card--b { transform: rotate(-18deg) translateX(-5%); }
+
+@keyframes h-float {
+  50% { transform: translateY(-0.5rem); }
+}
+
+.h-game__copy { min-width: 0; }
+
+.h-game__status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 0.9rem;
+  margin: 0 0 1rem;
+  color: #b9b4ab;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
+.h-soon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.75rem 0.3rem 0.6rem;
+  border-radius: 999px;
+  background: var(--pinto-red);
+  color: #fff;
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+}
+
+.h-soon::before {
+  content: "";
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: #fff;
+  animation: h-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes h-pulse { 50% { opacity: 0.3; } }
+
+.h-game__name { margin: 0; line-height: 0; }
+
+.h-game__name img {
+  display: block;
+  width: min(100%, 17rem);
+  height: auto;
+}
+
+.h-game__tag {
+  margin: 1rem 0 0;
+  font-size: clamp(1.25rem, 1rem + 1vw, 1.6rem);
+  font-style: italic;
+  font-weight: 700;
+  line-height: 1.15;
+  text-transform: uppercase;
+}
+
+.h-game__tag span { color: var(--pinto-red); }
+
+.h-game__text {
+  max-width: 30rem;
+  margin: 0.8rem 0 0;
+  color: #b9b4ab;
+}
+
+.h-game__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.h-game__facts li {
+  padding: 0.35rem 0.8rem;
+  border: 1px solid rgb(245 240 232 / 0.16);
+  border-radius: 999px;
+  font-size: 0.88rem;
+}
+
+.h-game__link {
+  display: inline-flex;
+  gap: 0.4rem;
+  margin-top: 1.5rem;
+  padding-bottom: 0.2rem;
+  border-bottom: 2px solid var(--pinto-red);
+  font-weight: 700;
+}
+
+.h-game:hover .h-game__link span { transform: translateX(3px); }
+.h-game__link span { transition: transform 0.2s ease; }
+
+.h-game__rainbow {
+  position: absolute;
+  inset: auto 0 0;
+  display: flex;
+  height: 0.4rem;
+}
+
+.h-game__rainbow i { flex: 1; }
+.h-game__rainbow i:nth-child(1) { background: #e63c3c; }
+.h-game__rainbow i:nth-child(2) { background: #f08c28; }
+.h-game__rainbow i:nth-child(3) { background: #f2c230; }
+.h-game__rainbow i:nth-child(4) { background: #3dba6a; }
+.h-game__rainbow i:nth-child(5) { background: #22b3c4; }
+.h-game__rainbow i:nth-child(6) { background: #2f86de; }
+.h-game__rainbow i:nth-child(7) { background: #9b4fd8; }
+.h-game__rainbow i:nth-child(8) { background: #e23b86; }
+
+/* Próximo juego */
+.h-next {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin: 1rem 0 0;
+  padding: 1rem 1.25rem;
+  border: 1.5px dashed rgb(247 243 234 / 0.28);
+  border-radius: 1rem;
+  color: var(--cream-dim);
+}
+
+.h-next__dot {
+  flex: none;
+  width: 0.6rem;
+  height: 0.6rem;
+  transform: rotate(45deg);
+  background: var(--peach);
+}
+
+/* --- Valores ------------------------------------------------------------ */
+
+.h-values { border-top: 1px solid var(--line); }
+
+.h-values__list {
+  display: grid;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: center;
+}
+
+.h-values__list li {
+  display: grid;
+  align-content: start;
+  justify-items: center;
+  gap: 0.5rem;
+}
+
+.h-values__icon {
+  display: grid;
+  place-items: center;
+  width: 5rem;
+  height: 5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 50%;
+  background: var(--cream);
+  color: var(--forest);
+}
+
+.h-values__icon svg { width: 2.6rem; height: 2.6rem; }
+
+.h-values h3 {
+  margin: 0;
+  font-size: clamp(1.8rem, 1.3rem + 1.6vw, 2.4rem);
+  font-weight: 700;
+  line-height: 1.05;
+}
+
+.h-values__list p {
+  max-width: 18rem;
+  margin: 0;
+  color: var(--cream-dim);
+}
+
+/* --- Pie ---------------------------------------------------------------- */
+
+.h-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem 1.5rem;
+}
+
+.h-footer__ig {
+  color: var(--cream);
+  font-weight: 700;
+  text-decoration: none;
+  border-bottom: 1px solid rgb(247 243 234 / 0.35);
+}
+
+.h-footer__ig:hover { border-color: var(--peach); color: var(--peach); }
+.h-footer__ig:focus-visible { outline: 3px solid var(--peach); outline-offset: 3px; }
+
+/* --- Tablet ------------------------------------------------------------- */
+
+@media (min-width: 40rem) {
+  .h-values__list { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+}
+
+/* --- Escritorio --------------------------------------------------------- */
+
+@media (min-width: 56rem) {
+  .h-hero {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    justify-items: stretch;
+    align-items: center;
+    column-gap: clamp(2rem, 6vw, 5rem);
+    text-align: left;
+  }
+
+  .h-hero__lead { margin-inline: 0; }
+  .h-actions { justify-content: flex-start; }
+
+  .h-hero__art {
+    justify-self: center;
+    width: min(100%, 25rem);
+  }
+
+  .h-game {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    align-items: center;
+    gap: clamp(2rem, 5vw, 4rem);
+  }
+
+  .h-game__art { width: min(100%, 14rem); }
+}
+
+
+
+@media (prefers-reduced-motion: reduce) {
+  .h-game:hover { transform: none; }
+}
