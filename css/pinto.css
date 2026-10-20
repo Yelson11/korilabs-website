@@ -66,6 +66,40 @@
 }
 
 .p-red { color: var(--red); }
+
+/* Etiqueta "Próximamente" mientras el juego está en desarrollo */
+.p-eyebrow--status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 0.9rem;
+}
+
+.p-soon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.75rem 0.3rem 0.6rem;
+  border-radius: 999px;
+  background: var(--red);
+  color: #fff;
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+}
+
+.p-soon::before {
+  content: "";
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: #fff;
+  animation: soon-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes soon-pulse {
+  50% { opacity: 0.3; }
+}
 .p-hero__tagline .p-red { display: block; }
 
 /* --- Portada ------------------------------------------------------------ */
@@ -483,6 +517,7 @@
     min-height: min(46rem, calc(100svh - 5rem));
   }
 
+  .p-eyebrow--status { justify-content: flex-start; }
   .p-logo { margin-inline: 0; width: min(100%, 26rem); }
   .p-hero__lead { margin-inline: 0; }
   .p-facts { justify-content: flex-start; }
