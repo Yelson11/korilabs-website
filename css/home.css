@@ -433,18 +433,6 @@ html { scroll-behavior: smooth; }
   min-width: 0;
 }
 
-/* Solo se ve mientras no se pegue el formulario real de Sender */
-.h-join__placeholder[data-sender-form-id="PENDIENTE"] {
-  display: grid;
-  place-items: center;
-  min-height: 12rem;
-  padding: 1.5rem;
-  border: 1.5px dashed rgb(247 243 234 / 0.35);
-  border-radius: 1rem;
-  color: var(--cream-dim);
-  text-align: center;
-}
-
 .h-join__note {
   margin: 0;
   color: var(--cream-dim);

@@ -37,11 +37,10 @@ assets/pinto-caja.webp     Caja de PINTO para la tarjeta de la portada
 
 La portada tiene una sección `#suscribete` (y un enlace "Suscríbete" en el menú). El formulario lo pone Sender:
 
-1. En Sender: **Forms → tu formulario incrustado → Publicar**, pestaña **JavaScript snippet**.
-2. Copia el `<script>` universal y pégalo en el `<head>` de `index.html`, donde dice "Sender: pega aquí…".
-3. Copia el `<div class="sender-form-field" data-sender-form-id="…">` y reemplaza con él el `<div>` marcado
-   `data-sender-form-id="PENDIENTE"` dentro de la sección `#suscribete`.
-4. El aspecto del formulario (colores, campos, mensaje de gracias) se cambia en el editor de Sender.
+- El `<script>` universal de la cuenta está en el `<head>` de `index.html`.
+- El formulario es el `<div class="sender-form-field" data-sender-form-id="dNk3wL">` de la sección `#suscribete`.
+- Su aspecto (colores, campos, mensaje de gracias) se cambia en el editor de Sender; al guardar allí, la página
+  muestra la versión nueva sola. Solo hay que tocar el código si se usa **otro** formulario (otro ID).
 
 El correo de bienvenida con el regalo se envía desde una automatización de Sender (no desde este sitio).
 

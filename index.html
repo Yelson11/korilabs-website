@@ -23,7 +23,25 @@
   <link rel="stylesheet" href="css/styles.css?v=2">
   <link rel="stylesheet" href="css/home.css?v=2">
 
-  <!-- Sender: pega aquí el script universal de tu cuenta (Forms → Publicar → JavaScript snippet). -->
+  <!-- Sender: script universal de la cuenta (carga el formulario de suscripción). -->
+  <script>
+    (function (s, e, n, d, er) {
+      s['Sender'] = er;
+      s[er] = s[er] || function () {
+        (s[er].q = s[er].q || []).push(arguments)
+      }, s[er].l = 1 * new Date();
+      s[er].on = function(event, callback) {
+        s[er].listeners = s[er].listeners || {};
+        (s[er].listeners[event] = s[er].listeners[event] || []).push(callback);
+      };
+      var a = e.createElement(n),
+          m = e.getElementsByTagName(n)[0];
+      a.async = 1;
+      a.src = d;
+      m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', 'https://cdn.sender.net/accounts_resources/universal.js', 'sender');
+    sender('8f54c30b917106')
+  </script>
 </head>
 <body class="home">
 
@@ -149,11 +167,8 @@
           </div>
 
           <div class="h-join__form">
-            <!-- Pega aquí el <div> del formulario incrustado de Sender (Forms → Publicar → JavaScript snippet).
-                 Ejemplo: <div style="text-align: left" class="sender-form-field" data-sender-form-id="XXXXXXX"></div> -->
-            <div class="sender-form-field h-join__placeholder" data-sender-form-id="PENDIENTE">
-              Aquí aparecerá el formulario de Sender
-            </div>
+            <!-- Formulario incrustado de Sender. Su diseño se cambia en Sender; aquí solo va el ID. -->
+            <div style="text-align: left" class="sender-form-field" data-sender-form-id="dNk3wL"></div>
             <p class="h-join__note">Sin spam. Puedes darte de baja cuando quieras.</p>
           </div>
         </div>
