@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="es" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PINTO · Juego de cartas · Kori Labs</title>
+  <meta name="description" content="PINTO es un juego de cartas de carreras de Kori Labs: encuentra tu ritmo, juega tus cartas y no seas el último en cruzar la meta. De 2 a 6 jugadores, partidas de 5 a 10 minutos.">
+  <meta name="theme-color" content="#16171b">
+  <meta name="color-scheme" content="dark">
+  <meta property="og:type" content="product">
+  <meta property="og:title" content="PINTO · Juego de cartas de Kori Labs">
+  <meta property="og:description" content="Deshazte de todas tus cartas. Un juego de carreras para 2 a 6 jugadores.">
+  <meta property="og:image" content="https://korilabscr.com/juegos/pinto/img/og-pinto.jpg">
+  <meta property="og:locale" content="es_CR">
+  <link rel="canonical" href="https://korilabscr.com/juegos/pinto/">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Istok+Web:wght@400;700&amp;family=Poppins:ital,wght@0,500;0,600;1,700;1,800&amp;display=swap">
+
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/pinto.css">
+  <script>document.documentElement.classList.replace('no-js', 'js');</script>
+</head>
+<body class="pinto">
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="icon-instagram" viewBox="0 0 24 24">
+      <rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <circle cx="17.3" cy="6.7" r="1.2" fill="currentColor"/>
+    </symbol>
+    <symbol id="icon-players" viewBox="0 0 24 24">
+      <circle cx="8" cy="7" r="3" fill="currentColor"/><circle cx="16.5" cy="7" r="3" fill="currentColor"/>
+      <path d="M2.5 18.5c0-3.3 2.5-6 5.5-6s5.5 2.7 5.5 6M11 18.5c0-3.3 2.5-6 5.5-6s5.5 2.7 5.5 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="icon-clock" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M12 7.5V12h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-age" viewBox="0 0 24 24">
+      <rect x="3.5" y="3.5" width="17" height="17" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
+      <text x="12" y="16" text-anchor="middle" font-size="9" font-weight="700" font-family="Poppins, sans-serif" fill="currentColor">4+</text>
+    </symbol>
+    <symbol id="icon-cards" viewBox="0 0 24 24">
+      <rect x="4" y="5" width="11" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="2" transform="rotate(-10 9.5 12.5)"/>
+      <rect x="9" y="4" width="11" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="2" transform="rotate(8 14.5 11.5)"/>
+    </symbol>
+  </svg>
+
+  <div class="page">
+    <header class="site-header">
+      <a class="home-link" href="../../" aria-label="Kori Labs, ir al inicio">
+        <svg class="wordmark" viewBox="100 113 196 38" aria-hidden="true" focusable="false">
+          <path d="M108.185 135.302V149.334H100.525V118.153H108.185V131.574H111.37L119.776 118.153H124.25L114.963 132.727L125.266 149.334H117.2L108.456 135.302H108.185ZM149.529 137.133C149.529 145.674 145.688 149.944 138.006 149.944C130.278 149.944 126.415 145.674 126.415 137.133C126.415 128.592 130.278 124.321 138.006 124.321C145.688 124.321 149.529 128.592 149.529 137.133ZM133.939 137.133C133.939 140.296 134.21 142.601 134.752 144.047C135.294 145.493 136.379 146.216 138.006 146.216C139.587 146.216 140.649 145.493 141.192 144.047C141.689 142.555 141.937 140.251 141.937 137.133C141.937 133.969 141.689 131.642 141.192 130.151C140.649 128.75 139.587 128.049 138.006 128.049C136.379 128.049 135.294 128.772 134.752 130.219C134.21 131.619 133.939 133.924 133.939 137.133ZM161.571 129.202C163.424 126.219 166 124.728 169.298 124.728V130.083C166.813 130.083 165.073 130.422 164.079 131.1C163.13 131.778 162.655 132.817 162.655 134.218V149.334H155.064V124.931H158.521L161.571 129.202ZM176.419 122.694C175.154 122.694 174.069 122.265 173.165 121.407C172.307 120.503 171.877 119.418 171.877 118.153C171.877 116.933 172.307 115.893 173.165 115.035C174.024 114.131 175.086 113.679 176.351 113.679C177.617 113.679 178.679 114.108 179.537 114.967C180.396 115.826 180.825 116.91 180.825 118.221C180.825 119.486 180.396 120.548 179.537 121.407C178.679 122.265 177.639 122.694 176.419 122.694ZM172.555 149.334V124.931H180.147V149.334H172.555ZM218.169 149.334H200.748V118.153H208.408V145.674H218.169V149.334ZM234.644 146.487C232.746 148.792 230.215 149.944 227.052 149.944C224.928 149.944 223.211 149.334 221.9 148.114C220.635 146.849 220.002 145.154 220.002 143.03C220.002 140.906 220.748 139.302 222.239 138.217C223.731 137.087 226.261 136.206 229.831 135.574L234.034 134.76V132.32C234.034 129.473 233.017 128.049 230.984 128.049C228.769 128.049 227.549 129.88 227.323 133.54L221.087 132.794C221.358 129.902 222.239 127.778 223.731 126.423C225.222 125.022 227.707 124.321 231.187 124.321C238.101 124.321 241.558 127.146 241.558 132.794V149.334H236.542L234.644 146.487ZM226.713 142.827C226.713 144.951 227.866 146.013 230.17 146.013C231.39 146.013 232.678 145.289 234.034 143.843V137.811L230.984 138.421C228.137 139.008 226.713 140.477 226.713 142.827ZM255.81 125.202C257.301 124.615 258.838 124.321 260.42 124.321C267.288 124.321 270.723 128.592 270.723 137.133C270.723 145.674 267.288 149.944 260.42 149.944C257.934 149.944 255.697 149.153 253.709 147.572L251.743 149.334H248.218V117.407L255.81 116.458V125.202ZM255.81 145.131C256.669 145.493 257.437 145.674 258.115 145.674C261.504 145.674 263.199 142.827 263.199 137.133C263.199 134.06 262.815 131.778 262.046 130.286C261.278 128.795 259.99 128.049 258.183 128.049C257.595 128.049 256.804 128.162 255.81 128.388V145.131ZM287.786 134.489C290.136 135.167 291.921 136.093 293.141 137.268C294.361 138.443 294.971 140.16 294.971 142.42C294.971 144.725 294.022 146.555 292.124 147.91C290.271 149.266 287.741 149.944 284.532 149.944C281.324 149.944 278.883 149.289 277.211 147.978C275.584 146.623 274.568 144.634 274.161 142.013L280.397 141.132C280.533 142.714 281.007 143.956 281.821 144.86C282.634 145.764 283.696 146.216 285.007 146.216C287.402 146.216 288.599 145.448 288.599 143.911C288.599 142.42 286.882 141.2 283.447 140.251L281.278 139.573C279.019 138.94 277.324 138.036 276.194 136.862C275.11 135.641 274.568 133.879 274.568 131.574C274.568 129.315 275.471 127.552 277.279 126.287C279.132 124.977 281.595 124.321 284.668 124.321C287.741 124.321 290.09 124.977 291.717 126.287C293.344 127.598 294.361 129.541 294.768 132.117L288.464 132.93C288.192 129.676 286.814 128.049 284.329 128.049C282.069 128.049 280.939 128.772 280.939 130.219C280.939 131.077 281.346 131.778 282.16 132.32C282.973 132.817 284.171 133.292 285.752 133.743L287.786 134.489Z" fill="currentColor"/>
+        </svg>
+      </a>
+      <nav class="site-nav" aria-label="Principal">
+        <a class="site-nav__link" href="../" aria-current="page">Juegos</a>
+      </nav>
+    </header>
+
+    <main>
+      <!-- Portada: texto + caja 3D -->
+      <section class="p-hero" aria-labelledby="p-title">
+        <div class="p-hero__copy">
+          <p class="p-eyebrow">Juego de cartas</p>
+          <h1 class="p-hero__title" id="p-title">
+            <img class="p-logo" src="img/logo-pinto.webp" width="584" height="175" alt="PINTO">
+          </h1>
+          <p class="p-hero__tagline">Deshazte de todas <span class="p-red">tus cartas.</span></p>
+          <p class="p-hero__lead">Encuentra tu ritmo, juega tus cartas y no seas el último en cruzar la meta. Un juego de carreras rápido, competitivo y para toda la mesa.</p>
+
+          <ul class="p-facts" aria-label="Datos del juego">
+            <li><svg aria-hidden="true"><use href="#icon-players"/></svg><span><strong>2–6</strong> jugadores</span></li>
+            <li><svg aria-hidden="true"><use href="#icon-clock"/></svg><span><strong>5–10</strong> min</span></li>
+            <li><svg aria-hidden="true"><use href="#icon-age"/></svg><span><strong>4+</strong> años</span></li>
+            <li><svg aria-hidden="true"><use href="#icon-cards"/></svg><span><strong>54</strong> cartas</span></li>
+          </ul>
+        </div>
+
+        <div class="p-hero__art">
+          <div class="box-stage" id="box-stage" role="img" aria-label="Caja del juego PINTO en 3D, girando. Puedes arrastrarla para verla por todos lados.">
+            <div class="box3d" id="box3d">
+              <div class="box3d__face box3d__face--front"><img src="img/caja-frente.webp" alt="" draggable="false"></div>
+              <div class="box3d__face box3d__face--back"><img src="img/caja-reverso.webp" alt="" draggable="false"></div>
+              <div class="box3d__face box3d__face--right"><img src="img/caja-lado-der.webp" alt="" draggable="false"></div>
+              <div class="box3d__face box3d__face--left"><img src="img/caja-lado-izq.webp" alt="" draggable="false"></div>
+              <div class="box3d__face box3d__face--top"><img src="img/caja-arriba.webp" alt="" draggable="false"></div>
+              <div class="box3d__face box3d__face--bottom"><img src="img/caja-abajo.webp" alt="" draggable="false"></div>
+            </div>
+            <div class="box-shadow" aria-hidden="true"></div>
+          </div>
+          <p class="box-hint" aria-hidden="true">Arrastra para girar</p>
+        </div>
+
+        <div class="p-rainbow" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      </section>
+
+      <!-- Cómo se juega -->
+      <section class="p-section" aria-labelledby="como-title">
+        <p class="p-eyebrow">Reglas en una vuelta</p>
+        <h2 class="p-h2" id="como-title">Cómo se juega</h2>
+        <ol class="p-steps">
+          <li>
+            <h3>Arma la parrilla</h3>
+            <p>Cada jugador pone 3 cartas boca abajo, que nadie puede ver, y encima 3 boca arriba. El resto se reparte como mano.</p>
+          </li>
+          <li>
+            <h3>Marca el ritmo</h3>
+            <p>Arranca quien tenga un 1. En tu turno, juega una o más cartas iguales con valor igual o mayor al de la pila.</p>
+          </li>
+          <li>
+            <h3>Si no puedes, recoges</h3>
+            <p>¿Sin jugada válida? Te llevas toda la pila central a la mano y el siguiente arranca una nueva secuencia.</p>
+          </li>
+          <li>
+            <h3>Juega las de la mesa</h3>
+            <p>Sin cartas en la mano, usas tus 3 visibles; después, las ocultas, una por una y sin mirar.</p>
+          </li>
+          <li>
+            <h3>Cruza la meta</h3>
+            <p>Quien se queda sin cartas termina su carrera. La partida sigue hasta que solo quede uno: ese pierde.</p>
+          </li>
+        </ol>
+        <p class="p-note"><strong>Carril lleno:</strong> si se juntan cuatro cartas iguales seguidas en la pila, se retira toda la pila. ¿Quieren más? Jueguen <strong>por rondas</strong> y sumen puntos según el orden de llegada.</p>
+      </section>
+
+      <!-- Cartas de ritmo -->
+      <section class="p-section" aria-labelledby="ritmo-title">
+        <p class="p-eyebrow">32 cartas · del 1 al 8</p>
+        <h2 class="p-h2" id="ritmo-title">Cartas de ritmo</h2>
+        <p class="p-section__lead">Cada número es una velocidad. Hay 4 copias de cada valor y solo se puede jugar igual o más rápido que la carta de arriba.</p>
+        <ul class="p-fan" aria-label="Cartas de ritmo del 1 al 8">
+          <li><img src="img/cartas/ritmo-1.webp" width="480" height="692" alt="Carta de ritmo 1" loading="lazy"></li>
+          <li><img src="img/cartas/ritmo-2.webp" width="480" height="692" alt="Carta de ritmo 2" loading="lazy"></li>
+          <li><img src="img/cartas/ritmo-3.webp" width="480" height="692" alt="Carta de ritmo 3" loading="lazy"></li>
+          <li><img src="img/cartas/ritmo-4.webp" width="480" height="692" alt="Carta de ritmo 4" loading="lazy"></li>
+          <li><img src="img/cartas/ritmo-5.webp" width="480" height="692" alt="Carta de ritmo 5" loading="lazy"></li>
+          <li><img src="img/cartas/ritmo-6.webp" width="480" height="692" alt="Carta de ritmo 6" loading="lazy"></li>
+          <li><img src="img/cartas/ritmo-7.webp" width="480" height="692" alt="Carta de ritmo 7" loading="lazy"></li>
+          <li><img src="img/cartas/ritmo-8.webp" width="480" height="692" alt="Carta de ritmo 8" loading="lazy"></li>
+        </ul>
+      </section>
+
+      <!-- Cartas especiales -->
+      <section class="p-section" aria-labelledby="especiales-title">
+        <p class="p-eyebrow">Cambian la carrera</p>
+        <h2 class="p-h2" id="especiales-title">Cartas especiales</h2>
+        <ul class="p-specials">
+          <li class="p-card" style="--c: #e5463b">
+            <img src="img/cartas/bandera-roja.webp" width="480" height="692" alt="" loading="lazy">
+            <div><h3>Bandera Roja</h3><p>Reinicio de carrera: se juega en cualquier momento y el siguiente arranca una secuencia nueva.</p></div>
+          </li>
+          <li class="p-card" style="--c: #f2bd23">
+            <img src="img/cartas/bandera-amarilla.webp" width="480" height="692" alt="" loading="lazy">
+            <div><h3>Bandera Amarilla</h3><p>Ritmo controlado: el siguiente jugador tiene que bajar a un 4 o menos.</p></div>
+          </li>
+          <li class="p-card" style="--c: #22b3c4">
+            <img src="img/cartas/rebufo.webp" width="480" height="692" alt="" loading="lazy">
+            <div><h3>Rebufo</h3><p>Aceleración en grupo: suelta de un golpe varias cartas iguales de 5 o más.</p></div>
+          </li>
+          <li class="p-card" style="--c: #e8e2d6">
+            <img src="img/cartas/bandera-a-cuadros.webp" width="480" height="692" alt="" loading="lazy">
+            <div><h3>Bandera a Cuadros</h3><p>Cierre de carrera: toda la pila central sale del juego.</p></div>
+          </li>
+          <li class="p-card" style="--c: #9b4fd8">
+            <img src="img/cartas/vuelta-rapida.webp" width="480" height="692" alt="" loading="lazy">
+            <div><h3>Vuelta Rápida</h3><p>Ritmo máximo: la carta más alta del juego, por encima del 8.</p></div>
+          </li>
+          <li class="p-card" style="--c: #2f86de">
+            <img src="img/cartas/bandera-azul.webp" width="480" height="692" alt="" loading="lazy">
+            <div><h3>Bandera Azul</h3><p>Ceder el paso: el siguiente jugador pierde su turno.</p></div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Cierre -->
+      <section class="p-cta" aria-labelledby="cta-title">
+        <img class="p-cta__card" src="img/cartas/reverso.webp" width="480" height="692" alt="" loading="lazy">
+        <div class="p-cta__copy">
+          <p class="p-eyebrow">Diseñado en Costa Rica</p>
+          <h2 class="p-h2" id="cta-title">Muy pronto en la parrilla de salida</h2>
+          <p>PINTO está calentando motores. Síguenos para enterarte primero de dónde conseguirlo.</p>
+          <a class="p-button" href="https://www.instagram.com/korilabs_cr/" target="_blank" rel="noopener noreferrer">
+            <svg aria-hidden="true"><use href="#icon-instagram"/></svg>
+            <span>@korilabs_cr</span>
+            <span class="visually-hidden">(se abre en una pestaña nueva)</span>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>© 2026 Kori Labs · PINTO es un juego de Kori Labs</p>
+    </footer>
+  </div>
+
+  <script src="box3d.js" defer></script>
+</body>
+</html>

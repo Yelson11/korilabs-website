@@ -1,0 +1,515 @@
+/* ==========================================================================
+   Kori Labs · página de PINTO (juegos/pinto/)
+   Usa la base de styles.css (cabecera, pie, utilidades) y la identidad de la caja:
+   asfalto oscuro, crema, rojo de pista y el arcoíris de las cartas de ritmo.
+   ========================================================================== */
+
+.pinto {
+  --asphalt: #16171b;
+  --asphalt-2: #1d1e23;
+  --asphalt-3: #26272d;
+  --cream: #f5f0e8;
+  --cream-dim: #b9b4ab;
+  --red: #e5463b;
+  --line: rgb(245 240 232 / 0.14);
+  --display: "Poppins", var(--font);
+
+  /* proporciones reales de la caja (troquel): ancho 758 · alto 1057 · fondo 244 */
+  --bw: clamp(11.5rem, 46vw, 17rem);
+  --bh: calc(var(--bw) * 1.3945);
+  --bd: calc(var(--bw) * 0.3219);
+
+  background-color: var(--asphalt);
+  /* rombos sutiles, como el fondo de la caja */
+  background-image:
+    radial-gradient(ellipse 70% 55% at 70% 18%, rgb(229 70 59 / 0.07), transparent 70%),
+    conic-gradient(from 45deg, var(--asphalt-2) 25%, transparent 0 50%, var(--asphalt-2) 0 75%, transparent 0);
+  background-size: auto, 5rem 5rem;
+  background-attachment: fixed, scroll;
+}
+
+.home-link {
+  display: block;
+  color: var(--cream);
+  border-radius: 4px;
+}
+
+.home-link:focus-visible {
+  outline: 3px solid var(--red);
+  outline-offset: 6px;
+}
+
+.pinto .site-nav__link::after { background: var(--red); }
+.pinto .site-nav__link:focus-visible { outline-color: var(--red); }
+
+/* --- Textos comunes ----------------------------------------------------- */
+
+.p-eyebrow {
+  margin: 0 0 0.6rem;
+  color: var(--cream-dim);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.p-h2 {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(1.9rem, 1.2rem + 3vw, 3rem);
+  font-style: italic;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.p-red { color: var(--red); }
+.p-hero__tagline .p-red { display: block; }
+
+/* --- Portada ------------------------------------------------------------ */
+
+.p-hero {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 1.5rem;
+  padding-block: clamp(2rem, 6vw, 4rem) 3.5rem;
+  text-align: center;
+}
+
+.p-hero__copy { max-width: 34rem; }
+
+.p-hero__title { margin: 0; line-height: 0; }
+
+.p-logo {
+  display: block;
+  width: min(100%, 22rem);
+  height: auto;
+  margin-inline: auto;
+}
+
+.p-hero__tagline {
+  margin: 1.4rem 0 0;
+  font-family: var(--display);
+  font-size: clamp(1.45rem, 1rem + 2vw, 2.1rem);
+  font-style: italic;
+  font-weight: 800;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.p-hero__lead {
+  margin: 1rem auto 0;
+  max-width: 30rem;
+  color: var(--cream-dim);
+  font-size: clamp(1.02rem, 0.98rem + 0.3vw, 1.15rem);
+  text-wrap: pretty;
+}
+
+.p-facts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  margin: 1.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.p-facts li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem 0.5rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgb(245 240 232 / 0.04);
+  font-size: 0.9rem;
+}
+
+.p-facts svg { width: 1.25rem; height: 1.25rem; color: var(--cream); }
+.p-facts strong { font-family: var(--display); font-weight: 600; }
+
+.p-rainbow {
+  position: absolute;
+  inset: auto 0 0;
+  display: flex;
+  gap: 0.35rem;
+  height: 0.45rem;
+}
+
+.p-rainbow i {
+  flex: 1;
+  transform: skewX(-25deg);
+  background: var(--c);
+}
+
+.p-rainbow i:nth-child(1) { --c: #e63c3c; }
+.p-rainbow i:nth-child(2) { --c: #f08c28; }
+.p-rainbow i:nth-child(3) { --c: #f2c230; }
+.p-rainbow i:nth-child(4) { --c: #3dba6a; }
+.p-rainbow i:nth-child(5) { --c: #22b3c4; }
+.p-rainbow i:nth-child(6) { --c: #2f86de; }
+.p-rainbow i:nth-child(7) { --c: #9b4fd8; }
+.p-rainbow i:nth-child(8) { --c: #e23b86; }
+
+/* --- Caja 3D ------------------------------------------------------------ */
+
+.p-hero__art {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+}
+
+.box-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: calc(var(--bw) * 1.7);
+  height: calc(var(--bh) * 1.32);
+  perspective: calc(var(--bw) * 5);
+  touch-action: pan-y;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.box-stage.is-dragging { cursor: grabbing; }
+
+.box3d {
+  --ry: -24deg;
+  --rx: -13deg;
+  --bob: 0px;
+  position: relative;
+  width: var(--bw);
+  height: var(--bh);
+  transform-style: preserve-3d;
+  transform: translateY(var(--bob)) rotateX(var(--rx)) rotateY(var(--ry));
+  will-change: transform;
+}
+
+.box3d__face {
+  position: absolute;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background: var(--asphalt);
+  /* borde de luz muy sutil para separar la caja del fondo */
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.05);
+}
+
+.box3d__face img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+}
+
+/* sombreado: lo controla box3d.js según hacia dónde mira cada cara */
+.box3d__face::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(115deg, rgb(255 255 255 / calc(var(--sheen, 0) * 0.16)) 0%, transparent 45%),
+    rgb(0 0 0 / var(--shade, 0));
+  pointer-events: none;
+}
+
+.box3d__face--front,
+.box3d__face--back { inset: 0; }
+
+.box3d__face--front  { transform: translateZ(calc(var(--bd) / 2)); }
+.box3d__face--back   { transform: rotateY(180deg) translateZ(calc(var(--bd) / 2)); --shade: 0.15; }
+
+.box3d__face--right,
+.box3d__face--left {
+  top: 0;
+  left: calc((var(--bw) - var(--bd)) / 2);
+  width: var(--bd);
+  height: var(--bh);
+  --shade: 0.35;
+}
+
+.box3d__face--right  { transform: rotateY(90deg) translateZ(calc(var(--bw) / 2)); }
+.box3d__face--left   { transform: rotateY(-90deg) translateZ(calc(var(--bw) / 2)); }
+
+.box3d__face--top,
+.box3d__face--bottom {
+  left: 0;
+  top: calc((var(--bh) - var(--bd)) / 2);
+  width: var(--bw);
+  height: var(--bd);
+}
+
+.box3d__face--top    { transform: rotateX(90deg) translateZ(calc(var(--bh) / 2)); --shade: 0.05; }
+.box3d__face--bottom { transform: rotateX(-90deg) translateZ(calc(var(--bh) / 2)); --shade: 0.5; }
+
+.box-shadow {
+  position: absolute;
+  left: 50%;
+  bottom: 3%;
+  width: calc(var(--bw) * 1.15);
+  height: calc(var(--bw) * 0.16);
+  translate: -50% 0;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(0 0 0 / 0.7), transparent);
+  transform: scale(var(--shadow-scale, 1));
+  pointer-events: none;
+  z-index: -1;
+}
+
+.box-hint {
+  margin: 0;
+  color: var(--cream-dim);
+  font-size: 0.72rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.no-js .box-hint { display: none; }
+
+/* Sin JavaScript la caja gira sola con CSS */
+.no-js .box3d { animation: box-spin 14s linear infinite; }
+
+@keyframes box-spin {
+  from { transform: rotateX(-13deg) rotateY(-24deg); }
+  to   { transform: rotateX(-13deg) rotateY(336deg); }
+}
+
+/* --- Secciones ---------------------------------------------------------- */
+
+.p-section {
+  padding-block: clamp(3rem, 8vw, 5.5rem);
+  border-top: 1px solid var(--line);
+}
+
+.p-section__lead {
+  max-width: 38rem;
+  margin: 1rem 0 0;
+  color: var(--cream-dim);
+  font-size: 1.05rem;
+}
+
+.p-steps {
+  display: grid;
+  gap: 1rem;
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: paso;
+}
+
+.p-steps li {
+  position: relative;
+  padding: 1.25rem 1.25rem 1.3rem 4.2rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: rgb(22 23 27 / 0.75);
+  counter-increment: paso;
+}
+
+.p-steps li::before {
+  content: counter(paso);
+  position: absolute;
+  left: 1.1rem;
+  top: 1.05rem;
+  width: 2.2rem;
+  font-family: var(--display);
+  font-size: 2rem;
+  font-style: italic;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--c, var(--red));
+  text-align: center;
+}
+
+.p-steps li:nth-child(1) { --c: #e63c3c; }
+.p-steps li:nth-child(2) { --c: #f08c28; }
+.p-steps li:nth-child(3) { --c: #f2c230; }
+.p-steps li:nth-child(4) { --c: #3dba6a; }
+.p-steps li:nth-child(5) { --c: #22b3c4; }
+
+.p-steps h3 {
+  margin: 0 0 0.3rem;
+  font-family: var(--display);
+  font-size: 1.1rem;
+  font-style: italic;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.p-steps p {
+  margin: 0;
+  color: var(--cream-dim);
+}
+
+.p-note {
+  max-width: 44rem;
+  margin: 1.5rem 0 0;
+  padding: 1rem 1.25rem;
+  border-left: 3px solid var(--red);
+  background: rgb(229 70 59 / 0.07);
+  color: var(--cream-dim);
+}
+
+.p-note strong { color: var(--cream); }
+
+/* Abanico de cartas de ritmo */
+.p-fan {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  margin: 2.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.p-fan img,
+.p-card img,
+.p-cta__card {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 6%/4.2%;
+  box-shadow: 0 0.9rem 1.8rem rgb(0 0 0 / 0.45);
+}
+
+.p-fan li { transition: transform 0.3s ease; }
+
+/* Cartas especiales */
+.p-specials {
+  display: grid;
+  gap: 1rem;
+  margin: 2.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.p-card {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  align-items: center;
+  gap: 1.1rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: linear-gradient(120deg, color-mix(in srgb, var(--c) 12%, transparent), transparent 55%), rgb(22 23 27 / 0.75);
+}
+
+.p-card h3 {
+  margin: 0 0 0.25rem;
+  color: var(--c);
+  font-family: var(--display);
+  font-size: 1.05rem;
+  font-style: italic;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.p-card p {
+  margin: 0;
+  color: var(--cream-dim);
+  font-size: 0.97rem;
+}
+
+/* Cierre */
+.p-cta {
+  display: grid;
+  justify-items: center;
+  gap: 2rem;
+  padding-block: clamp(3rem, 8vw, 5.5rem);
+  border-top: 1px solid var(--line);
+  text-align: center;
+}
+
+.p-cta__card {
+  width: min(11rem, 46vw);
+  transform: rotate(-8deg);
+}
+
+.p-cta__copy { max-width: 32rem; }
+
+.p-cta__copy > p:not(.p-eyebrow) {
+  margin: 1rem 0 0;
+  color: var(--cream-dim);
+  font-size: 1.05rem;
+}
+
+.p-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1.5rem;
+  padding: 0.85rem 1.4rem;
+  border-radius: 999px;
+  background: var(--red);
+  color: #fff;
+  font-family: var(--display);
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.p-button svg { width: 1.3rem; height: 1.3rem; }
+.p-button:hover { background: #f05a4f; transform: translateY(-2px); }
+.p-button:focus-visible { outline: 3px solid var(--cream); outline-offset: 4px; }
+
+/* --- Pantallas medianas ------------------------------------------------- */
+
+@media (min-width: 40rem) {
+  .p-fan { grid-template-columns: repeat(8, 1fr); gap: 0.6rem; }
+  .p-fan li:nth-child(odd)  { transform: translateY(0.75rem); }
+  .p-fan li:hover { transform: translateY(-0.5rem); }
+  .p-steps { grid-template-columns: repeat(2, 1fr); }
+  .p-steps li:last-child { grid-column: 1 / -1; }
+  .p-specials { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* --- Escritorio --------------------------------------------------------- */
+
+@media (min-width: 56rem) {
+  .pinto { --bw: clamp(14rem, 22vw, 18rem); }
+
+  .p-hero {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    justify-items: stretch;
+    text-align: left;
+    min-height: min(46rem, calc(100svh - 5rem));
+  }
+
+  .p-logo { margin-inline: 0; width: min(100%, 26rem); }
+  .p-hero__lead { margin-inline: 0; }
+  .p-facts { justify-content: flex-start; }
+  .p-hero__art { justify-self: center; }
+
+  .p-steps { grid-template-columns: repeat(5, 1fr); }
+  .p-steps li { padding: 4.2rem 1.15rem 1.3rem; }
+  .p-steps li:last-child { grid-column: auto; }
+  .p-steps li::before { top: 1.1rem; left: 1.1rem; text-align: left; }
+
+  .p-specials { grid-template-columns: repeat(3, 1fr); }
+  .p-card { grid-template-columns: 1fr; align-items: start; padding: 1.25rem; }
+  .p-card img { width: 62%; margin: 0 auto 0.4rem; }
+
+  .p-cta {
+    grid-template-columns: auto minmax(0, 32rem);
+    justify-content: center;
+    gap: 4rem;
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .no-js .box3d { animation: none; }
+  .p-fan li:hover { transform: none; }
+}
+
+@media (forced-colors: active) {
+  .p-steps li, .p-card, .p-facts li { border-color: CanvasText; }
+}

@@ -85,6 +85,47 @@ body {
   text-transform: uppercase;
 }
 
+/* --- Navegación --------------------------------------------------------- */
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.site-nav__link {
+  position: relative;
+  padding-block: 0.4rem;
+  color: var(--cream);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.site-nav__link::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 2px;
+  background: var(--peach);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+
+.site-nav__link:hover::after,
+.site-nav__link[aria-current="page"]::after {
+  transform: scaleX(1);
+}
+
+.site-nav__link:focus-visible {
+  outline: 3px solid var(--peach);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
 /* --- Contenido principal ------------------------------------------------ */
 
 .hero {
@@ -141,6 +182,49 @@ body {
   font-weight: 700;
   letter-spacing: 0.2em;
   text-transform: uppercase;
+}
+
+/* --- Enlace al primer juego (portada) ----------------------------------- */
+
+.game-teaser {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin-top: 1.75rem;
+  padding: 0.85rem 1.4rem;
+  border: 2px solid var(--peach);
+  border-radius: 1rem;
+  color: var(--cream);
+  text-align: left;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.game-teaser__label {
+  color: var(--cream-dim);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.game-teaser__name {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.game-teaser:hover {
+  background-color: var(--peach);
+  color: var(--forest);
+  transform: translateY(-2px);
+}
+
+.game-teaser:hover .game-teaser__label {
+  color: var(--forest);
+}
+
+.game-teaser:focus-visible {
+  outline: 3px solid var(--peach);
+  outline-offset: 4px;
 }
 
 /* --- Redes sociales ----------------------------------------------------- */

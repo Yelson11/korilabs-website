@@ -11,7 +11,21 @@ css/styles.css      Estilos (colores y tipografía en variables al inicio)
 assets/favicon.svg  Icono de la pestaña
 assets/pattern.svg  Patrón de gatitos del fondo
 .nojekyll           Evita que GitHub Pages procese el sitio con Jekyll
+
+juegos/index.html          Sección "Juegos": por ahora redirige a PINTO
+juegos/pinto/index.html    Página de PINTO (caja 3D, cómo se juega, cartas)
+juegos/pinto/box3d.js      Giro y arrastre de la caja 3D (sin dependencias)
+juegos/pinto/img/          Caras de la caja, cartas, logo e imagen para redes (og-pinto.jpg)
+css/pinto.css              Estilos de la página de PINTO
 ```
+
+## Sección Juegos
+
+- El menú de la cabecera y el botón "Conoce PINTO" de la portada llevan a `juegos/`, que por ahora redirige
+  a `juegos/pinto/`. Cuando haya más juegos, cambia `juegos/index.html` por un listado.
+- **Caja 3D:** son seis imágenes (`img/caja-*.webp`) montadas con CSS 3D. Si cambia el diseño de la caja,
+  reemplaza esas imágenes manteniendo las proporciones (ancho 758 · alto 1057 · fondo 244).
+- **Cartas:** `img/cartas/*.webp`, exportadas del "Deck v1.0" de Figma.
 
 ## Cambiar el contenido
 
