@@ -13,6 +13,8 @@
   --asphalt: #16171b;
   --asphalt-2: #1e1f24;
   --pinto-red: #e5463b;
+  /* aire del separador de rombos: el mismo arriba (fin del hero) y abajo (inicio de Nuestros juegos) */
+  --sep: clamp(2.5rem, 6vw, 3.5rem);
 
   /* rombos de la marca, muy sutiles; un halo cálido detrás del gato */
   background-color: var(--forest);
@@ -83,7 +85,7 @@
   display: grid;
   justify-items: center;
   gap: clamp(1.75rem, 5vw, 3rem);
-  padding-block: clamp(2rem, 6vw, 4.5rem) clamp(2.5rem, 6vw, 4rem);
+  padding-block: clamp(2rem, 6vw, 4.5rem) var(--sep);
   text-align: center;
 }
 
@@ -176,7 +178,7 @@
 
 /* "Nuestros juegos": menos aire arriba (rombos) y abajo (antes de la suscripción) */
 .h-games {
-  padding-block: clamp(2rem, 5vw, 3rem) clamp(1.5rem, 4vw, 2.5rem);
+  padding-block: var(--sep) clamp(1.5rem, 4vw, 2.5rem);
   scroll-margin-top: 1.5rem;
 }
 
@@ -595,7 +597,6 @@ html { scroll-behavior: smooth; }
     text-align: left;
   }
 
-  .h-hero { padding-bottom: clamp(1.5rem, 3vw, 2.5rem); }
   .h-hero__lead { margin-inline: 0; }
   .h-actions { justify-content: flex-start; }
 
