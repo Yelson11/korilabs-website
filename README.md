@@ -45,8 +45,8 @@ La portada tiene una sección `#suscribete` (y un enlace "Suscríbete" en el men
 **Respaldo del formulario.** Debajo del `div` de Sender hay un bloque `data-sender-fallback`. Mientras el
 formulario carga muestra "Cargando el formulario…"; si a los 8 s no apareció (bloqueador de anuncios, red
 lenta, sin JavaScript) muestra un botón al formulario hospedado de Sender. Ese enlace es el `href` del botón
-(hoy dice `SENDER_FORM_URL`): cópialo en Sender → Formularios → engranaje → *Publishing settings* → form URL.
-Mientras diga `SENDER_FORM_URL`, el botón se oculta.
+(`https://stats.sender.net/forms/dNk3wL/view`). Si cambias de formulario, copia la nueva en Sender →
+Formularios → engranaje → *Publishing settings* → form URL.
 
 El correo de bienvenida con el regalo se envía desde una automatización de Sender (no desde este sitio).
 `robots.txt` evita que `/regalos/` aparezca en buscadores, pero el archivo sigue siendo público para quien
