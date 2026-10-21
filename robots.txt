@@ -1,0 +1,3 @@
+User-agent: *
+# El regalo de suscripción se entrega por correo; no debe aparecer en buscadores.
+Disallow: /regalos/

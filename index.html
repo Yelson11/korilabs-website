@@ -4,13 +4,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Kori Labs · Estudio de juegos de mesa</title>
-  <meta name="description" content="Kori Labs es un estudio creativo de juegos de mesa y videojuegos en Costa Rica. Nuestro primer juego, PINTO, ya casi está listo.">
+  <meta name="description" content="Kori Labs es un estudio creativo de juegos de mesa y videojuegos en Costa Rica. Nuestro primer juego, PINTO, está casi listo para salir del taller.">
   <meta name="theme-color" content="#1F4F37">
   <meta name="color-scheme" content="dark">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Kori Labs · Estamos preparando la mesa">
-  <meta property="og:description" content="Imaginar, crear, compartir. Nuestro primer juego, PINTO, ya casi está listo.">
+  <meta property="og:description" content="Imaginar, crear, compartir. Nuestro primer juego, PINTO, está casi listo para salir del taller.">
+  <meta property="og:url" content="https://korilabscr.com/">
+  <meta property="og:site_name" content="Kori Labs">
+  <meta property="og:image" content="https://korilabscr.com/assets/og-korilabs.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Kori Labs: el gato de la marca dormido junto a dados y cartas, con el texto Estamos preparando la mesa.">
   <meta property="og:locale" content="es_CR">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://korilabscr.com/">
   <link rel="icon" href="favicon.ico" sizes="32x32">
   <link rel="icon" href="assets/favicon.svg?v=2" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
@@ -21,7 +29,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Istok+Web:wght@400;700&amp;display=swap">
 
   <link rel="stylesheet" href="css/styles.css?v=2">
-  <link rel="stylesheet" href="css/home.css?v=3">
+  <link rel="stylesheet" href="css/home.css?v=5">
 
   <!-- Sender: script universal de la cuenta (carga el formulario de suscripción). -->
   <script>
@@ -52,6 +60,19 @@
       <circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/>
       <circle cx="17.3" cy="6.7" r="1.2" fill="currentColor"/>
     </symbol>
+    <!-- Íconos de datos del juego: los mismos que en juegos/pinto/index.html -->
+    <symbol id="icon-players" viewBox="0 0 24 24">
+      <circle cx="8" cy="7" r="3" fill="currentColor"/><circle cx="16.5" cy="7" r="3" fill="currentColor"/>
+      <path d="M2.5 18.5c0-3.3 2.5-6 5.5-6s5.5 2.7 5.5 6M11 18.5c0-3.3 2.5-6 5.5-6s5.5 2.7 5.5 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="icon-clock" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M12 7.5V12h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-age" viewBox="0 0 24 24">
+      <rect x="3.5" y="3.5" width="17" height="17" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
+      <text x="12" y="16" text-anchor="middle" font-size="9" font-weight="700" font-family="Poppins, 'Istok Web', sans-serif" fill="currentColor">8+</text>
+    </symbol>
     <symbol id="icon-imaginar" viewBox="0 0 48 48">
       <path d="M21 8c1.4 7.6 4.4 10.6 12 12-7.6 1.4-10.6 4.4-12 12-1.4-7.6-4.4-10.6-12-12 7.6-1.4 10.6-4.4 12-12Z" fill="currentColor"/>
       <path d="M36 6c.5 2.8 1.6 3.9 4.4 4.4-2.8.5-3.9 1.6-4.4 4.4-.5-2.8-1.6-3.9-4.4-4.4 2.8-.5 3.9-1.6 4.4-4.4ZM35 31c.4 2 1.1 2.7 3.1 3.1-2 .4-2.7 1.1-3.1 3.1-.4-2-1.1-2.7-3.1-3.1 2-.4 2.7-1.1 3.1-3.1Z" fill="var(--kori)"/>
@@ -74,7 +95,7 @@
         </svg>
       </a>
       <nav class="site-nav" aria-label="Principal">
-        <a class="site-nav__link" href="juegos/">Juegos</a>
+        <a class="site-nav__link" href="#juegos">Juegos</a>
         <a class="site-nav__link" href="#suscribete">Suscríbete</a>
         <a class="site-nav__icon" href="https://www.instagram.com/korilabs_cr/" target="_blank" rel="noopener noreferrer">
           <svg aria-hidden="true" focusable="false"><use href="#icon-instagram"/></svg>
@@ -89,7 +110,7 @@
         <div class="h-hero__copy">
           <p class="h-eyebrow">Estudio de juegos · Costa Rica</p>
           <h1 class="h-hero__title" id="h-title">Estamos preparando <span class="accent">la mesa…</span></h1>
-          <p class="h-hero__lead">Algo se está acomodando entre dados, cartas y píxeles. Nuestro primer juego ya casi está listo para jugarse.</p>
+          <p class="h-hero__lead">Algo se está armando entre dados, cartas y figuras. Nuestro primer juego está casi listo para salir del taller.</p>
           <div class="h-actions">
             <a class="h-btn h-btn--primary" href="juegos/pinto/">Conoce PINTO <span aria-hidden="true">→</span></a>
             <a class="h-btn h-btn--ghost" href="https://www.instagram.com/korilabs_cr/" target="_blank" rel="noopener noreferrer">
@@ -118,7 +139,7 @@
       <div class="h-diamonds" aria-hidden="true"><i></i><i></i><i></i></div>
 
       <!-- Juegos -->
-      <section class="h-section" aria-labelledby="juegos-title">
+      <section class="h-section h-games" id="juegos" aria-labelledby="juegos-title">
         <header class="h-section__head">
           <p class="h-eyebrow">Sobre la mesa</p>
           <h2 class="h-h2" id="juegos-title">Nuestros juegos</h2>
@@ -137,10 +158,11 @@
             </h3>
             <p class="h-game__tag">Deshazte de todas <span>tus cartas.</span></p>
             <p class="h-game__text">Un juego inspirado en las carreras. Rápido, competitivo y divertido. Encuentra tu ritmo y no seas el último en cruzar la meta.</p>
+            <!-- Mismos datos, íconos y orden que en juegos/pinto/ (allá se suma "54 cartas") -->
             <ul class="h-game__facts" aria-label="Datos del juego">
-              <li><strong>2–6</strong> jugadores</li>
-              <li><strong>5–10</strong> min</li>
-              <li><strong>54</strong> cartas</li>
+              <li><svg aria-hidden="true" focusable="false"><use href="#icon-players"/></svg><span><strong>2–6</strong> jugadores</span></li>
+              <li><svg aria-hidden="true" focusable="false"><use href="#icon-clock"/></svg><span><strong>5–10</strong> min</span></li>
+              <li><svg aria-hidden="true" focusable="false"><use href="#icon-age"/></svg><span><strong>8+</strong> años</span></li>
             </ul>
             <span class="h-game__link">Ver el juego <span aria-hidden="true">→</span></span>
           </div>
@@ -149,7 +171,7 @@
 
         <p class="h-next">
           <span class="h-next__dot" aria-hidden="true"></span>
-          Más juegos en el taller. <a href="#suscribete">Te contamos</a> cuando estén listos para la mesa.
+          <span>Más juegos en el taller. <a href="#suscribete">Te contamos</a> cuando estén listos para la mesa.</span>
         </p>
       </section>
 
@@ -169,6 +191,14 @@
           <div class="h-join__form">
             <!-- Formulario incrustado de Sender. Su diseño se cambia en Sender; aquí solo va el ID. -->
             <div style="text-align: left" class="sender-form-field" data-sender-form-id="dNk3wL"></div>
+            <!-- Respaldo: se muestra mientras carga el formulario y se queda si Sender no carga
+                 (bloqueador de anuncios, red lenta, sin JavaScript). El enlace va al formulario
+                 hospedado de Sender: Formularios → engranaje → Publishing settings → "form URL". -->
+            <div class="h-join__fallback" data-sender-fallback>
+              <p class="h-join__loading" aria-hidden="true">Cargando el formulario…</p>
+              <p class="h-join__fallback-text">¿No ves el formulario? Puede que tu navegador lo esté bloqueando.</p>
+              <a class="h-btn h-btn--primary h-join__fallback-btn" href="https://stats.sender.net/forms/dNk3wL/view" target="_blank" rel="noopener noreferrer">Suscríbete aquí <span aria-hidden="true">→</span><span class="visually-hidden"> (se abre en una pestaña nueva)</span></a>
+            </div>
             <p class="h-join__note">Sin spam. Puedes darte de baja cuando quieras. Lee nuestra <a href="privacidad/">política de privacidad</a>.</p>
           </div>
         </div>
@@ -206,5 +236,30 @@
     </footer>
   </div>
 
+  <script>
+    // Respaldo del formulario de Sender: oculta el aviso cuando el formulario aparece;
+    // si no aparece en unos segundos, muestra el enlace al formulario hospedado.
+    (function () {
+      var field = document.querySelector('.sender-form-field');
+      var fallback = document.querySelector('[data-sender-fallback]');
+      if (!field || !fallback) return;
+      var link = fallback.querySelector('a');
+      if (link && link.getAttribute('href') === 'SENDER_FORM_URL') link.hidden = true; // aún sin URL
+      fallback.classList.add('is-loading');
+
+      function rendered() { return field.offsetHeight > 40; }
+      function done() { fallback.hidden = true; observer.disconnect(); clearTimeout(timer); }
+      var observer = new MutationObserver(function () {
+        // Sender agrega el formulario y luego carga su contenido; esperamos a que tenga altura.
+        if (rendered()) done(); else setTimeout(function () { if (rendered()) done(); }, 600);
+      });
+      observer.observe(field, { childList: true, subtree: true });
+      var timer = setTimeout(function () {
+        if (rendered()) return done();
+        fallback.classList.remove('is-loading');
+        fallback.classList.add('is-failed');
+      }, 8000);
+    })();
+  </script>
 </body>
 </html>
