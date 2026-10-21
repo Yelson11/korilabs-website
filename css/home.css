@@ -446,7 +446,7 @@ html { scroll-behavior: smooth; }
 
 /* En pantallas muy angostas el enlace no cabe; la sección sigue en la portada */
 @media (max-width: 22.4rem) {
-  .site-nav__link[href="#suscribete"] { display: none; }
+  .site-nav__link[href$="#suscribete"] { display: none; }
 }
 
 /* --- Valores ------------------------------------------------------------ */
@@ -514,6 +514,19 @@ html { scroll-behavior: smooth; }
 
 .h-footer__ig:hover { border-color: var(--peach); color: var(--peach); }
 .h-footer__ig:focus-visible { outline: 3px solid var(--peach); outline-offset: 3px; }
+
+.h-footer__link,
+.h-join__note a {
+  color: var(--cream);
+  text-decoration-color: var(--peach);
+  text-underline-offset: 0.2em;
+}
+
+.h-footer__link:hover,
+.h-join__note a:hover { color: var(--peach); }
+
+.h-footer__link:focus-visible,
+.h-join__note a:focus-visible { outline: 3px solid var(--peach); outline-offset: 3px; border-radius: 2px; }
 
 /* --- Tablet ------------------------------------------------------------- */
 

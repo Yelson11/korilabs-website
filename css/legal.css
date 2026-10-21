@@ -1,0 +1,67 @@
+/* ==========================================================================
+   Kori Labs · páginas legales (privacidad)
+   Se carga después de styles.css y home.css.
+   ========================================================================== */
+
+.legal {
+  width: min(100%, 44rem);
+  margin-inline: auto;
+  padding-block: clamp(2rem, 6vw, 4rem) clamp(3rem, 8vw, 5rem);
+}
+
+.legal__head { margin-bottom: 2rem; }
+
+.legal__date {
+  margin: 0.75rem 0 0;
+  color: var(--cream-dim);
+  font-size: 0.9rem;
+}
+
+.legal__body {
+  padding: clamp(1.5rem, 5vw, 2.75rem);
+  border: 1.5px solid rgb(254 228 193 / 0.25);
+  border-radius: 1.5rem;
+  background: var(--forest-deep);
+}
+
+.legal__lead {
+  margin-top: 0;
+  font-size: 1.08rem;
+}
+
+.legal__body h2 {
+  margin: 2.25rem 0 0.6rem;
+  color: var(--peach);
+  font-size: 1.2rem;
+  line-height: 1.25;
+}
+
+.legal__body p,
+.legal__body li {
+  color: var(--cream-dim);
+  max-width: 65ch;
+}
+
+.legal__body p { margin: 0 0 0.9rem; }
+.legal__body strong { color: var(--cream); }
+
+.legal__body ul {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0 0 0.9rem;
+  padding-left: 1.2rem;
+}
+
+.legal__body li::marker { color: var(--peach); }
+
+.legal__body a:not(.h-btn) {
+  color: var(--cream);
+  text-decoration-color: var(--peach);
+  text-underline-offset: 0.2em;
+  overflow-wrap: anywhere;
+}
+
+.legal__body a:not(.h-btn):hover { color: var(--peach); }
+.legal__body a:focus-visible { outline: 3px solid var(--peach); outline-offset: 3px; border-radius: 2px; }
+
+.legal__back { margin: 2.5rem 0 0; }
