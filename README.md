@@ -42,7 +42,22 @@ La portada tiene una sección `#suscribete` (y un enlace "Suscríbete" en el men
 - Su aspecto (colores, campos, mensaje de gracias) se cambia en el editor de Sender; al guardar allí, la página
   muestra la versión nueva sola. Solo hay que tocar el código si se usa **otro** formulario (otro ID).
 
+**Respaldo del formulario.** Debajo del `div` de Sender hay un bloque `data-sender-fallback`. Mientras el
+formulario carga muestra "Cargando el formulario…"; si a los 8 s no apareció (bloqueador de anuncios, red
+lenta, sin JavaScript) muestra un botón al formulario hospedado de Sender. Ese enlace es el `href` del botón
+(hoy dice `SENDER_FORM_URL`): cópialo en Sender → Formularios → engranaje → *Publishing settings* → form URL.
+Mientras diga `SENDER_FORM_URL`, el botón se oculta.
+
 El correo de bienvenida con el regalo se envía desde una automatización de Sender (no desde este sitio).
+`robots.txt` evita que `/regalos/` aparezca en buscadores, pero el archivo sigue siendo público para quien
+tenga el enlace. Para que sea solo de suscriptores, adjúntalo en el correo de Sender (o súbelo a su
+gestor de archivos) y luego borra la carpeta `regalos/` del repo.
+
+## Imagen para compartir
+
+`assets/og-korilabs.jpg` (1200 × 630) es la vista previa de la portada en WhatsApp, Instagram, Facebook, etc.
+Si cambias el titular, regénérala con el mismo tamaño. WhatsApp y Facebook guardan la vista previa en caché:
+para forzar la nueva, pega la URL en https://developers.facebook.com/tools/debug/ y pulsa "Scrape Again".
 
 ## Cambiar el contenido
 

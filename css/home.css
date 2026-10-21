@@ -174,6 +174,12 @@
   padding-block: clamp(3rem, 8vw, 5.5rem);
 }
 
+/* "Nuestros juegos": menos aire arriba (rombos) y abajo (antes de la suscripción) */
+.h-games {
+  padding-block: clamp(2rem, 5vw, 3rem) clamp(2.5rem, 6vw, 3.5rem);
+  scroll-margin-top: 1.5rem;
+}
+
 .h-section__head { margin-bottom: 2rem; }
 .h-section__head--center { text-align: center; margin-bottom: 1.5rem; }
 
@@ -303,21 +309,28 @@
   color: #b9b4ab;
 }
 
+/* Mismo chip que .p-facts en pinto.css (ícono + dato), para que home y PINTO se vean iguales */
 .h-game__facts {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.6rem;
   margin: 1.25rem 0 0;
   padding: 0;
   list-style: none;
 }
 
 .h-game__facts li {
-  padding: 0.35rem 0.8rem;
-  border: 1px solid rgb(245 240 232 / 0.16);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem 0.5rem 0.7rem;
+  border: 1px solid rgb(245 240 232 / 0.14);
   border-radius: 999px;
-  font-size: 0.88rem;
+  background: rgb(245 240 232 / 0.04);
+  font-size: 0.9rem;
 }
+
+.h-game__facts svg { flex: none; width: 1.25rem; height: 1.25rem; color: #f5f0e8; }
 
 .h-game__link {
   display: inline-flex;
@@ -359,6 +372,8 @@
   border-radius: 1rem;
   color: var(--cream-dim);
 }
+
+.h-next > span:last-child { min-width: 0; text-wrap: pretty; }
 
 .h-next__dot {
   flex: none;
@@ -433,6 +448,30 @@ html { scroll-behavior: smooth; }
   min-width: 0;
 }
 
+/* El respaldo reserva el alto aproximado del formulario para que la nota no salte al cargar */
+.h-join__fallback {
+  display: grid;
+  justify-items: start;
+  align-content: center;
+  gap: 0.9rem;
+  min-height: 13rem;
+  padding: 1.5rem;
+  border: 1.5px dashed rgb(247 243 234 / 0.25);
+  border-radius: 1rem;
+  background: rgb(247 243 234 / 0.04);
+}
+
+.h-join__fallback p { margin: 0; }
+.h-join__fallback[hidden] { display: none; }
+.h-join__fallback-text { color: var(--cream-dim); }
+
+/* Sin JS: solo texto + enlace. Con JS: "Cargando…" primero; texto + enlace si falla. */
+.h-join__loading { display: none; color: var(--cream-dim); }
+.h-join__fallback.is-loading .h-join__loading { display: block; animation: h-pulse 1.6s ease-in-out infinite; }
+.h-join__fallback.is-loading .h-join__fallback-text,
+.h-join__fallback.is-loading .h-join__fallback-btn { display: none; }
+.h-join__fallback-btn[hidden] { display: none; }
+
 .h-join__note {
   margin: 0;
   color: var(--cream-dim);
@@ -497,12 +536,23 @@ html { scroll-behavior: smooth; }
 
 /* --- Pie ---------------------------------------------------------------- */
 
+/* Móvil: todo centrado en columna. Desde tablet: a los lados. */
 .h-footer {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  gap: 0.5rem 1.5rem;
+  gap: 0.6rem;
+  text-align: center;
+}
+
+@media (min-width: 40rem) {
+  .h-footer {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+    text-align: left;
+  }
 }
 
 .h-footer__ig {
@@ -545,6 +595,7 @@ html { scroll-behavior: smooth; }
     text-align: left;
   }
 
+  .h-hero { padding-bottom: clamp(1.5rem, 3vw, 2.5rem); }
   .h-hero__lead { margin-inline: 0; }
   .h-actions { justify-content: flex-start; }
 
