@@ -42,6 +42,29 @@
 .pinto .site-nav__link::after { background: var(--red); }
 .pinto .site-nav__link:focus-visible { outline-color: var(--red); }
 
+/* Icono de Instagram en la cabecera (igual que en la portada) */
+.site-nav__icon {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1.5px solid rgb(245 240 232 / 0.4);
+  border-radius: 50%;
+  color: var(--cream);
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.site-nav__icon svg { width: 1.15rem; height: 1.15rem; }
+.site-nav__icon:hover { background: var(--cream); border-color: var(--cream); color: var(--asphalt); }
+.site-nav__icon:focus-visible { outline: 3px solid var(--red); outline-offset: 5px; }
+
+@media (max-width: 30rem) {
+  .site-nav { gap: 0.85rem; }
+  .site-nav__link { letter-spacing: 0.1em; }
+}
+@media (max-width: 22.4rem) {
+  .site-nav__link[href$="#suscribete"] { display: none; }
+}
+
 /* --- Textos comunes ----------------------------------------------------- */
 
 .p-eyebrow {
