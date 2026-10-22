@@ -392,7 +392,6 @@
 }
 
 .p-note strong { color: var(--cream); }
-.p-note a { color: var(--cream); text-underline-offset: 2px; }
 
 /* Abanico de cartas de ritmo */
 .p-fan {
