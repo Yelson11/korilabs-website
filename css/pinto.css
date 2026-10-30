@@ -590,6 +590,25 @@
 .p-back a,
 .p-rules a { color: var(--cream); text-decoration-color: var(--red); text-underline-offset: 0.2em; }
 
+/* Hover lift for special cards and game modes, like the rhythm-card fan.
+   Only on devices with a real pointer so taps don't leave cards stuck "up". */
+.p-card,
+.p-mode {
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.p-card img { transition: transform 0.3s ease; }
+
+@media (hover: hover) and (pointer: fine) {
+  .p-card:hover,
+  .p-mode:hover {
+    transform: translateY(-0.5rem);
+    border-color: color-mix(in srgb, var(--c, var(--red)) 60%, transparent);
+    box-shadow: 0 1rem 2rem rgb(0 0 0 / 0.45);
+  }
+  .p-mode:hover { border-top-color: var(--c, var(--red)); }
+  .p-card:hover img { transform: rotate(-3deg) scale(1.04); }
+}
+
 /* --- Instructions page (juegos/pinto/instrucciones/) -------------------- */
 
 .p-intro {
@@ -747,6 +766,7 @@
 @media (prefers-reduced-motion: reduce) {
   .no-js .box3d { animation: none; }
   .p-fan li:hover { transform: none; }
+  .p-card:hover, .p-mode:hover, .p-card:hover img { transform: none; }
   .p-more:hover::after { transform: none; }
 }
 
