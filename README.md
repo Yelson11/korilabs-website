@@ -30,7 +30,7 @@ assets/pinto-caja.webp     Caja de PINTO para la tarjeta de la portada
 
 - **Instrucciones y reglamento:** el QR del folleto de la caja debe apuntar a
   `https://korilabscr.com/juegos/pinto/instrucciones`. Esa página tiene un resumen de las reglas y el botón
-  "Descargar reglamento", que enlaza a `juegos/pinto/reglamento.pdf`. No cambies la ruta de `instrucciones/`,
+  "Ver reglamento", que abre en otra pestaña a `juegos/pinto/reglamento.pdf`. No cambies la ruta de `instrucciones/`,
   porque va impresa. El PDF sí se puede mover o renombrar: solo actualiza los dos botones de descarga (y el
   peso/páginas que muestran). Para publicar otra versión, reemplaza el PDF y revisa que el resumen siga igual.
 - `pinto/reglas/` es una dirección corta que redirige a las instrucciones.

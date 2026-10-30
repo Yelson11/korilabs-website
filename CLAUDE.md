@@ -67,7 +67,7 @@ comments just to translate them — only translate what you are already touching
 │   └── pinto/
 │       ├── index.html       PINTO page: hero with 3D box, "Cómo se juega", rhythm cards, special cards, CTA
 │       ├── box3d.js         Auto-rotating, draggable CSS-3D box with per-face shading (no deps, respects reduced motion)
-│       ├── instrucciones/index.html  Rules summary + "Descargar reglamento" PDF button. TARGET OF THE PRINTED QR — never move
+│       ├── instrucciones/index.html  Rules summary + "Ver reglamento" button (opens the PDF in a new tab, no `download` attr so phones open it). TARGET OF THE PRINTED QR — never move
 │       ├── reglamento.pdf   Official rules PDF (v1.3, source of truth). Linked from instrucciones/ only
 │       └── img/             caja-*.webp (6 box faces), cartas/*.webp (card art from Figma "Deck v1.0"),
 │                            logo-pinto.webp, og-pinto.jpg (share preview)
