@@ -18,8 +18,9 @@ juegos/index.html          Sección "Juegos": por ahora redirige a PINTO
 juegos/pinto/index.html    Página de PINTO (caja 3D, cómo se juega, cartas)
 juegos/pinto/box3d.js      Giro y arrastre de la caja 3D (sin dependencias)
 juegos/pinto/img/          Caras de la caja, cartas, logo e imagen para redes (og-pinto.jpg)
+juegos/pinto/instrucciones/  Instrucciones de PINTO (resumen + botón para descargar el reglamento). Destino del QR del folleto
 juegos/pinto/reglamento.pdf  Reglamento oficial completo de PINTO (PDF)
-pinto/reglas/index.html    Dirección corta del QR del folleto: redirige a juegos/pinto/reglamento.pdf
+pinto/reglas/index.html    Dirección corta: redirige a juegos/pinto/instrucciones/
 css/pinto.css              Estilos de la página de PINTO
 css/home.css               Estilos de la portada (se carga después de styles.css)
 assets/pinto-caja.webp     Caja de PINTO para la tarjeta de la portada
@@ -27,9 +28,12 @@ assets/pinto-caja.webp     Caja de PINTO para la tarjeta de la portada
 
 ## Sección Juegos
 
-- **Reglamento:** el QR impreso en el folleto de la caja apunta a `https://korilabscr.com/pinto/reglas`, que
-  redirige a `juegos/pinto/reglamento.pdf`. Para publicar otra versión del reglamento, reemplaza ese PDF con el
-  mismo nombre; no cambies la ruta `pinto/reglas/`, porque ya está impresa.
+- **Instrucciones y reglamento:** el QR del folleto de la caja debe apuntar a
+  `https://korilabscr.com/juegos/pinto/instrucciones`. Esa página tiene un resumen de las reglas y el botón
+  "Descargar reglamento", que enlaza a `juegos/pinto/reglamento.pdf`. No cambies la ruta de `instrucciones/`,
+  porque va impresa. El PDF sí se puede mover o renombrar: solo actualiza los dos botones de descarga (y el
+  peso/páginas que muestran). Para publicar otra versión, reemplaza el PDF y revisa que el resumen siga igual.
+- `pinto/reglas/` es una dirección corta que redirige a las instrucciones.
 
 - El menú de la cabecera y el botón "Conoce PINTO" de la portada llevan a `juegos/`, que por ahora redirige
   a `juegos/pinto/`. Cuando haya más juegos, cambia `juegos/index.html` por un listado.

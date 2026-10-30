@@ -23,7 +23,7 @@ Website of **Kori Labs**, a small Costa Rican tabletop-game studio. Its first ga
 | Code comments you add or rewrite, this file | **English** |
 | Everything visitors see (page text, `alt`, `aria-label`, `<title>`, meta/OG tags) | **Spanish (Costa Rica)** — `lang="es"`, `og:locale` `es_CR` |
 | `README.md` | Spanish (owner-facing how-to). Keep it in Spanish unless asked otherwise |
-| URLs / folder names (`juegos/`, `privacidad/`, `regalos/`, `pinto/reglas/`) | Spanish — **never rename**, they are public and some are printed |
+| URLs / folder names (`juegos/`, `privacidad/`, `regalos/`, `pinto/reglas/`, `juegos/pinto/instrucciones/`) | Spanish — **never rename**, they are public and some are printed |
 
 History before October 2026 is in Spanish; that's expected. Don't rewrite existing Spanish code
 comments just to translate them — only translate what you are already touching.
@@ -67,10 +67,11 @@ comments just to translate them — only translate what you are already touching
 │   └── pinto/
 │       ├── index.html       PINTO page: hero with 3D box, "Cómo se juega", rhythm cards, special cards, CTA
 │       ├── box3d.js         Auto-rotating, draggable CSS-3D box with per-face shading (no deps, respects reduced motion)
-│       ├── reglamento.pdf   Official rules PDF (v1.3). Not linked from the page; reached via the QR short URL
+│       ├── instrucciones/index.html  Rules summary + "Descargar reglamento" PDF button. TARGET OF THE PRINTED QR — never move
+│       ├── reglamento.pdf   Official rules PDF (v1.3, source of truth). Linked from instrucciones/ only
 │       └── img/             caja-*.webp (6 box faces), cartas/*.webp (card art from Figma "Deck v1.0"),
 │                            logo-pinto.webp, og-pinto.jpg (share preview)
-├── pinto/reglas/index.html  Meta-refresh → /juegos/pinto/reglamento.pdf. THIS PATH IS PRINTED AS A QR — never move/remove
+├── pinto/reglas/index.html  Meta-refresh → /juegos/pinto/instrucciones/ (short alias; keep working)
 ├── privacidad/index.html    Privacy policy (only email is collected, via Sender; contact info@korilabscr.com)
 └── regalos/
     └── pinto-modo-temporada.pdf  Subscriber gift (score sheets). Public by URL, hidden from search engines
@@ -94,8 +95,18 @@ comments just to translate them — only translate what you are already touching
 Fonts: Istok Web + **Poppins** (display). Sections: `p-hero` (title + `#box-stage`/`#box3d` 3D box),
 "Cómo se juega", "Cartas de ritmo" (ritmo-1…8), "Cartas especiales" (banderas, rebufo, vuelta rápida),
 `p-cta` "Muy pronto en la parrilla de salida". Script: `box3d.js` (deferred).
+Below the 3-step "Cómo se juega" there's a "Ver instrucciones completas" link; a "Modos de juego" section
+(Modo Rápido / Modo Temporada, icons `img/icono-bandera-cuadros.svg` / `img/icono-trofeo.svg`) sits before the CTA.
 Game facts (players, duration, 8+, card names, rules wording) must stay consistent between the home
-card, this page and `reglamento.pdf` v1.3.
+card, this page, `instrucciones/` and `reglamento.pdf` v1.3.
+
+### PINTO instructions — `juegos/pinto/instrucciones/index.html` (CSS: `styles.css` + `pinto.css`)
+Target of the QR printed in the rules leaflet. A **summary** of the rules, not a copy of the PDF: the PDF is
+the detailed source of truth (edge cases, FAQ, full championship scoring). Sections: intro with download
+button + in-page chips (`p-toc`), `#preparacion` (steps + deck table), `#turno`, `#mesa`, `#especiales`,
+`#referencia` (quick-reference table), `#modos`, closing CTA with a second download button. The score
+sheet gift is offered via "Suscribirme" (`/#suscribete`), never linked directly. If the PDF changes, update
+the size/page count shown next to the download button.
 
 ### Privacy — `privacidad/index.html` (CSS: `styles.css` + `home.css` + `legal.css`)
 
@@ -116,15 +127,16 @@ card, this page and `reglamento.pdf` v1.3.
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
   Current: `styles.css?v=2`, `home.css?v=6` (index) / `?v=3` (privacidad — stale, bump when touching),
-  `pinto.css?v=5`, `legal.css?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=2`.
+  `pinto.css?v=7`, `legal.css?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=2`.
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
 - **Sender (newsletter):** universal script in the `<head>` of `index.html`; form is
   `div.sender-form-field[data-sender-form-id="dNk3wL"]`; fallback block `[data-sender-fallback]` links to
   `https://stats.sender.net/forms/dNk3wL/view`. Form look and the welcome/gift email are configured in
   Sender, not here. Only touch code if the form ID changes.
-- **Never break public URLs:** `/pinto/reglas/` (printed QR), `/juegos/pinto/reglamento.pdf`,
-  `/regalos/pinto-modo-temporada.pdf` (sent in emails), `/privacidad/`.
+- **Never break public URLs:** `/juegos/pinto/instrucciones/` (printed QR), `/pinto/reglas/`,
+  `/regalos/pinto-modo-temporada.pdf` (sent in emails), `/privacidad/`. `reglamento.pdf` is only reached
+  through the instructions page, so it may move — just update both download buttons there.
 - **Share previews:** `og-korilabs.jpg` / `og-pinto.jpg` are 1200×630; regenerate if headlines change.
   Absolute `og:url` / `og:image` / canonical use `https://korilabscr.com/…`.
 - **Accessibility:** keep `aria-labelledby` on sections, `alt` text (Spanish), visible focus styles,
