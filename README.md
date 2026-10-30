@@ -1,6 +1,6 @@
 # Kori Labs · landing temporal
 
-Página de presentación de una sola sección ("Estamos preparando la mesa…") hecha con HTML y CSS nativos.
+Sitio de Kori Labs, estudio costarricense de juegos (portada con "Nuestros juegos" y "Taller", página de PINTO e instrucciones), hecho con HTML y CSS nativos.
 Sin frameworks, sin JavaScript, sin proceso de compilación.
 
 ## Estructura
