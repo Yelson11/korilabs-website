@@ -516,26 +516,49 @@
 .p-button:hover { background: #f05a4f; transform: translateY(-2px); }
 .p-button:focus-visible { outline: 3px solid var(--cream); outline-offset: 4px; }
 
-/* Shorter 3-step version of "Cómo se juega" on the main page */
-.p-steps--short li:nth-child(3) { --c: #3dba6a; }
 
-/* Text link with arrow ("Ver instrucciones completas") */
-.p-more {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  margin-top: 1.5rem;
-  color: var(--cream);
-  font-family: var(--display);
-  font-weight: 600;
-  text-decoration: underline;
-  text-decoration-color: var(--red);
-  text-decoration-thickness: 2px;
-  text-underline-offset: 0.3em;
+/* Cream pill button (secondary actions: "Ver instrucciones", "Suscribirme"…) */
+.p-button--cream {
+  background: var(--cream);
+  color: var(--asphalt);
 }
-.p-more::after { content: "→"; transition: transform 0.2s ease; }
-.p-more:hover::after { transform: translateX(0.25rem); }
-.p-more:focus-visible { outline: 3px solid var(--red); outline-offset: 4px; border-radius: 4px; }
+.p-button--cream:hover { background: #fff; }
+.p-button--cream:focus-visible { outline-color: var(--red); }
+.p-button--small { margin-top: 1rem; padding: 0.6rem 1.1rem; font-size: 0.92rem; }
+
+/* About PINTO */
+.p-about__text {
+  max-width: 42rem;
+  margin: 1.25rem 0 0;
+  color: var(--cream-dim);
+  font-size: clamp(1.1rem, 1rem + 0.5vw, 1.3rem);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+.p-about__text strong { color: var(--cream); }
+.p-about__text + .p-about__text { margin-top: 0.75rem; }
+.p-about__text .p-red { color: var(--red); }
+
+/* "Cómo jugar" on the main page: step titles only */
+.p-steps--titles li { padding-block: 1.1rem; }
+.p-steps--titles h3 { margin: 0; }
+
+/* Special cards on the main page: image + name only */
+.p-specials--compact {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem 0.75rem;
+}
+.p-specials--compact .p-card {
+  grid-template-columns: 1fr;
+  justify-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 0.75rem 1rem;
+  text-align: center;
+}
+.p-specials--compact .p-card h3 { margin: 0; font-size: clamp(0.85rem, 0.75rem + 0.4vw, 1rem); text-wrap: balance; }
+
+/* Two-player note: title on its own line */
+.p-note--stacked strong { display: block; margin-bottom: 0.4rem; font-family: var(--display); font-style: italic; text-transform: uppercase; }
 
 /* Game modes (main page and instructions page) */
 .p-modes {
@@ -586,8 +609,6 @@
   font-size: 0.95rem;
 }
 .p-mode__extra strong { color: var(--cream); }
-.p-mode a,
-.p-back a,
 .p-rules a { color: var(--cream); text-decoration-color: var(--red); text-underline-offset: 0.2em; }
 
 /* Hover lift for special cards and game modes, like the rhythm-card fan.
@@ -656,6 +677,11 @@
 
 .pinto [id] { scroll-margin-top: 1rem; }
 
+/* In-page chips scroll smoothly to their section */
+@media (prefers-reduced-motion: no-preference) {
+  html:has(.p-toc) { scroll-behavior: smooth; }
+}
+
 .p-rules {
   display: grid;
   gap: 0.75rem;
@@ -712,7 +738,7 @@
 .p-table--ref td { text-align: left; }
 .p-table--ref tbody th { width: 38%; }
 
-.p-back { font-size: 0.95rem; }
+
 
 /* --- Pantallas medianas ------------------------------------------------- */
 
@@ -723,6 +749,7 @@
   .p-steps { grid-template-columns: repeat(2, 1fr); }
   .p-steps li:last-child { grid-column: 1 / -1; }
   .p-specials { grid-template-columns: repeat(2, 1fr); }
+  .p-specials--compact { grid-template-columns: repeat(3, 1fr); }
   .p-modes { grid-template-columns: repeat(2, 1fr); align-items: start; }
 }
 
@@ -748,10 +775,11 @@
   .p-steps { grid-template-columns: repeat(5, 1fr); }
   .p-steps li { padding: 4.2rem 1.15rem 1.3rem; }
   .p-steps li:last-child { grid-column: auto; }
-  .p-steps--short { grid-template-columns: repeat(3, 1fr); }
   .p-steps li::before { top: 1.1rem; left: 1.1rem; text-align: left; }
 
   .p-specials { grid-template-columns: repeat(3, 1fr); }
+  .p-specials--compact { grid-template-columns: repeat(6, 1fr); }
+  .p-specials--compact .p-card img { width: 100%; margin: 0; }
   .p-card { grid-template-columns: 1fr; align-items: start; padding: 1.25rem; }
   .p-card img { width: 62%; margin: 0 auto 0.4rem; }
 
@@ -767,7 +795,6 @@
   .no-js .box3d { animation: none; }
   .p-fan li:hover { transform: none; }
   .p-card:hover, .p-mode:hover, .p-card:hover img { transform: none; }
-  .p-more:hover::after { transform: none; }
 }
 
 @media (forced-colors: active) {

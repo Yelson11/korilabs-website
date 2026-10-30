@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Istok+Web:wght@400;700&amp;family=Poppins:ital,wght@0,500;0,600;1,700;1,800&amp;display=swap">
 
   <link rel="stylesheet" href="../../css/styles.css?v=2">
-  <link rel="stylesheet" href="../../css/pinto.css?v=8">
+  <link rel="stylesheet" href="../../css/pinto.css?v=9">
   <script>document.documentElement.classList.replace('no-js', 'js');</script>
 </head>
 <body class="pinto">
@@ -108,32 +108,31 @@
         <div class="p-rainbow" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
       </section>
 
-      <!-- Cómo se juega -->
+      <!-- About -->
+      <section class="p-section p-about" aria-labelledby="acerca-title">
+        <p class="p-eyebrow">El juego</p>
+        <h2 class="p-h2" id="acerca-title">Acerca de PINTO</h2>
+        <p class="p-about__text">PINTO es un juego de cartas en el que todo se trata de <strong>deshacerte de tus cartas</strong>. Cada jugador intenta jugar todas las suyas antes que sus rivales. Si no tienes una carta válida para jugar, te llevas toda la pila.</p>
+        <p class="p-about__text">Si te quedas sin cartas de primero, <strong class="p-red">eres el ganador.</strong></p>
+      </section>
+
+      <!-- How to play: titles only; the detail lives on instrucciones/ -->
       <section class="p-section" aria-labelledby="como-title">
-        <p class="p-eyebrow">Reglas en una vuelta</p>
-        <h2 class="p-h2" id="como-title">Cómo se juega</h2>
-        <ol class="p-steps p-steps--short">
-          <li>
-            <h3>Arma la parrilla</h3>
-            <p>Cada jugador pone 3 cartas boca abajo, que nadie puede ver, y encima 3 boca arriba. El resto se reparte como mano.</p>
-          </li>
-          <li>
-            <h3>Marca el ritmo</h3>
-            <p>En tu turno, juega cartas iguales con valor igual o mayor al de la pila. ¿Sin jugada válida? Te llevas toda la pila.</p>
-          </li>
-          <li>
-            <h3>Cruza la meta</h3>
-            <p>Vacía tu mano y después tus cartas de la mesa. Quien se quede de último con cartas pierde.</p>
-          </li>
+        <h2 class="p-h2" id="como-title">Cómo jugar</h2>
+        <ol class="p-steps p-steps--titles">
+          <li><h3>Prepara el mazo</h3></li>
+          <li><h3>Cartas ocultas</h3></li>
+          <li><h3>Cartas visibles</h3></li>
+          <li><h3>Reparte la mano</h3></li>
+          <li><h3>Den la salida</h3></li>
         </ol>
-        <a class="p-more" href="instrucciones/">Ver instrucciones completas</a>
+        <a class="p-button p-button--cream" href="instrucciones/">Ver instrucciones completas <span aria-hidden="true">→</span></a>
       </section>
 
       <!-- Cartas de ritmo -->
       <section class="p-section" aria-labelledby="ritmo-title">
         <p class="p-eyebrow">32 cartas · del 1 al 8</p>
         <h2 class="p-h2" id="ritmo-title">Cartas de ritmo</h2>
-        <p class="p-section__lead">Cada número es una velocidad. Hay 4 copias de cada valor y solo se puede jugar igual o más rápido que la carta de arriba.</p>
         <ul class="p-fan" aria-label="Cartas de ritmo del 1 al 8">
           <li><img src="img/cartas/ritmo-1.webp" width="480" height="692" alt="Carta de ritmo 1" loading="lazy"></li>
           <li><img src="img/cartas/ritmo-2.webp" width="480" height="692" alt="Carta de ritmo 2" loading="lazy"></li>
@@ -150,30 +149,30 @@
       <section class="p-section" aria-labelledby="especiales-title">
         <p class="p-eyebrow">Cambian la carrera</p>
         <h2 class="p-h2" id="especiales-title">Cartas especiales</h2>
-        <ul class="p-specials">
+        <ul class="p-specials p-specials--compact">
           <li class="p-card" style="--c: #e5463b">
             <img src="img/cartas/bandera-roja.webp" width="480" height="692" alt="" loading="lazy">
-            <div><h3>Bandera Roja</h3><p>Reinicio de carrera: se juega sobre cualquier carta y el siguiente arranca una secuencia nueva.</p></div>
+            <h3>Bandera Roja</h3>
           </li>
           <li class="p-card" style="--c: #f2bd23">
             <img src="img/cartas/bandera-amarilla.webp" width="480" height="692" alt="" loading="lazy">
-            <div><h3>Bandera Amarilla</h3><p>Ritmo controlado: el siguiente jugador tiene que bajar a un 4 o menos.</p></div>
+            <h3>Bandera Amarilla</h3>
           </li>
           <li class="p-card" style="--c: #22b3c4">
             <img src="img/cartas/rebufo.webp" width="480" height="692" alt="" loading="lazy">
-            <div><h3>Rebufo</h3><p>Aceleración: sobre un ritmo de 4 o menos, sube a 5 o más, incluso con dos valores seguidos.</p></div>
+            <h3>Rebufo</h3>
           </li>
           <li class="p-card" style="--c: #e8e2d6">
             <img src="img/cartas/bandera-a-cuadros.webp" width="480" height="692" alt="" loading="lazy">
-            <div><h3>Bandera a Cuadros</h3><p>Cierre de carrera: toda la pila central sale del juego.</p></div>
+            <h3>Bandera a Cuadros</h3>
           </li>
           <li class="p-card" style="--c: #9b4fd8">
             <img src="img/cartas/vuelta-rapida.webp" width="480" height="692" alt="" loading="lazy">
-            <div><h3>Vuelta Rápida</h3><p>Ritmo máximo: la carta más alta del juego, por encima del 8.</p></div>
+            <h3>Vuelta Rápida</h3>
           </li>
           <li class="p-card" style="--c: #2f86de">
             <img src="img/cartas/bandera-azul.webp" width="480" height="692" alt="" loading="lazy">
-            <div><h3>Bandera Azul</h3><p>Ceder el paso: el siguiente jugador pierde su turno.</p></div>
+            <h3>Bandera Azul</h3>
           </li>
         </ul>
       </section>
@@ -196,7 +195,8 @@
               <h3>Modo Temporada</h3>
             </div>
             <p>Un Campeonato de Grandes Premios: jueguen varias carreras y sumen puntos según el orden de llegada. Temporadas de 5, 10 o 15 Grandes Premios; gana quien acumule más puntos.</p>
-            <p class="p-mode__extra"><strong>Hoja de puntuación:</strong> suscríbete al boletín y te la enviamos gratis. <a href="../../#suscribete">Suscribirme</a></p>
+            <p class="p-mode__extra"><strong>Hoja de puntuación:</strong> suscríbete al boletín y te la enviamos gratis.</p>
+            <a class="p-button p-button--cream p-button--small" href="../../#suscribete">Suscribirme <span aria-hidden="true">→</span></a>
           </li>
         </ul>
       </section>
