@@ -336,12 +336,17 @@
 
 .h-game__link {
   display: inline-flex;
+  align-items: center;
   gap: 0.4rem;
   margin-top: 1.5rem;
-  padding-bottom: 0.2rem;
-  border-bottom: 2px solid var(--pinto-red);
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  background: #f5f0e8;
+  color: var(--asphalt);
   font-weight: 700;
+  transition: background-color 0.2s ease;
 }
+.h-game:hover .h-game__link { background: #fff; }
 
 .h-game:hover .h-game__link span { transform: translateX(3px); }
 .h-game__link span { transition: transform 0.2s ease; }
@@ -395,6 +400,180 @@
 /* --- Suscripción -------------------------------------------------------- */
 
 html { scroll-behavior: smooth; }
+/* --- En el taller (games in development, horizontal carousel) ---------- */
+
+.h-lab { padding-top: clamp(2.5rem, 6vw, 4rem); scroll-margin-top: 1.5rem; }
+
+.h-lab__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+}
+
+.h-lab__lead {
+  max-width: 34rem;
+  margin: 1rem 0 0;
+  color: var(--cream-dim);
+  font-size: 1.05rem;
+  text-wrap: pretty;
+}
+
+.h-lab__nav { display: flex; gap: 0.5rem; }
+.h-lab__nav[hidden] { display: none; }
+
+.h-lab__btn {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1.5px solid rgb(247 243 234 / 0.4);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--cream);
+  font: inherit;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+}
+.h-lab__btn:hover:not(:disabled) { background: var(--cream); color: var(--forest); }
+.h-lab__btn:disabled { opacity: 0.35; cursor: default; }
+.h-lab__btn:focus-visible { outline: 3px solid var(--peach); outline-offset: 3px; }
+
+.h-lab__track {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 0;
+  scrollbar-width: none;
+  border-radius: 1.25rem;
+}
+.h-lab__track::-webkit-scrollbar { display: none; }
+.h-lab__track:focus-visible { outline: 3px solid var(--peach); outline-offset: 4px; }
+
+.h-lab__list {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: min(78%, 17rem);
+  gap: 1rem;
+  margin: 0;
+  padding: 0.5rem 0 0.25rem;
+  list-style: none;
+}
+
+.h-lab__item {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  overflow: hidden;
+  border: 1px solid rgb(247 243 234 / 0.12);
+  border-radius: 1.25rem;
+  background: var(--asphalt);
+  color: #f5f0e8;
+  scroll-snap-align: start;
+}
+
+.h-lab__art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  max-width: 100%;
+  padding: 1.5rem;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 45%, rgb(254 228 193 / 0.1), transparent 70%),
+    #1b1c20;
+}
+.h-lab__art img { width: 88%; height: auto; }
+
+/* Locked: a "character to unlock" silhouette */
+.h-lab__item--locked .h-lab__art {
+  background:
+    repeating-linear-gradient(135deg, rgb(255 255 255 / 0.025) 0 10px, transparent 10px 20px),
+    #0d0e10;
+}
+
+.h-lab__lock {
+  position: absolute;
+  right: 0.9rem;
+  top: 0.9rem;
+  width: 1.4rem;
+  height: 1.4rem;
+  color: rgb(247 243 234 / 0.45);
+}
+
+.h-lab__type {
+  margin: 0;
+  color: var(--cream-dim);
+  font-size: 0.9rem;
+}
+
+.h-lab__info {
+  display: grid;
+  align-content: start;
+  gap: 0.3rem;
+  padding: 1rem 1.15rem 1.2rem;
+  border-top: 1px solid rgb(247 243 234 / 0.08);
+}
+
+.h-lab__code {
+  margin: 0;
+  color: var(--peach);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.h-lab__name { margin: 0; font-size: 1.2rem; line-height: 1.2; }
+.h-lab__item--locked .h-lab__name { color: rgb(245 240 232 / 0.55); }
+
+.h-lab__stage {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.35rem 0 0;
+  color: var(--cream-dim);
+  font-size: 0.88rem;
+}
+
+.h-lab__dots { display: inline-flex; gap: 0.3rem; }
+.h-lab__dots i {
+  width: 0.55rem;
+  height: 0.55rem;
+  transform: rotate(45deg);
+  border: 1.5px solid rgb(254 228 193 / 0.5);
+}
+.h-lab__dots i.is-done { border-color: var(--peach); background: var(--peach); }
+
+.h-lab__note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin: 1.75rem 0 0;
+  color: var(--cream-dim);
+}
+
+.h-btn--small {
+  min-height: 2.6rem;
+  padding: 0.5rem 1.1rem;
+  background: var(--cream);
+  color: var(--forest);
+  font-size: 0.95rem;
+}
+.h-btn--small:hover { background: var(--peach); transform: translateY(-2px); }
+
+@media (min-width: 56rem) {
+  /* Three across; with more games the row scrolls and the arrows appear */
+  .h-lab__list { grid-auto-columns: calc((100% - 2rem) / 3); }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .h-lab__item { transition: transform 0.3s ease, border-color 0.3s ease; }
+  .h-lab__item:hover { transform: translateY(-4px); border-color: rgb(254 228 193 / 0.4); }
+}
+
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
 .h-join { padding-top: 0; scroll-margin-top: 1.5rem; }
@@ -483,11 +662,14 @@ html { scroll-behavior: smooth; }
 @media (max-width: 30rem) {
   .site-nav { gap: 0.85rem; }
   .site-nav__link { letter-spacing: 0.1em; }
+  /* Three links don't fit on phones; the subscribe section stays reachable from the page */
+  .site-nav__link[href="#suscribete"] { display: none; }
 }
 
 /* En pantallas muy angostas el enlace no cabe; la sección sigue en la portada */
 @media (max-width: 22.4rem) {
-  .site-nav__link[href$="#suscribete"] { display: none; }
+  .site-nav { gap: 0.6rem; }
+  .site-nav__link { letter-spacing: 0.06em; }
 }
 
 /* --- Valores ------------------------------------------------------------ */
@@ -623,5 +805,5 @@ html { scroll-behavior: smooth; }
 
 
 @media (prefers-reduced-motion: reduce) {
-  .h-game:hover { transform: none; }
+  .h-game:hover, .h-lab__item:hover { transform: none; }
 }

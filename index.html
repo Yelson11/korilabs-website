@@ -29,7 +29,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Istok+Web:wght@400;700&amp;display=swap">
 
   <link rel="stylesheet" href="css/styles.css?v=2">
-  <link rel="stylesheet" href="css/home.css?v=6">
+  <link rel="stylesheet" href="css/home.css?v=7">
 
   <!-- Sender: script universal de la cuenta (carga el formulario de suscripción). -->
   <script>
@@ -96,6 +96,7 @@
       </a>
       <nav class="site-nav" aria-label="Principal">
         <a class="site-nav__link" href="#juegos">Juegos</a>
+        <a class="site-nav__link" href="#taller">Taller</a>
         <a class="site-nav__link" href="#suscribete">Suscríbete</a>
         <a class="site-nav__icon" href="https://www.instagram.com/korilabs_cr/" target="_blank" rel="noopener noreferrer">
           <svg aria-hidden="true" focusable="false"><use href="#icon-instagram"/></svg>
@@ -109,10 +110,10 @@
       <section class="h-hero" aria-labelledby="h-title">
         <div class="h-hero__copy">
           <p class="h-eyebrow">Estudio de juegos · Costa Rica</p>
-          <h1 class="h-hero__title" id="h-title">Estamos preparando <span class="accent">la mesa…</span></h1>
-          <p class="h-hero__lead">Algo se está armando entre dados, cartas y figuras. Nuestro primer juego está casi listo para salir del taller.</p>
+          <h1 class="h-hero__title" id="h-title">Diseñamos juegos <span class="accent">para compartir.</span></h1>
+          <p class="h-hero__lead">Somos un estudio costarricense que crea juegos de cartas y de mesa. Lo que viene después ya se está armando en el taller.</p>
           <div class="h-actions">
-            <a class="h-btn h-btn--primary" href="juegos/pinto/">Conoce PINTO <span aria-hidden="true">→</span></a>
+            <a class="h-btn h-btn--primary" href="#juegos">Ver nuestros juegos <span aria-hidden="true">→</span></a>
             <a class="h-btn h-btn--ghost" href="https://www.instagram.com/korilabs_cr/" target="_blank" rel="noopener noreferrer">
               <svg aria-hidden="true" focusable="false"><use href="#icon-instagram"/></svg>
               Síguenos<span class="visually-hidden"> en Instagram (se abre en una pestaña nueva)</span>
@@ -169,11 +170,54 @@
           <span class="h-game__rainbow" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
         </a>
 
-        <p class="h-next">
-          <span class="h-next__dot" aria-hidden="true"></span>
-          <span>Más juegos en el taller. <a href="#suscribete">Te contamos</a> cuando estén listos para la mesa.</span>
-        </p>
       </section>
+
+      <!-- Taller: games in development. Locked items are still too early to show. -->
+      <section class="h-section h-lab" id="taller" aria-labelledby="taller-title">
+        <header class="h-section__head h-lab__head">
+          <div>
+            <p class="h-eyebrow">Otros proyectos</p>
+            <h2 class="h-h2" id="taller-title">Taller</h2>
+            <p class="h-lab__lead">Estos son algunos de los proyectos que tenemos en desarrollo.</p>
+          </div>
+          <div class="h-lab__nav" data-lab-nav hidden>
+            <button class="h-lab__btn" type="button" data-lab-prev aria-label="Anterior"><span aria-hidden="true">←</span></button>
+            <button class="h-lab__btn" type="button" data-lab-next aria-label="Siguiente"><span aria-hidden="true">→</span></button>
+          </div>
+        </header>
+
+        <div class="h-lab__track" data-lab-track tabindex="0" role="region" aria-label="Juegos en desarrollo">
+          <ul class="h-lab__list">
+            <li class="h-lab__item">
+              <div class="h-lab__art h-lab__art--wilds">
+                <img src="assets/taller/last-of-the-wilds.webp" width="526" height="351" alt="Last of the Wilds" loading="lazy">
+              </div>
+              <div class="h-lab__info">
+                <h3 class="h-lab__name">Last of the Wilds</h3>
+                <p class="h-lab__type">Juego de cartas</p>
+              </div>
+            </li>
+            <li class="h-lab__item h-lab__item--locked">
+              <div class="h-lab__art">
+                <svg class="h-lab__lock" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="10.5" width="14" height="10" rx="2.5" fill="currentColor"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+              </div>
+              <div class="h-lab__info">
+                <h3 class="h-lab__name">???</h3>
+              </div>
+            </li>
+            <li class="h-lab__item h-lab__item--locked">
+              <div class="h-lab__art">
+                <svg class="h-lab__lock" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="10.5" width="14" height="10" rx="2.5" fill="currentColor"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+              </div>
+              <div class="h-lab__info">
+                <h3 class="h-lab__name">???</h3>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <p class="h-lab__note">Si quieres probar prototipos, no dudes en unirte a nuestra mesa. <a class="h-btn h-btn--small" href="#suscribete">Únete a la mesa <span aria-hidden="true">→</span></a></p>
+      </section>
+
 
       <!-- Suscripción (formulario de Sender) -->
       <section class="h-section h-join" id="suscribete" aria-labelledby="join-title">
@@ -259,6 +303,31 @@
         fallback.classList.remove('is-loading');
         fallback.classList.add('is-failed');
       }, 8000);
+    })();
+  </script>
+  <script>
+    /* Workshop carousel: arrow buttons scroll the track by one card. */
+    (function () {
+      var track = document.querySelector('[data-lab-track]');
+      var nav = document.querySelector('[data-lab-nav]');
+      if (!track || !nav) return;
+      var prev = nav.querySelector('[data-lab-prev]');
+      var next = nav.querySelector('[data-lab-next]');
+      function step() {
+        var item = track.querySelector('.h-lab__item');
+        return item ? item.getBoundingClientRect().width + 16 : 280;
+      }
+      function update() {
+        var max = track.scrollWidth - track.clientWidth - 2;
+        nav.hidden = max <= 0;
+        prev.disabled = track.scrollLeft <= 2;
+        next.disabled = track.scrollLeft >= max;
+      }
+      prev.addEventListener('click', function () { track.scrollBy({ left: -step(), behavior: 'smooth' }); });
+      next.addEventListener('click', function () { track.scrollBy({ left: step(), behavior: 'smooth' }); });
+      track.addEventListener('scroll', update, { passive: true });
+      window.addEventListener('resize', update);
+      update();
     })();
   </script>
 </body>

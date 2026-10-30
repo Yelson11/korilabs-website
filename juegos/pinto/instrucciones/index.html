@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Istok+Web:wght@400;700&amp;family=Poppins:ital,wght@0,500;0,600;1,700;1,800&amp;display=swap">
 
   <link rel="stylesheet" href="../../../css/styles.css?v=2">
-  <link rel="stylesheet" href="../../../css/pinto.css?v=8">
+  <link rel="stylesheet" href="../../../css/pinto.css?v=9">
 </head>
 <body class="pinto">
 
@@ -76,7 +76,6 @@
         <nav class="p-toc" aria-label="En esta página">
           <a href="#preparacion">Preparación</a>
           <a href="#turno">Tu turno</a>
-          <a href="#mesa">Cartas de la mesa</a>
           <a href="#especiales">Cartas especiales</a>
           <a href="#referencia">Referencia rápida</a>
           <a href="#modos">Modos de juego</a>
@@ -124,7 +123,7 @@
           </table>
         </div>
 
-        <p class="p-note"><strong>¿Juegan dos?</strong> Cada uno recibe 7 cartas en la mano y el resto forma un mazo de reserva. Después de jugar, roba hasta volver a tener 7. Las cartas de la mesa se usan cuando la reserva se acaba y te quedas sin mano.</p>
+        <p class="p-note p-note--stacked"><strong>¿Juegan dos?</strong> Cada uno recibe 7 cartas en la mano y el resto forma un mazo de reserva. Después de jugar, roba hasta volver a tener 7. Las cartas de la mesa se usan cuando la reserva se acaba y te quedas sin mano.</p>
       </section>
 
       <!-- Turn -->
@@ -132,23 +131,11 @@
         <p class="p-eyebrow">En carrera</p>
         <h2 class="p-h2" id="turno-title">Tu turno</h2>
         <ul class="p-rules">
-          <li><strong>Marca el ritmo.</strong> Juega una o más cartas iguales con valor igual o mayor al de la pila. Sobre un 4 puedes jugar 4, 5, 6, 7 u 8.</li>
-          <li><strong>Sin mezclar.</strong> En una jugada solo van cartas del mismo valor. La única combinación permitida es con el Rebufo.</li>
-          <li><strong>Si no puedes, recoges.</strong> Sin jugada válida, te llevas toda la pila a la mano y tu turno termina. Si tienes jugada, no puedes recoger.</li>
-          <li><strong>Vía libre.</strong> Después de recoger la pila, de una Bandera Roja, una Bandera a Cuadros o un Carril Lleno, el siguiente abre con cualquier carta, menos una Bandera Azul.</li>
+          <li><strong>Marca el ritmo.</strong> Juega una o más cartas iguales con valor igual o mayor al de la pila.</li>
+          <li><strong>Sin mezclar.</strong> Puedes colocar varias cartas seguidas, pero solo si son del mismo valor.</li>
+          <li><strong>Si no puedes, recoges.</strong> Sin jugada válida, te llevas toda la pila a la mano y tu turno termina.</li>
+          <li><strong>Vía libre.</strong> Si no hay nada en la pila, el siguiente jugador puede jugar la carta que desee.</li>
           <li><strong>Carril Lleno.</strong> Si quedan cuatro cartas iguales seguidas arriba de la pila, toda la pila sale del juego y el siguiente tiene vía libre.</li>
-        </ul>
-      </section>
-
-      <!-- Table cards -->
-      <section class="p-section" id="mesa" aria-labelledby="mesa-title">
-        <p class="p-eyebrow">Recta final</p>
-        <h2 class="p-h2" id="mesa-title">Cartas de la mesa</h2>
-        <ul class="p-rules">
-          <li><strong>Visibles.</strong> Cuando te quedas sin mano, tomas tus 3 cartas visibles como nueva mano y las juegas normal.</li>
-          <li><strong>Ocultas.</strong> Después juegas las ocultas de una en una, descubriéndolas en el momento de jugarlas.</li>
-          <li><strong>Si una oculta no sirve.</strong> Al inicio de tu turno, recoges la pila junto con esa carta. A mitad de tu turno, solo la pasas a tu mano y terminas.</li>
-          <li><strong>Cruza la meta.</strong> Sin cartas en la mano ni en la mesa, terminas tu carrera. Los demás siguen hasta que quede uno: ese pierde.</li>
         </ul>
       </section>
 
@@ -179,7 +166,7 @@
           </li>
           <li class="p-card" style="--c: #2f86de">
             <img src="../img/cartas/bandera-azul.webp" width="480" height="692" alt="" loading="lazy">
-            <div><h3>Bandera Azul</h3><p>Va sobre una carta de ritmo. El siguiente pierde su turno y el que sigue responde al ritmo de abajo. No se usa con 2 jugadores.</p></div>
+            <div><h3>Bandera Azul</h3><p>Va sobre una carta de ritmo o con vía libre. El siguiente pierde su turno y el que sigue responde al ritmo de abajo. No se usa con 2 jugadores.</p></div>
           </li>
         </ul>
       </section>
@@ -195,7 +182,7 @@
               <tr><th scope="col">Arriba de la pila</th><th scope="col">Puedes jugar</th></tr>
             </thead>
             <tbody>
-              <tr><th scope="row">Vía libre</th><td>Cualquier carta, menos Bandera Azul</td></tr>
+              <tr><th scope="row">Vía libre</th><td>Cualquier carta</td></tr>
               <tr><th scope="row">Ritmo 1–4</th><td>Ritmo igual o mayor, Roja, Amarilla, Rebufo, a Cuadros, Vuelta Rápida, Azul</td></tr>
               <tr><th scope="row">Ritmo 5–8</th><td>Ritmo igual o mayor, Roja, a Cuadros, Vuelta Rápida, Azul</td></tr>
               <tr><th scope="row">Bandera Amarilla</th><td>Ritmo 1–4, Roja, Amarilla, a Cuadros</td></tr>
@@ -225,7 +212,8 @@
               <h3>Modo Temporada</h3>
             </div>
             <p>Un Campeonato de Grandes Premios: jueguen varias carreras y sumen puntos según el orden de llegada. Temporadas de 5, 10 o 15 Grandes Premios; gana quien acumule más puntos.</p>
-            <p class="p-mode__extra"><strong>Hoja de puntuación:</strong> suscríbete al boletín de Kori Labs y te la enviamos gratis. <a href="../../../#suscribete">Suscribirme</a></p>
+            <p class="p-mode__extra"><strong>Hoja de puntuación:</strong> suscríbete al boletín de Kori Labs y te la enviamos gratis.</p>
+            <a class="p-button p-button--cream p-button--small" href="../../../#suscribete">Suscribirme <span aria-hidden="true">→</span></a>
           </li>
         </ul>
       </section>
@@ -241,7 +229,7 @@
             <span>Ver reglamento</span>
             <span class="visually-hidden">(PDF, se abre en una pestaña nueva)</span>
           </a>
-          <p class="p-back"><a href="../">Conoce más de PINTO</a></p>
+          <a class="p-button p-button--cream p-button--small p-back" href="../">Conoce más de PINTO <span aria-hidden="true">→</span></a>
         </div>
       </section>
     </main>

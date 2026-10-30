@@ -56,7 +56,8 @@ comments just to translate them — only translate what you are already touching
 │   ├── apple-touch-icon.png
 │   ├── pattern.svg          Diamond/cat background pattern
 │   ├── og-korilabs.jpg      1200×630 share preview for the home page
-│   └── pinto-caja.webp      PINTO box used on the home game card
+│   ├── pinto-caja.webp      PINTO box used on the home game card
+│   └── taller/              Logos for the home "Taller" carousel (last-of-the-wilds.webp)
 ├── css/
 │   ├── styles.css           Base: tokens, reset, header/nav, footer, shared bits (loaded on every page)
 │   ├── home.css             Home page (h-* classes); also reused by /privacidad/
@@ -84,18 +85,26 @@ comments just to translate them — only translate what you are already touching
    `icon-age`, `icon-imaginar`, `icon-crear`, `icon-compartir`. Use via `<use href="#icon-…"/>`.
    The game-stat icons are duplicated in `juegos/pinto/index.html` — keep both in sync.
 2. `header.site-header` + `nav.site-nav` (shared pattern on every page; nav links are hard-coded per page).
-3. `section.h-hero` — `h1` "Estamos preparando la mesa…".
-4. `section#juegos.h-games` — PINTO card (box image, chips: players / time / 8+ age) and "Más juegos en el taller".
-5. `section#suscribete.h-join` — Sender newsletter form (see below).
-6. `section.h-values` — Imaginar / Crear / Compartir.
-7. `footer.site-footer.h-footer` — includes link to `/privacidad/`.
-8. Inline `<script>` at the end: Sender form fallback ("Cargando…" → after 8 s shows a link to the hosted form).
+   Home nav: Juegos / Taller / Suscríbete (Suscríbete is hidden under 30rem so it fits on phones).
+3. `section.h-hero` — Kori Labs as a game studio: `h1` "Diseñamos juegos para compartir.", CTA to `#juegos`.
+4. `section#juegos.h-games` — "Nuestros juegos": released/upcoming games (PINTO card with a cream "Ver el juego" pill).
+5. `section#taller.h-lab` — "Otros proyectos / Taller": horizontal scroll-snap carousel (`.h-lab__track`, arrow
+   buttons via inline script, hidden when nothing overflows). Cards: `.h-lab__item` with logo + name + type line
+   (`.h-lab__type`), or `.h-lab__item--locked` (striped dark art, corner lock, name "???"). Keep cards minimal:
+   name and game type only — no project numbers or development stages. To add a game, copy an item and put its
+   logo in `assets/taller/`.
+6. `section#suscribete.h-join` — Sender newsletter form (see below).
+7. `section.h-values` — Imaginar / Crear / Compartir.
+8. `footer.site-footer.h-footer` — includes link to `/privacidad/`.
+9. Inline `<script>`s at the end: workshop carousel arrows, and the Sender form fallback ("Cargando…" → after 8 s shows a link to the hosted form).
 
 ### PINTO — `juegos/pinto/index.html` (`<html class="no-js">` → `js`, CSS: `styles.css` + `pinto.css`)
 Fonts: Istok Web + **Poppins** (display). Sections: `p-hero` (title + `#box-stage`/`#box3d` 3D box),
 "Cómo se juega", "Cartas de ritmo" (ritmo-1…8), "Cartas especiales" (banderas, rebufo, vuelta rápida),
 `p-cta` "Muy pronto en la parrilla de salida". Script: `box3d.js` (deferred).
-Below the 3-step "Cómo se juega" there's a "Ver instrucciones completas" link; a "Modos de juego" section
+After the hero: "Acerca de PINTO" (short text), "Cómo jugar" (5 step titles only, no descriptions, plus a cream
+"Ver instrucciones completas" button), "Cartas de ritmo", "Cartas especiales" (image + name only,
+`.p-specials--compact`), then a "Modos de juego" section
 (Modo Rápido / Modo Temporada, icons `img/icono-bandera-cuadros.svg` / `img/icono-trofeo.svg`) sits before the CTA.
 Game facts (players, duration, 8+, card names, rules wording) must stay consistent between the home
 card, this page, `instrucciones/` and `reglamento.pdf` v1.3.
@@ -103,7 +112,7 @@ card, this page, `instrucciones/` and `reglamento.pdf` v1.3.
 ### PINTO instructions — `juegos/pinto/instrucciones/index.html` (CSS: `styles.css` + `pinto.css`)
 Target of the QR printed in the rules leaflet. A **summary** of the rules, not a copy of the PDF: the PDF is
 the detailed source of truth (edge cases, FAQ, full championship scoring). Sections: intro with download
-button + in-page chips (`p-toc`), `#preparacion` (steps + deck table), `#turno`, `#mesa`, `#especiales`,
+button + in-page chips (`p-toc`, smooth scroll), `#preparacion` (steps + deck table), `#turno`, `#especiales`,
 `#referencia` (quick-reference table), `#modos`, closing CTA with a second download button. The score
 sheet gift is offered via "Suscribirme" (`/#suscribete`), never linked directly. If the PDF changes, update
 the size/page count shown next to the download button.
@@ -118,6 +127,7 @@ the size/page count shown next to the download button.
   `--pinto-red #e5463b`, `--sep`.
 - `css/pinto.css` redefines its own palette (`--asphalt*`, `--cream`, `--red`, `--display: Poppins`) and
   box dimensions `--bw/--bh/--bd` (box ratio 758 × 1057 × 244 — keep it if box images change).
+- Buttons are pills (`h-btn`, `p-button`, `p-button--cream`); don't use red-underlined text links as buttons.
 - Class prefixes: `h-` home, `p-` PINTO, `legal__` privacy, BEM-ish (`block__elem--mod`).
   Utility: `.visually-hidden`, `.accent`.
 - Every CSS file has a `prefers-reduced-motion` block; keep animations behind it.
@@ -126,8 +136,8 @@ the size/page count shown next to the download button.
 
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
-  Current: `styles.css?v=2`, `home.css?v=6` (index) / `?v=3` (privacidad — stale, bump when touching),
-  `pinto.css?v=8`, `legal.css?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=2`.
+  Current: `styles.css?v=2`, `home.css?v=7` (index and privacidad),
+  `pinto.css?v=9`, `legal.css?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=2`.
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
 - **Sender (newsletter):** universal script in the `<head>` of `index.html`; form is
