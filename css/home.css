@@ -486,13 +486,6 @@ html { scroll-behavior: smooth; }
 }
 .h-lab__art img { width: 88%; height: auto; }
 
-/* Silhouette logo: light ground so the black shape reads, like a character to unlock */
-.h-lab__item--silhouette .h-lab__art {
-  background:
-    radial-gradient(ellipse 65% 60% at 50% 50%, #fff 0%, #f1ebe0 55%, #d9d1c3 100%);
-}
-.h-lab__item--silhouette .h-lab__name { color: rgb(245 240 232 / 0.75); }
-
 /* Locked: a "character to unlock" silhouette */
 .h-lab__item--locked .h-lab__art {
   background:
@@ -575,8 +568,8 @@ html { scroll-behavior: smooth; }
 .h-btn--small:hover { background: var(--peach); transform: translateY(-2px); }
 
 @media (min-width: 56rem) {
-  /* ~3.4 cards visible so the next one peeks in and the row reads as a carousel */
-  .h-lab__list { grid-auto-columns: calc((100% - 3rem) / 3.4); }
+  /* Three across; with more games the row scrolls and the arrows appear */
+  .h-lab__list { grid-auto-columns: calc((100% - 2rem) / 3); }
 }
 
 @media (hover: hover) and (pointer: fine) {
