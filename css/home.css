@@ -494,9 +494,12 @@ html { scroll-behavior: smooth; }
 }
 
 .h-lab__lock {
-  width: clamp(3rem, 2.5rem + 2vw, 4rem);
-  height: clamp(3rem, 2.5rem + 2vw, 4rem);
-  color: rgb(247 243 234 / 0.28);
+  position: absolute;
+  right: 0.9rem;
+  top: 0.9rem;
+  width: 1.4rem;
+  height: 1.4rem;
+  color: rgb(247 243 234 / 0.45);
 }
 
 .h-lab__type {
