@@ -86,7 +86,7 @@ comments just to translate them — only translate what you are already touching
    The game-stat icons are duplicated in `juegos/pinto/index.html` — keep both in sync.
 2. `header.site-header` + `nav.site-nav` (shared pattern on every page; nav links are hard-coded per page).
    Home nav: Juegos / Taller / Suscríbete (Suscríbete is hidden under 30rem so it fits on phones).
-3. `section.h-hero` — Kori Labs as a game studio: `h1` "Diseñamos juegos para compartir.", CTA to `#juegos`.
+3. `section.h-hero` — `h1` "Estamos preparando la mesa…" (owner prefers this original copy), CTA to `#juegos`.
 4. `section#juegos.h-games` — "Nuestros juegos": released/upcoming games (PINTO card with a cream "Ver el juego" pill).
 5. `section#taller.h-lab` — "Otros proyectos / Taller": horizontal scroll-snap carousel (`.h-lab__track`, arrow
    buttons via inline script, hidden when nothing overflows). Cards: `.h-lab__item` with logo + name + type line
