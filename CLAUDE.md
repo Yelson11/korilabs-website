@@ -95,8 +95,8 @@ comments just to translate them — only translate what you are already touching
 Fonts: Istok Web + **Poppins** (display). Sections: `p-hero` (title + `#box-stage`/`#box3d` 3D box),
 "Cómo se juega", "Cartas de ritmo" (ritmo-1…8), "Cartas especiales" (banderas, rebufo, vuelta rápida),
 `p-cta` "Muy pronto en la parrilla de salida". Script: `box3d.js` (deferred).
-Below the 3-step "Cómo se juega" there's a "Ver instrucciones completas" link; a "Formas de jugar" section
-(Carrera individual / Campeonato de Grandes Premios) sits before the CTA.
+Below the 3-step "Cómo se juega" there's a "Ver instrucciones completas" link; a "Modos de juego" section
+(Modo Rápido / Modo Temporada, icons `img/icono-bandera-cuadros.svg` / `img/icono-trofeo.svg`) sits before the CTA.
 Game facts (players, duration, 8+, card names, rules wording) must stay consistent between the home
 card, this page, `instrucciones/` and `reglamento.pdf` v1.3.
 
@@ -104,7 +104,7 @@ card, this page, `instrucciones/` and `reglamento.pdf` v1.3.
 Target of the QR printed in the rules leaflet. A **summary** of the rules, not a copy of the PDF: the PDF is
 the detailed source of truth (edge cases, FAQ, full championship scoring). Sections: intro with download
 button + in-page chips (`p-toc`), `#preparacion` (steps + deck table), `#turno`, `#mesa`, `#especiales`,
-`#referencia` (quick-reference table), `#formas`, closing CTA with a second download button. The score
+`#referencia` (quick-reference table), `#modos`, closing CTA with a second download button. The score
 sheet gift is offered via "Suscribirme" (`/#suscribete`), never linked directly. If the PDF changes, update
 the size/page count shown next to the download button.
 
@@ -127,7 +127,7 @@ the size/page count shown next to the download button.
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
   Current: `styles.css?v=2`, `home.css?v=6` (index) / `?v=3` (privacidad — stale, bump when touching),
-  `pinto.css?v=6`, `legal.css?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=2`.
+  `pinto.css?v=7`, `legal.css?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=2`.
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
 - **Sender (newsletter):** universal script in the `<head>` of `index.html`; form is

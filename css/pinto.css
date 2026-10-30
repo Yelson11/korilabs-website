@@ -555,8 +555,21 @@
 }
 .p-mode:nth-child(2) { --c: #f2c230; }
 
+.p-mode__head {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 0.6rem;
+}
+
+.p-mode__icon {
+  flex: none;
+  width: 3.25rem;
+  height: 3.25rem;
+}
+
 .p-mode h3 {
-  margin: 0 0 0.4rem;
+  margin: 0;
   font-family: var(--display);
   font-size: 1.15rem;
   font-style: italic;
