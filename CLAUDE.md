@@ -70,7 +70,8 @@ comments just to translate them — only translate what you are already touching
 │       ├── box3d.js         Auto-rotating, draggable CSS-3D box with per-face shading (no deps, respects reduced motion)
 │       ├── instrucciones/index.html  Rules summary + "Ver reglamento" button (opens the PDF in a new tab, no `download` attr so phones open it). TARGET OF THE PRINTED QR — never move
 │       ├── reglamento.pdf   Official rules PDF (v1.3, source of truth). Linked from instrucciones/ only
-│       └── img/             caja-*.webp (6 box faces), cartas/*.webp (card art from Figma "Deck v1.0"),
+│       └── img/             caja-*.webp (6 box faces), cartas/*.webp (card art, 660×900, cream border baked in;
+│                            special cards have their description paragraph removed),
 │                            logo-pinto.webp, og-pinto.jpg (share preview)
 ├── pinto/reglas/index.html  Meta-refresh → /juegos/pinto/instrucciones/ (short alias; keep working)
 ├── privacidad/index.html    Privacy policy (only email is collected, via Sender; contact info@korilabscr.com)
@@ -136,8 +137,8 @@ the size/page count shown next to the download button.
 
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
-  Current: `styles.css?v=2`, `home.css?v=7` (index and privacidad),
-  `pinto.css?v=9`, `legal.css?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=2`.
+  Current: `styles.css?v=2`, `home.css?v=8` (index and privacidad),
+  `pinto.css?v=10`, card images `?v=2`, `legal.css?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=2`.
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
 - **Sender (newsletter):** universal script in the `<head>` of `index.html`; form is

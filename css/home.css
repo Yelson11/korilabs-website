@@ -233,7 +233,8 @@
   width: 62%;
   height: auto;
   top: 8%;
-  border-radius: 6%/4.2%;
+  /* New card art (825×1125) has a cream border with square corners; round the outer edge */
+  border-radius: 9%/6.6%;
   box-shadow: 0 0.8rem 1.6rem rgb(0 0 0 / 0.5);
   transition: transform 0.4s ease;
 }
@@ -614,7 +615,7 @@ html { scroll-behavior: smooth; }
   flex: none;
   width: 2.6rem;
   height: auto;
-  border-radius: 0.3rem;
+  border-radius: 9%/6.6%;
   transform: rotate(-8deg);
   box-shadow: 0 0.4rem 0.8rem rgb(0 0 0 / 0.35);
 }
