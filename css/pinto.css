@@ -189,6 +189,14 @@
 .p-facts svg { width: 1.25rem; height: 1.25rem; color: var(--cream); }
 .p-facts strong { font-family: var(--display); font-weight: 600; }
 
+/* "Hecho en Costa Rica · Kori Labs" seal under the fact chips */
+.p-seal {
+  display: block;
+  width: min(13rem, 60vw);
+  height: auto;
+  margin: 1.5rem auto 0;
+}
+
 .p-rainbow {
   position: absolute;
   inset: auto 0 0;
@@ -771,6 +779,7 @@
   .p-logo { margin-inline: 0; width: min(100%, 26rem); }
   .p-hero__lead { margin-inline: 0; }
   .p-facts { justify-content: flex-start; }
+  .p-seal { margin-inline: 0; }
   .p-hero__art { justify-self: center; }
 
   .p-steps { grid-template-columns: repeat(5, 1fr); }
