@@ -432,7 +432,8 @@
   display: block;
   width: 100%;
   height: auto;
-  border-radius: 6%/4.2%;
+  /* New card art (825×1125) has a cream border with square corners; round the outer edge */
+  border-radius: 7.5%/5.35%;
   box-shadow: 0 0.9rem 1.8rem rgb(0 0 0 / 0.45);
 }
 
