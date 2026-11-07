@@ -12,6 +12,8 @@
     vr: 'vuelta-rapida', reb: 'rebufo', roja: 'bandera-roja',
     ama: 'bandera-amarilla', azul: 'bandera-azul', cuad: 'bandera-a-cuadros'
   };
+  // You + the three musketeers (bots 1–3)
+  var DEFAULT_NAMES = ['Tú', 'Athos', 'Porthos', 'Aramis'];
   // Sort order inside a hand: rhythms 1–8 first, then specials
   var ORDER = { r: 0, reb: 10, ama: 11, roja: 12, azul: 13, vr: 14, cuad: 15 };
 
@@ -133,7 +135,7 @@
     opts = opts || {};
     var rng = opts.rng || Math.random;
     var n = 4;
-    var names = opts.names || ['Tú', 'Athos', 'Porthos', 'Aramis']; // the three musketeers: bots 1–3
+    var names = opts.names || DEFAULT_NAMES;
     var deck = shuffle(makeDeck(n), rng);
     var players = names.slice(0, n).map(function (name, i) {
       return { id: i, name: name, hand: [], visible: [], hidden: [], place: 0 };
@@ -437,7 +439,7 @@
     newGame: newGame, play: play, pickUp: pickUp, revealHidden: revealHidden, endChain: endChain,
     legalMoves: legalMoves, playableIds: playableIds, checkPlay: checkPlay, botStep: botStep,
     pileHint: pileHint, effectiveTop: effectiveTop, cardName: cardName, cardFile: cardFile,
-    stageOf: stageOf, sameKind: sameKind
+    stageOf: stageOf, sameKind: sameKind, defaultNames: DEFAULT_NAMES, deckSize: function (n) { return makeDeck(n || 4).length; }
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.PintoEngine = api;

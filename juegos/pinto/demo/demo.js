@@ -18,6 +18,7 @@
   // What each player did last (shown in a bubble next to each bot) and who played on the pile
   var lastAction = {}, freshPid = null, pileNote = '';
 
+  var dealing = false;
   var s, fastForward = false, selected = [], message = '', messageError = false, timer = null, lastPileTop = null, botSteps = 0;
 
   var $ = function (sel) { return board.querySelector(sel); };
@@ -260,9 +261,96 @@
     schedule();
   }
 
+  /* ---------- Before the race: face-down deck, then the deal ---------- */
+
+  function renderIdle() {
+    var names = E.defaultNames;
+    board.classList.remove('has-result');
+    resultBox.hidden = true;
+    seats.forEach(function (el, i) {
+      el.classList.remove('is-turn', 'is-out');
+      if (i === 0) {
+        el.innerHTML = '<p class="pd-name">Tú</p><div class="pd-actions">' + (dealing ? '' :
+          '<p class="pd-status">Toca “Nueva carrera” para repartir las cartas.</p>' +
+          '<button type="button" class="p-button" data-act="new">Nueva carrera</button>') + '</div>';
+      } else {
+        el.innerHTML = '<p class="pd-name">' + names[i] + ' <span class="pd-tag">' + (dealing ? 'Recibiendo' : 'Esperando') + '</span></p>';
+      }
+    });
+    var deck = '';
+    for (var k = 0; k < 5; k++) deck += img(null);
+    $('.pd-center').innerHTML =
+      '<div class="pd-deck" aria-hidden="true">' + deck + '</div>' +
+      (dealing
+        ? '<p class="pd-deal-text" role="status">Repartiendo cartas<span class="pd-dots" aria-hidden="true"><i>.</i><i>.</i><i>.</i></span></p>'
+        : '<p class="pd-pile__meta">' + E.deckSize(4) + ' cartas boca abajo</p>');
+    logList.innerHTML = '<li>' + (dealing ? 'Repartiendo cartas…' : 'Toca “Nueva carrera” para empezar.') + '</li>';
+  }
+
+  // Cards fly from the deck to each seat in the real dealing order:
+  // 3 hidden each, 3 visible each, then the rest of the deck one by one.
+  function dealAnimation(game, done) {
+    var deckEl = board.querySelector('.pd-deck');
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!deckEl || reduce || !Element.prototype.animate) { setTimeout(done, 1200); return; }
+    var bRect = board.getBoundingClientRect();
+    var dRect = deckEl.getBoundingClientRect();
+    var from = { x: dRect.left - bRect.left + dRect.width / 2, y: dRect.top - bRect.top + dRect.height / 2 };
+    var targets = seats.map(function (el) {
+      var r = el.getBoundingClientRect();
+      return { x: r.left - bRect.left + r.width / 2, y: r.top - bRect.top + Math.min(r.height / 2, 90) };
+    });
+    var order = [], n = game.players.length, i, rounds;
+    var seq = [1, 2, 3, 0]; // dealer is you, so dealing starts on your left
+    for (rounds = 0; rounds < 6; rounds++) seq.forEach(function (pid) { order.push(pid); });
+    var handTotal = game.players.reduce(function (a, p) { return a + p.hand.length; }, 0);
+    for (i = 0; i < handTotal; i++) order.push(seq[i % n]);
+
+    var STAGGER = 45, DUR = 420, layer = document.createDocumentFragment(), flyers = [];
+    order.forEach(function (pid, k) {
+      var c = document.createElement('img');
+      c.className = 'pd-card pd-fly';
+      c.src = BASE + 'reverso.webp' + VER;
+      c.alt = '';
+      layer.appendChild(c);
+      flyers.push([c, pid, k]);
+    });
+    board.appendChild(layer);
+    var half = flyers.length ? flyers[0][0].getBoundingClientRect() : { width: 0, height: 0 };
+    flyers.forEach(function (f) {
+      var c = f[0], to = targets[f[1]], k = f[2];
+      var dx = (to.x - from.x), dy = (to.y - from.y), rot = ((k * 47) % 30) - 15;
+      var start = 'translate(' + (from.x - half.width / 2) + 'px,' + (from.y - half.height / 2) + 'px)';
+      var end = 'translate(' + (from.x - half.width / 2 + dx) + 'px,' + (from.y - half.height / 2 + dy) + 'px) rotate(' + rot + 'deg)';
+      c.style.transform = start;
+      c.style.opacity = '0';
+      c.animate([
+        { transform: start, opacity: 1 },
+        { transform: end, opacity: 1, offset: 0.85 },
+        { transform: end, opacity: 0 }
+      ], { duration: DUR, delay: k * STAGGER, easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'forwards' });
+    });
+    setTimeout(function () {
+      flyers.forEach(function (f) { f[0].remove(); });
+      done();
+    }, flyers.length * STAGGER + DUR + 150);
+  }
+
   function newGame() {
+    if (dealing) return;
     clearTimeout(timer);
-    s = E.newGame();
+    dealing = true;
+    s = null;
+    renderIdle();
+    var game = E.newGame();
+    dealAnimation(game, function () {
+      dealing = false;
+      startGame(game);
+    });
+  }
+
+  function startGame(game) {
+    s = game;
     selected = []; botSteps = 0; lastPileTop = null; fastForward = false;
     lastAction = {}; freshPid = null; pileNote = '';
     var starter = s.players[s.current];
@@ -272,7 +360,9 @@
 
   board.addEventListener('click', function (e) {
     var t = e.target.closest('button');
-    if (!t || !s) return;
+    if (!t) return;
+    if (t.getAttribute('data-act') === 'new') { newGame(); return; }
+    if (!s) return;
     if (t.hasAttribute('data-card')) {
       if (s.current === 0 && !s.over) toggleCard(+t.getAttribute('data-card'));
       return;
@@ -318,5 +408,6 @@
   });
   syncControls();
 
-  newGame();
+  renderIdle();
+
 })();
