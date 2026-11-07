@@ -13,7 +13,7 @@
     ama: 'bandera-amarilla', azul: 'bandera-azul', cuad: 'bandera-a-cuadros'
   };
   // You + the three musketeers (bots 1–3)
-  var DEFAULT_NAMES = ['Tú', 'Athos', 'Porthos', 'Aramis'];
+  var DEFAULT_NAMES = ['Tú', 'J1 - Athos', 'J2 - Porthos', 'J3 - Aramis'];
   // Sort order inside a hand: rhythms 1–8 first, then specials
   var ORDER = { r: 0, reb: 10, ama: 11, roja: 12, azul: 13, vr: 14, cuad: 15 };
 
