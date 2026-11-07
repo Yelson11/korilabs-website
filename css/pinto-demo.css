@@ -173,28 +173,18 @@ button.pd-hidden-btn:focus-visible { outline: 3px solid var(--cream); outline-of
   text-transform: uppercase;
 }
 .pd-pile__meta { margin: 0; color: var(--cream-dim); font-size: 0.82rem; font-variant-numeric: tabular-nums; }
-.pd-hint {
-  margin: 0;
-  max-width: 22rem;
-  padding: 0.45rem 0.9rem;
-  border-radius: 999px;
-  background: rgb(242 194 48 / 0.14);
-  color: var(--gold);
-  font-size: 0.85rem;
-  font-weight: 700;
-  text-wrap: balance;
-}
 
 /* ---------- Player area ---------- */
 .pd-me {
   display: grid;
-  gap: 0.9rem;
+  justify-items: center;
+  gap: 0.6rem;
   padding: 1rem clamp(0.5rem, 2vw, 1.25rem) 0.25rem;
   border-top: 1px solid var(--line);
 }
-.pd-me__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem 1.5rem; }
-.pd-me__head .pd-name { justify-content: flex-start; font-size: 1.05rem; }
-.pd-me__table { display: flex; align-items: center; gap: 0.75rem; color: var(--cream-dim); font-size: 0.8rem; }
+.pd-me > .pd-name { font-size: 1.05rem; }
+/* Table cards sit centered right above the hand */
+.pd-me__table { display: flex; justify-content: center; }
 .pd-me.is-turn .pd-hand { --ring: var(--gold); }
 
 .pd-hand {
@@ -202,6 +192,7 @@ button.pd-hidden-btn:focus-visible { outline: 3px solid var(--cream); outline-of
   flex-wrap: wrap;
   gap: 0.4rem;
   justify-content: center;
+  width: 100%;
   min-height: calc(var(--card-hand) * 1.45);
   padding-top: 0.6rem;
 }

@@ -8,11 +8,11 @@
 
   var BASE = board.getAttribute('data-cards') || '../img/cartas/';
   var VER = '?v=4';
-  var BOT_DELAY = 950;
-  var FAST_DELAY = 260;
-  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Each bot waits 1 s so the player can follow what it did
+  var BOT_DELAY = 1000;
+  var FAST_DELAY = 200; // only after the player finished and chose to skip ahead
 
-  var s, selected = [], message = '', messageError = false, timer = null, lastPileTop = null, botSteps = 0;
+  var s, fastForward = false, selected = [], message = '', messageError = false, timer = null, lastPileTop = null, botSteps = 0;
 
   var $ = function (sel) { return board.querySelector(sel); };
   var seats = [$('[data-seat="0"]'), $('[data-seat="1"]'), $('[data-seat="2"]'), $('[data-seat="3"]')];
@@ -102,16 +102,15 @@
         actions = '<p class="pd-status">' + (s.opening ? 'Arrancas tú: elige tu Ritmo ' + s.opening + '.' : 'Elige una o más cartas iguales para jugar.') + '</p>';
       }
     } else if (!s.over) {
-      actions = '<p class="pd-status">' + (p.place ? 'Ya cruzaste la meta. Los bots terminan la carrera…' : 'Juega ' + s.players[s.current].name + '…') + '</p>';
+      actions = '<p class="pd-status">' + (p.place ? 'Ya cruzaste la meta. Los bots terminan la carrera…' : 'Juega ' + s.players[s.current].name + '…') + '</p>' +
+        (p.place && !fastForward ? '<button type="button" class="p-button p-button--cream p-button--small" data-act="skip">Ir al resultado</button>' : '');
     }
     if (message) actions = '<p class="pd-status' + (messageError ? ' pd-status--error' : '') + '">' + message + '</p>' + actions;
 
     el.classList.toggle('is-turn', myTurn);
     el.innerHTML =
-      '<div class="pd-me__head">' +
-        '<p class="pd-name">Tú ' + tag(p, 0) + '</p>' +
-        '<div class="pd-me__table"><span>Tu mesa</span>' + tableCards(p, true, hiddenStage) + '</div>' +
-      '</div>' +
+      '<p class="pd-name">Tú ' + tag(p, 0) + '</p>' +
+      '<div class="pd-me__table" aria-label="Tu mesa">' + tableCards(p, true, hiddenStage) + '</div>' +
       '<div class="pd-hand" role="group" aria-label="Tu mano">' + hand + '</div>' +
       '<div class="pd-actions" aria-live="polite">' + actions + '</div>';
   }
@@ -131,7 +130,7 @@
     el.innerHTML =
       '<div class="pd-pile" aria-label="Pila central">' + html + '</div>' +
       '<p class="pd-pile__meta">Pila: ' + plural(s.pile.length, 'carta', 'cartas') + ' · fuera de juego: ' + s.discarded + '</p>' +
-      (s.over ? '' : '<p class="pd-hint">' + E.pileHint(s.pile, s.opening) + '</p>');
+      '';
   }
 
   function renderLog() {
@@ -169,7 +168,7 @@
     render();
     if (s.current !== 0) {
       var meDone = !!s.players[0].place;
-      timer = setTimeout(botTurn, meDone || reduceMotion ? FAST_DELAY : BOT_DELAY);
+      timer = setTimeout(botTurn, meDone && fastForward ? FAST_DELAY : BOT_DELAY);
     }
   }
 
@@ -221,7 +220,7 @@
   function newGame() {
     clearTimeout(timer);
     s = E.newGame();
-    selected = []; botSteps = 0; lastPileTop = null;
+    selected = []; botSteps = 0; lastPileTop = null; fastForward = false;
     var starter = s.players[s.current];
     say(starter.id === 0 ? '' : starter.name + ' tiene el Ritmo ' + s.opening + ' y arranca la carrera.');
     schedule();
@@ -247,6 +246,7 @@
       case 'pickup': E.pickUp(s); selected = []; say(''); schedule(); break;
       case 'endchain': E.endChain(s); selected = []; say(''); schedule(); break;
       case 'new': newGame(); break;
+      case 'skip': fastForward = true; schedule(); break;
     }
   });
 
