@@ -36,7 +36,7 @@
   }
   function save(key, value) { try { localStorage.setItem(key, value); } catch (e) { /* storage blocked: keep in memory */ } }
 
-  // "Turbo juega 2× Ritmo 5 · vía libre…" → "Jugó 2× Ritmo 5 · vía libre…"
+  // "Athos juega 2× Ritmo 5 · vía libre…" → "Jugó 2× Ritmo 5 · vía libre…"
   var PAST = {
     juega: 'Jugó', recoge: 'Recogió', revela: 'Reveló', toma: 'Tomó', pierde: 'Perdió', cruza: 'Cruzó', se: 'Se',
     juegas: 'Jugaste', recoges: 'Recogiste', revelas: 'Revelaste', tomas: 'Tomaste', pierdes: 'Perdiste', cruzas: 'Cruzaste', te: 'Te'

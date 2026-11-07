@@ -133,7 +133,7 @@
     opts = opts || {};
     var rng = opts.rng || Math.random;
     var n = 4;
-    var names = opts.names || ['Tú', 'Turbo', 'Chispa', 'Rayo'];
+    var names = opts.names || ['Tú', 'Athos', 'Porthos', 'Aramis']; // the three musketeers: bots 1–3
     var deck = shuffle(makeDeck(n), rng);
     var players = names.slice(0, n).map(function (name, i) {
       return { id: i, name: name, hand: [], visible: [], hidden: [], place: 0 };
