@@ -39,9 +39,17 @@ assets/pinto-caja.webp     Caja de PINTO para la tarjeta de la portada
   a `juegos/pinto/`. Cuando haya más juegos, cambia `juegos/index.html` por un listado.
 - **Caja 3D:** son seis imágenes (`img/caja-*.webp`) montadas con CSS 3D. Si cambia el diseño de la caja,
   reemplaza esas imágenes manteniendo las proporciones (ancho 758 · alto 1057 · fondo 244).
-- **Cartas:** `img/cartas/*.webp`, exportadas del "Deck v1.0" de Figma.
+- **Cartas:** `img/cartas/*.webp`, exportadas de Figma (SVG convertido a WebP de 660 × 922). Al cambiarlas, sube su `?v=N` en todas las páginas que las usan.
 - **Caché:** los enlaces a CSS y JS llevan `?v=N`. Al cambiar esos archivos, sube el número para que los
   navegadores descarguen la versión nueva en vez de usar la guardada.
+
+## Demo de PINTO
+
+`juegos/pinto/demo/` es una carrera jugable contra tres bots (4 jugadores) que corre en el navegador, sin servidor.
+
+- Por ahora no está enlazada desde el menú y tiene `noindex`, para probarla antes de anunciarla. Para publicarla, agrega un botón hacia `juegos/pinto/demo/` en la página de PINTO y quita la línea `robots noindex` de `demo/index.html`.
+- Las reglas están en `demo/pinto-engine.js`. Si cambia el reglamento, se ajusta ahí. `demo/demo.js` dibuja la mesa y maneja los turnos, y los estilos están en `css/pinto-demo.css`.
+- Usa las mismas imágenes de `img/cartas/`, así que al cambiar las cartas el demo se actualiza solo.
 
 ## Suscripción (Sender)
 

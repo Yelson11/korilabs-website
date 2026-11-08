@@ -1,0 +1,399 @@
+/* ==========================================================================
+   Kori Labs · PINTO web demo (juegos/pinto/demo/)
+   Loaded after styles.css and pinto.css; reuses the PINTO palette (--asphalt,
+   --cream, --red, --display). Layout: a dark wooden table seen from above. Each
+   bot sits on one side with its cards on a "mat" rotated to face it; the pile is
+   in the middle and your cards are at the bottom.
+   ========================================================================== */
+
+.pinto-demo {
+  --wood: #623e2b;        /* walnut table (owner's color) */
+  --wood-dark: #4e2b1d;
+  --wood-light: #8e5b3e;
+  --ink: #f7efe3;         /* text on the table */
+  --ink-dim: #dcc6a6;
+  --shadow-ink: #24130b;  /* dark ring around selected cards */
+  --gold: #f2c230;
+  --ok: #3dba6a;
+  --card-hand: clamp(3.6rem, 2.4rem + 4.6vw, 5.6rem);
+  --card-me-table: clamp(2.6rem, 2rem + 2.4vw, 3.8rem);
+  --card-pile: clamp(4.4rem, 3rem + 5vw, 6.8rem);
+  --card-mini: clamp(1.8rem, 1.2rem + 2vw, 3rem);
+  /* bot mat: table cards on top, fanned hand below (upright frame, before rotation) */
+  --mat-w: calc(var(--card-mini) * 4.2);
+  --mat-h: calc(var(--card-mini) * 3.5);
+  color-scheme: dark;
+}
+
+.pd-intro { padding-block: clamp(1.75rem, 5vw, 3rem) 1.5rem; }
+.pd-intro .p-intro__lead { max-width: 44rem; }
+.pd-intro__actions { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+.pd-intro__actions .p-button { margin-top: 1.25rem; }
+
+/* ---------- Board ---------- */
+.pd-board {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 1fr);
+  grid-template-areas:
+    ".    top    ."
+    "left center right"
+    "me   me     me";
+  align-items: center;
+  gap: clamp(0.5rem, 2vw, 1.25rem);
+  padding: clamp(0.9rem, 3vw, 1.75rem);
+  border: 1px solid var(--wood-dark);
+  border-radius: 1.5rem;
+  color: var(--ink);
+  /* wood: plank seams + fine grain + soft light falloff */
+  background:
+    repeating-linear-gradient(0deg, rgb(36 19 11 / 0.45) 0 2px, transparent 2px 140px),
+    repeating-linear-gradient(90deg, rgb(36 19 11 / 0.12) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(90deg, rgb(142 91 62 / 0.18) 0 2px, transparent 2px 31px),
+    radial-gradient(ellipse at 50% 45%, rgb(142 91 62 / 0.55), transparent 70%),
+    var(--wood);
+  box-shadow: inset 0 0 0 6px rgb(78 43 29 / 0.8), inset 0 0 50px rgb(20 10 5 / 0.45);
+  overflow: hidden;
+}
+.pd-board::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: linear-gradient(90deg, #e63c3c 0 12.5%, #f08c28 0 25%, #f2c230 0 37.5%, #3dba6a 0 50%, #22b3c4 0 62.5%, #2f86de 0 75%, #9b4fd8 0 87.5%, #e23b86 0);
+}
+
+.pd-seat--top { grid-area: top; }
+.pd-seat--left { grid-area: left; }
+.pd-seat--right { grid-area: right; }
+.pd-center { grid-area: center; }
+.pd-me { grid-area: me; }
+
+/* ---------- Cards ---------- */
+.pd-card {
+  display: block;
+  width: var(--w, var(--card-hand));
+  aspect-ratio: 660 / 922;
+  max-width: none;
+  border-radius: 7%/5%;
+  background: var(--asphalt-3);
+  box-shadow: 0 3px 10px rgb(15 7 3 / 0.55);
+}
+img.pd-card { height: auto; object-fit: cover; }
+
+/* Invisible elements used to measure a card size for the flight animations */
+.pd-probe { position: absolute; visibility: hidden; width: var(--card-mini); height: 1px; }
+.pd-probe--hand { width: var(--card-hand); }
+
+/* Cards travelling between a seat and the pile */
+.pd-ghost { position: absolute; z-index: 5; pointer-events: none; will-change: transform, opacity; }
+.pd-card.is-arriving { visibility: hidden; }
+
+/* ---------- Seats (shared turn frame) ---------- */
+.pd-seat, .pd-me {
+  border: 1.5px solid transparent;
+  border-radius: 1rem;
+  transition: border-color 0.25s ease, background-color 0.25s ease;
+}
+.pd-seat.is-turn, .pd-me.is-turn { border-color: rgb(247 239 227 / 0.65); background: rgb(247 239 227 / 0.08); }
+.pd-seat.is-out { opacity: 0.5; }
+
+.pd-seat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  padding: 0.6rem 0.4rem;
+}
+
+.pd-label { display: grid; justify-items: center; gap: 0.1rem; margin: 0; text-align: center; line-height: 1.2; }
+.pd-label strong { font-family: var(--display); font-weight: 600; font-size: 0.95rem; }
+.pd-label strong { color: var(--ink); }
+.pd-label span { color: var(--ink-dim); font-size: 0.82rem; font-variant-numeric: tabular-nums; }
+
+/* Bot mat, rotated to face its player: top seat 180°, left 90°, right −90° */
+.pd-matbox { position: relative; flex: none; width: var(--mat-w); height: var(--mat-h); }
+.pd-matbox--left, .pd-matbox--right { width: var(--mat-h); height: var(--mat-w); }
+.pd-mat {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--mat-w);
+  height: var(--mat-h);
+  transform: translate(-50%, -50%) rotate(var(--rot, 0deg));
+}
+.pd-matbox--top .pd-mat { --rot: 180deg; }
+.pd-matbox--left .pd-mat { --rot: 90deg; }
+.pd-matbox--right .pd-mat { --rot: -90deg; }
+
+.pd-mat .pd-table { position: absolute; top: 0; left: 0; right: 0; display: flex; justify-content: center; gap: 0.25rem; }
+.pd-slot { position: relative; width: var(--card-mini); }
+.pd-slot .pd-card { --w: var(--card-mini); }
+.pd-slot .pd-card--up { position: absolute; top: 14%; left: 0; }
+.pd-mat .pd-slot { padding-bottom: 14%; }
+
+.pd-fan { position: absolute; bottom: 0; left: 50%; width: var(--card-mini); height: calc(var(--card-mini) * 1.4); transform: translateX(-50%); }
+.pd-fan__card { --w: var(--card-mini); position: absolute; inset: 0; transform-origin: 50% 170%; }
+
+/* ---------- Pile ---------- */
+.pd-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-width: 0;
+  text-align: center;
+}
+.pd-pile {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: calc(var(--card-pile) * 1.9);
+  height: calc(var(--card-pile) * 1.55);
+  max-width: 100%;
+}
+.pd-pile .pd-card { --w: var(--card-pile); position: absolute; }
+.pd-pile__empty {
+  display: grid;
+  place-items: center;
+  width: var(--card-pile);
+  aspect-ratio: 660 / 922;
+  border: 2px dashed rgb(247 239 227 / 0.4);
+  border-radius: 7%/5%;
+  color: var(--ink-dim);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+/* What the last player did, right under the pile */
+.pd-pile__note {
+  min-height: 2.8em;
+  max-width: 22rem;
+  margin: 0;
+  color: var(--ink-dim);
+  font-size: 0.98rem;
+  line-height: 1.4;
+  text-wrap: balance;
+}
+.pd-pile__note strong { color: var(--ink); font-family: var(--display); font-weight: 600; }
+
+/* ---------- Deck and deal ---------- */
+.pd-deck { position: relative; width: var(--card-pile); aspect-ratio: 660 / 922; margin-block: 0.5rem 0.75rem; }
+.pd-deck .pd-card { --w: var(--card-pile); position: absolute; inset: 0; }
+.pd-deck .pd-card:nth-child(2) { transform: translate(-2px, -2px); }
+.pd-deck .pd-card:nth-child(3) { transform: translate(-4px, -4px); }
+.pd-deck .pd-card:nth-child(4) { transform: translate(-6px, -6px); }
+.pd-deck .pd-card:nth-child(5) { transform: translate(-8px, -8px); }
+.pd-deal-text {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(1.05rem, 0.9rem + 0.8vw, 1.4rem);
+  font-style: italic;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.pd-dots i { font-style: normal; }
+
+/* ---------- Your area ---------- */
+.pd-me {
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem clamp(0.5rem, 2vw, 1.25rem);
+}
+.pd-table--me { display: flex; justify-content: center; gap: 0.4rem; }
+.pd-table--me .pd-slot, .pd-table--me .pd-card { --w: var(--card-me-table); width: var(--w); }
+.pd-table--me .pd-slot { padding-bottom: 24%; }
+.pd-table--me .pd-card--up { top: 24%; }
+
+button.pd-hidden-btn {
+  padding: 0 0 24%;
+  border: 0;
+  border-radius: 7%/5%;
+  background: none;
+  cursor: pointer;
+}
+button.pd-hidden-btn .pd-card { outline: 2px solid var(--gold); outline-offset: 2px; }
+button.pd-hidden-btn:hover .pd-card, button.pd-hidden-btn:focus-visible .pd-card { transform: translateY(-4px); }
+button.pd-hidden-btn:focus-visible { outline: 3px solid var(--cream); outline-offset: 5px; }
+
+.pd-hand {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+  width: 100%;
+  min-height: calc(var(--card-hand) * 1.45);
+  padding-top: 0.6rem;
+}
+.pd-hand__card {
+  padding: 0;
+  border: 0;
+  border-radius: 7%/5%;
+  background: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.pd-hand__card:hover { transform: translateY(-4px); }
+.pd-hand__card:focus-visible { outline: 3px solid var(--cream); outline-offset: 3px; }
+/* darken instead of fading, so unplayable cards don't turn beige on the wood */
+.pd-hand__card.is-dim { filter: grayscale(0.7) brightness(0.55); }
+.pd-hand__card[aria-pressed="true"] { transform: translateY(-12px); }
+.pd-hand__card[aria-pressed="true"] .pd-card { outline: 4px solid var(--gold); outline-offset: 1px; box-shadow: 0 0 0 8px var(--shadow-ink); }
+.pd-hand.is-active .pd-hand__card { touch-action: none; } /* lets you drag cards on phones */
+.pd-hand__card.is-dragging { opacity: 0.25; }
+
+/* Selection being dragged to the pile */
+.pd-drag { position: fixed; z-index: 50; display: flex; pointer-events: none; transform: translate(-50%, -60%); }
+.pd-drag .pd-card { width: var(--drag-w, 4.5rem); margin-left: calc(var(--drag-w, 4.5rem) * -0.55); box-shadow: 0 10px 24px rgb(0 0 0 / 0.5); }
+.pd-drag .pd-card:first-child { margin-left: 0; }
+.pd-pile.is-drop { outline: 3px dashed var(--ink); outline-offset: 10px; border-radius: 1rem; }
+
+/* Countdown of your 3 s window to keep playing */
+.pd-timer { width: min(16rem, 80%); height: 6px; border-radius: 999px; background: rgb(247 239 227 / 0.2); overflow: hidden; }
+.pd-timer i { display: block; height: 100%; background: var(--ink); transform-origin: left; animation: pd-countdown linear forwards; }
+@keyframes pd-countdown { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+
+/* What a special card does: small, dismissible, doesn't block the table.
+   Card thumbnail + short text on a cream note with a racing-stripe edge. */
+.pd-tip {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.9rem;
+  max-width: 32rem;
+  padding: 0.85rem 1rem 0.85rem 0.85rem;
+  border-radius: 1rem;
+  background: linear-gradient(180deg, #fbf7ef, #efe6d6);
+  color: var(--asphalt);
+  box-shadow: 0 10px 26px rgb(15 7 3 / 0.5), inset 0 0 0 1px rgb(255 255 255 / 0.6);
+  overflow: hidden;
+}
+.pd-tip::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: linear-gradient(90deg, #e63c3c 0 12.5%, #f08c28 0 25%, #f2c230 0 37.5%, #3dba6a 0 50%, #22b3c4 0 62.5%, #2f86de 0 75%, #9b4fd8 0 87.5%, #e23b86 0);
+}
+.pd-tip__card { --w: 3.6rem; transform: rotate(-4deg); box-shadow: 0 6px 14px rgb(15 7 3 / 0.35); }
+.pd-tip__body { display: grid; gap: 0.3rem; min-width: 0; }
+.pd-tip__body p { margin: 0; }
+.pd-tip__eyebrow { color: var(--red); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+.pd-tip__title { font-family: var(--display); font-size: 1.05rem; font-style: italic; font-weight: 800; text-transform: uppercase; line-height: 1.1; }
+.pd-tip__text { color: #3b3127; font-size: 0.88rem; line-height: 1.45; }
+.pd-tip__actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.35rem; }
+.pd-tip__btn {
+  padding: 0.38rem 1rem;
+  border: 1.5px solid var(--asphalt);
+  border-radius: 999px;
+  background: var(--asphalt);
+  color: var(--cream);
+  font: 600 0.82rem var(--display);
+  cursor: pointer;
+}
+.pd-tip__btn:hover { background: #2b2c31; }
+.pd-tip__actions { align-items: center; }
+.pd-tip__check { display: inline-flex; align-items: center; gap: 0.4rem; color: #8a8178; font-size: 0.82rem; cursor: pointer; }
+/* light grey custom checkbox */
+.pd-tip__check input {
+  appearance: none;
+  display: grid;
+  place-items: center;
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  border: 1.5px solid #c2bbb1;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+}
+.pd-tip__check input:checked {
+  border-color: #c2bbb1;
+  background: #d6d0c7 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%23ffffff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 80% no-repeat;
+}
+.pd-tip__check input:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+.pd-tip__btn:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+
+.pd-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.6rem 0.9rem; min-height: 3rem; }
+.pd-actions .p-button { margin-top: 0; }
+.pd-status { margin: 0; color: var(--ink); font-size: 0.95rem; font-weight: 700; text-align: center; text-wrap: balance; }
+.pd-status--hint { color: var(--ink-dim); font-weight: 400; font-size: 0.88rem; }
+.pd-status--error { color: #ffb3a6; }
+
+/* ---------- Log and help ---------- */
+.pd-below { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 1.5rem; padding-block: 1.5rem 3rem; }
+.pd-log h2, .pd-help h2 { margin: 0 0 0.75rem; font-family: var(--display); font-size: 1.05rem; font-style: italic; font-weight: 800; text-transform: uppercase; }
+.pd-log ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.35rem; }
+.pd-log li { padding: 0.45rem 0.75rem; border-radius: 0.6rem; background: var(--asphalt-2); color: var(--cream-dim); font-size: 0.88rem; }
+.pd-log li.is-me { color: var(--cream); box-shadow: inset 3px 0 0 var(--red); }
+.pd-help ul { margin: 0; padding-left: 1.1rem; color: var(--cream-dim); font-size: 0.9rem; line-height: 1.55; }
+.pd-help li + li { margin-top: 0.35rem; }
+.pd-help strong { color: var(--cream); }
+.pd-help__reset { margin-top: 0.9rem; padding: 0; border: 0; background: none; color: var(--cream-dim); font: inherit; font-size: 0.85rem; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.pd-help__reset:hover { color: var(--cream); }
+.pd-help__reset:focus-visible { outline: 2px solid var(--cream); outline-offset: 3px; }
+
+/* ---------- Result ---------- */
+.pd-result {
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  z-index: 6;
+  align-self: center;
+  justify-self: center;
+  width: min(100%, 26rem);
+  padding: 1.5rem;
+  border: 1px solid var(--line);
+  border-radius: 1.25rem;
+  background: var(--asphalt-2);
+  box-shadow: 0 20px 60px rgb(0 0 0 / 0.55);
+  text-align: center;
+}
+.pd-result h2 { margin: 0; font-family: var(--display); font-style: italic; font-weight: 800; font-size: 1.6rem; text-transform: uppercase; }
+.pd-result ol { margin: 1rem 0 0; padding: 0; list-style: none; display: grid; gap: 0.4rem; text-align: left; }
+.pd-result li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.5rem 0.85rem; border-radius: 0.6rem; background: var(--asphalt-3); }
+.pd-result li.is-me { box-shadow: inset 3px 0 0 var(--red); color: var(--cream); font-weight: 700; }
+.pd-result p { margin: 1rem 0 0; color: var(--cream-dim); font-size: 0.92rem; }
+.pd-result__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; }
+.pd-board.has-result > :not(.pd-result) { filter: blur(2px) brightness(0.6); }
+
+/* ---------- Phones: same table, smaller cards ---------- */
+@media (max-width: 44rem) {
+  .pinto-demo {
+    --card-mini: 1.55rem;
+    --card-pile: 3.9rem;
+    --card-hand: clamp(3.2rem, 2.4rem + 4vw, 4rem);
+    --card-me-table: 2.5rem;
+  }
+  .pd-board {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    padding: 0.85rem 0.4rem;
+    gap: 0.4rem;
+  }
+  .pd-seat { padding: 0.4rem 0.2rem; gap: 0.35rem; }
+  .pd-label strong { font-size: 0.78rem; }
+  .pd-label span { font-size: 0.72rem; }
+  .pd-pile__note { font-size: 0.85rem; }
+  .pd-below { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pd-tip { animation: pd-tip-in 0.25s ease-out; }
+  @keyframes pd-tip-in { from { opacity: 0; transform: translateY(8px); } }
+  .pd-deal-text { animation: pd-slide 1.2s ease-in-out infinite alternate; }
+  .pd-dots i { animation: pd-blink 1s infinite; }
+  .pd-dots i:nth-child(2) { animation-delay: 0.2s; }
+  .pd-dots i:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes pd-slide { from { transform: translateX(-14px); } to { transform: translateX(14px); } }
+  @keyframes pd-blink { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pd-hand__card, .pd-seat, .pd-me { transition: none; }
+  .pd-hand__card:hover, .pd-hand__card[aria-pressed="true"] { transform: none; }
+  .pd-timer i { animation: none; }
+}
