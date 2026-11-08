@@ -12,8 +12,8 @@
     vr: 'vuelta-rapida', reb: 'rebufo', roja: 'bandera-roja',
     ama: 'bandera-amarilla', azul: 'bandera-azul', cuad: 'bandera-a-cuadros'
   };
-  // You + the three musketeers (bots 1–3)
-  var DEFAULT_NAMES = ['Tú', 'J1 - Athos', 'J2 - Porthos', 'J3 - Aramis'];
+  // You + bots 1–3, seated clockwise from your left
+  var DEFAULT_NAMES = ['Tú', 'Jugador 1', 'Jugador 2', 'Jugador 3'];
   // Sort order inside a hand: rhythms 1–8 first, then specials
   var ORDER = { r: 0, reb: 10, ama: 11, roja: 12, azul: 13, vr: 14, cuad: 15 };
 
@@ -149,7 +149,8 @@
 
     var s = {
       players: players, pile: [], discarded: 0, current: 0, opening: null,
-      skipNext: false, chain: null, finished: [], over: false, log: [], rng: rng
+      skipNext: false, chain: null, finished: [], over: false, log: [], rng: rng,
+      moves: [] // every play / pickup, so the page can animate cards between seats and the pile
     };
     // Lowest rhythm in hand starts. In a real game it's a race; the human gets
     // priority when tied so the opening never feels unfair on screen.
@@ -229,7 +230,7 @@
     return putOnPile(s, p, res.cards);
   }
 
-  function putOnPile(s, p, cards) {
+  function putOnPile(s, p, cards, fromHidden) {
     var wasOpening = !!s.opening;
     s.opening = null;
     // Check Carril Lleno after every card: 4 Rebufos in a combo also count.
@@ -253,6 +254,7 @@
       special = ' · vía libre para el siguiente';
     }
     log(s, p.name + (p.id === 0 ? ' juegas ' : ' juega ') + label + special, p.id);
+    s.moves.push({ type: 'play', pid: p.id, cards: cards.slice(), discarded: last.k === 'cuad' || full, fromHidden: fromHidden });
 
     var tookVisible = refillFromVisible(p);
     if (tookVisible) log(s, p.name + (p.id === 0 ? ' tomas' : ' toma') + ' sus cartas visibles', p.id);
@@ -297,6 +299,7 @@
     s.pile = [];
     s.chain = null;
     log(s, p.name + (p.id === 0 ? ' recoges' : ' recoge') + ' la pila (' + n + (n === 1 ? ' carta)' : ' cartas)'), p.id);
+    s.moves.push({ type: 'pickup', pid: p.id, n: n });
     advance(s);
     return { ok: true, endsTurn: true };
   }
@@ -312,12 +315,13 @@
       var n = s.pile.length;
       p.hand = sortCards(s.pile.concat([c]));
       s.pile = [];
+      s.moves.push({ type: 'pickup', pid: p.id, n: n + 1, revealed: c, hiddenIndex: index });
       log(s, p.name + (p.id === 0 ? ' revelas ' : ' revela ') + cardName(c) + ' y no entra: ' + (p.id === 0 ? 'recoges' : 'recoge') + ' la pila (' + (n + 1) + ' cartas)', p.id);
       advance(s);
       return { ok: true, endsTurn: true, revealed: c, failed: true };
     }
     log(s, p.name + (p.id === 0 ? ' revelas ' : ' revela ') + cardName(c), p.id);
-    var r = putOnPile(s, p, [c]);
+    var r = putOnPile(s, p, [c], index);
     r.revealed = c;
     return r;
   }

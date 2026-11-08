@@ -1,8 +1,9 @@
 /* ==========================================================================
    Kori Labs · PINTO web demo (juegos/pinto/demo/)
    Loaded after styles.css and pinto.css; reuses the PINTO palette (--asphalt,
-   --cream, --red, --display). Layout: a race-track board with the three bots
-   around the pile and the player's hand at the bottom.
+   --cream, --red, --display). Layout: a table seen from above. Each bot sits on
+   one side with its cards on a "mat" rotated to face it; the pile is in the
+   middle and your cards are at the bottom.
    ========================================================================== */
 
 .pinto-demo {
@@ -11,8 +12,12 @@
   --gold: #f2c230;
   --ok: #3dba6a;
   --card-hand: clamp(3.6rem, 2.4rem + 4.6vw, 5.6rem);
+  --card-me-table: clamp(2.6rem, 2rem + 2.4vw, 3.8rem);
   --card-pile: clamp(4.4rem, 3rem + 5vw, 6.8rem);
-  --card-mini: clamp(1.9rem, 1.4rem + 1.8vw, 2.9rem);
+  --card-mini: clamp(1.45rem, 1rem + 1.6vw, 2.5rem);
+  /* bot mat: table cards on top, fanned hand below (upright frame, before rotation) */
+  --mat-w: calc(var(--card-mini) * 4.2);
+  --mat-h: calc(var(--card-mini) * 3.5);
   color-scheme: dark;
 }
 
@@ -45,13 +50,14 @@
 .pd-board {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 1fr);
   grid-template-areas:
     ".    top    ."
     "left center right"
     "me   me     me";
-  gap: clamp(0.75rem, 2vw, 1.5rem);
-  padding: clamp(1rem, 3vw, 2rem);
+  align-items: center;
+  gap: clamp(0.5rem, 2vw, 1.25rem);
+  padding: clamp(0.9rem, 3vw, 1.75rem);
   border: 1px solid var(--line);
   border-radius: 1.5rem;
   background:
@@ -78,102 +84,66 @@
   display: block;
   width: var(--w, var(--card-hand));
   aspect-ratio: 660 / 922;
-  max-width: 100%;
+  max-width: none;
   border-radius: 7%/5%;
   background: var(--asphalt-3);
   box-shadow: 0 2px 6px rgb(0 0 0 / 0.45);
 }
 img.pd-card { height: auto; object-fit: cover; }
 
-/* ---------- Bot seats ---------- */
+/* Invisible elements used to measure a card size for the flight animations */
+.pd-probe { position: absolute; visibility: hidden; width: var(--card-mini); height: 1px; }
+.pd-probe--hand { width: var(--card-hand); }
+
+/* Cards travelling between a seat and the pile */
+.pd-ghost { position: absolute; z-index: 5; pointer-events: none; will-change: transform, opacity; }
+.pd-card.is-arriving { visibility: hidden; }
+
+/* ---------- Seats (shared turn frame) ---------- */
+.pd-seat, .pd-me {
+  border: 1.5px solid transparent;
+  border-radius: 1rem;
+  transition: border-color 0.25s ease, background-color 0.25s ease;
+}
+.pd-seat.is-turn, .pd-me.is-turn { border-color: rgb(242 194 48 / 0.7); background: rgb(242 194 48 / 0.06); }
+.pd-seat.is-out { opacity: 0.5; }
+
 .pd-seat {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.55rem;
-  min-width: 0;
-  padding: 0.75rem 0.5rem;
-  border: 1px solid transparent;
-  border-radius: 1rem;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
-}
-.pd-seat.is-turn { border-color: rgb(242 194 48 / 0.6); background: rgb(242 194 48 / 0.06); }
-.pd-seat.is-out { opacity: 0.55; }
-
-.pd-name {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 0.35rem 0.5rem;
-  margin: 0;
-  font-family: var(--display);
-  font-weight: 600;
-  font-size: 0.95rem;
-  text-align: center;
-}
-.pd-tag {
-  padding: 0.12rem 0.55rem;
-  border-radius: 999px;
-  background: var(--asphalt-3);
-  color: var(--cream-dim);
-  font-family: var(--font);
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-.pd-tag--turn { background: var(--gold); color: var(--asphalt); }
-.pd-tag--place { background: var(--ok); color: var(--asphalt); }
-
-/* Last move of each bot, kept visible until its next turn */
-.pd-said {
-  max-width: 15rem;
-  margin: 0;
-  padding: 0.35rem 0.75rem;
-  border-radius: 0.75rem;
-  background: var(--asphalt-3);
-  color: var(--cream-dim);
-  font-size: 0.82rem;
-  line-height: 1.35;
-  text-align: center;
-  text-wrap: balance;
-}
-.pd-said.is-fresh { background: var(--cream); color: var(--asphalt); font-weight: 700; }
-
-.pd-count {
-  display: flex;
-  align-items: center;
   gap: 0.5rem;
-  color: var(--cream-dim);
-  font-size: 0.85rem;
-  font-variant-numeric: tabular-nums;
+  min-width: 0;
+  padding: 0.6rem 0.4rem;
 }
-.pd-stack { position: relative; flex: none; width: calc(var(--card-mini) + 10px); }
-.pd-stack .pd-card { --w: var(--card-mini); }
-.pd-stack .pd-card + .pd-card { position: absolute; top: 0; }
-.pd-stack .pd-card:nth-child(2) { left: 5px; }
-.pd-stack .pd-card:nth-child(3) { left: 10px; }
 
-/* Table cards: visible card resting on top of the hidden one */
-.pd-table { display: flex; gap: 0.35rem; justify-content: center; min-height: calc(var(--card-mini) * 1.65); }
+.pd-label { display: grid; justify-items: center; gap: 0.1rem; margin: 0; text-align: center; line-height: 1.2; }
+.pd-label strong { font-family: var(--display); font-weight: 600; font-size: 0.95rem; }
+.pd-label span { color: var(--cream-dim); font-size: 0.82rem; font-variant-numeric: tabular-nums; }
+
+/* Bot mat, rotated to face its player: top seat 180°, left 90°, right −90° */
+.pd-matbox { position: relative; flex: none; width: var(--mat-w); height: var(--mat-h); }
+.pd-matbox--left, .pd-matbox--right { width: var(--mat-h); height: var(--mat-w); }
+.pd-mat {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--mat-w);
+  height: var(--mat-h);
+  transform: translate(-50%, -50%) rotate(var(--rot, 0deg));
+}
+.pd-matbox--top .pd-mat { --rot: 180deg; }
+.pd-matbox--left .pd-mat { --rot: 90deg; }
+.pd-matbox--right .pd-mat { --rot: -90deg; }
+
+.pd-mat .pd-table { position: absolute; top: 0; left: 0; right: 0; display: flex; justify-content: center; gap: 0.25rem; }
 .pd-slot { position: relative; width: var(--card-mini); }
 .pd-slot .pd-card { --w: var(--card-mini); }
-.pd-slot .pd-card--up { position: absolute; top: 28%; left: 0; }
-.pd-table--me { min-height: auto; }
-.pd-table--me .pd-slot, .pd-table--me .pd-card { --w: var(--card-me-table, clamp(2.6rem, 2rem + 2.4vw, 3.8rem)); width: var(--w); }
-.pd-table--me .pd-slot { padding-bottom: 28%; }
+.pd-slot .pd-card--up { position: absolute; top: 14%; left: 0; }
+.pd-mat .pd-slot { padding-bottom: 14%; }
 
-button.pd-hidden-btn {
-  padding: 0;
-  border: 0;
-  border-radius: 7%/5%;
-  background: none;
-  cursor: pointer;
-}
-button.pd-hidden-btn .pd-card { outline: 2px solid var(--gold); outline-offset: 2px; }
-button.pd-hidden-btn:hover .pd-card, button.pd-hidden-btn:focus-visible .pd-card { transform: translateY(-4px); }
-button.pd-hidden-btn:focus-visible { outline: 3px solid var(--cream); outline-offset: 5px; }
+.pd-fan { position: absolute; bottom: 0; left: 50%; width: var(--card-mini); height: calc(var(--card-mini) * 1.4); transform: translateX(-50%); }
+.pd-fan__card { --w: var(--card-mini); position: absolute; inset: 0; transform-origin: 50% 170%; }
 
 /* ---------- Pile ---------- */
 .pd-center {
@@ -181,7 +151,7 @@ button.pd-hidden-btn:focus-visible { outline: 3px solid var(--cream); outline-of
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
+  gap: 0.6rem;
   min-width: 0;
   text-align: center;
 }
@@ -207,15 +177,17 @@ button.pd-hidden-btn:focus-visible { outline: 3px solid var(--cream); outline-of
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
+/* What the last player did, right under the pile */
 .pd-pile__note {
+  min-height: 2.8em;
+  max-width: 22rem;
   margin: 0;
-  max-width: 24rem;
-  color: var(--cream);
-  font-size: 0.95rem;
-  font-weight: 700;
+  color: var(--cream-dim);
+  font-size: 0.98rem;
+  line-height: 1.4;
   text-wrap: balance;
 }
-.pd-pile__meta { margin: 0; color: var(--cream-dim); font-size: 0.82rem; font-variant-numeric: tabular-nums; }
+.pd-pile__note strong { color: var(--cream); font-family: var(--display); font-weight: 600; }
 
 /* ---------- Deck and deal ---------- */
 .pd-deck { position: relative; width: var(--card-pile); aspect-ratio: 660 / 922; margin-block: 0.5rem 0.75rem; }
@@ -224,7 +196,6 @@ button.pd-hidden-btn:focus-visible { outline: 3px solid var(--cream); outline-of
 .pd-deck .pd-card:nth-child(3) { transform: translate(-4px, -4px); }
 .pd-deck .pd-card:nth-child(4) { transform: translate(-6px, -6px); }
 .pd-deck .pd-card:nth-child(5) { transform: translate(-8px, -8px); }
-.pd-fly { --w: var(--card-mini); position: absolute; top: 0; left: 0; z-index: 3; pointer-events: none; will-change: transform; }
 .pd-deal-text {
   margin: 0;
   font-family: var(--display);
@@ -236,18 +207,28 @@ button.pd-hidden-btn:focus-visible { outline: 3px solid var(--cream); outline-of
 }
 .pd-dots i { font-style: normal; }
 
-/* ---------- Player area ---------- */
+/* ---------- Your area ---------- */
 .pd-me {
   display: grid;
   justify-items: center;
   gap: 0.6rem;
-  padding: 1rem clamp(0.5rem, 2vw, 1.25rem) 0.25rem;
-  border-top: 1px solid var(--line);
+  padding: 0.75rem clamp(0.5rem, 2vw, 1.25rem);
 }
-.pd-me > .pd-name { font-size: 1.05rem; }
-/* Table cards sit centered right above the hand */
-.pd-me__table { display: flex; justify-content: center; }
-.pd-me.is-turn .pd-hand { --ring: var(--gold); }
+.pd-table--me { display: flex; justify-content: center; gap: 0.4rem; }
+.pd-table--me .pd-slot, .pd-table--me .pd-card { --w: var(--card-me-table); width: var(--w); }
+.pd-table--me .pd-slot { padding-bottom: 24%; }
+.pd-table--me .pd-card--up { top: 24%; }
+
+button.pd-hidden-btn {
+  padding: 0 0 24%;
+  border: 0;
+  border-radius: 7%/5%;
+  background: none;
+  cursor: pointer;
+}
+button.pd-hidden-btn .pd-card { outline: 2px solid var(--gold); outline-offset: 2px; }
+button.pd-hidden-btn:hover .pd-card, button.pd-hidden-btn:focus-visible .pd-card { transform: translateY(-4px); }
+button.pd-hidden-btn:focus-visible { outline: 3px solid var(--cream); outline-offset: 5px; }
 
 .pd-hand {
   display: flex;
@@ -271,14 +252,13 @@ button.pd-hidden-btn:focus-visible { outline: 3px solid var(--cream); outline-of
 .pd-hand__card.is-dim { opacity: 0.42; }
 .pd-hand__card[aria-pressed="true"] { transform: translateY(-12px); }
 .pd-hand__card[aria-pressed="true"] .pd-card { outline: 3px solid var(--gold); outline-offset: 1px; }
-.pd-hand__empty { align-self: center; color: var(--cream-dim); font-size: 0.9rem; }
 
 .pd-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.6rem 0.9rem; min-height: 3rem; }
 .pd-actions .p-button { margin-top: 0; }
 .pd-status { margin: 0; color: var(--cream); font-size: 0.95rem; text-align: center; text-wrap: balance; }
 .pd-status--error { color: #ff8a80; }
 
-/* ---------- Log ---------- */
+/* ---------- Log and help ---------- */
 .pd-below { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 1.5rem; padding-block: 1.5rem 3rem; }
 .pd-log h2, .pd-help h2 { margin: 0 0 0.75rem; font-family: var(--display); font-size: 1.05rem; font-style: italic; font-weight: 800; text-transform: uppercase; }
 .pd-log ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.35rem; }
@@ -292,7 +272,7 @@ button.pd-hidden-btn:focus-visible { outline: 3px solid var(--cream); outline-of
 .pd-result {
   grid-column: 1 / -1;
   grid-row: 1 / -1;
-  z-index: 2;
+  z-index: 6;
   align-self: center;
   justify-self: center;
   width: min(100%, 26rem);
@@ -311,30 +291,26 @@ button.pd-hidden-btn:focus-visible { outline: 3px solid var(--cream); outline-of
 .pd-result__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; }
 .pd-board.has-result > :not(.pd-result) { filter: blur(2px) brightness(0.6); }
 
-/* ---------- Phones ---------- */
+/* ---------- Phones: same table, smaller cards ---------- */
 @media (max-width: 44rem) {
-  .pd-board {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    grid-template-areas:
-      "left top right"
-      "center center center"
-      "me me me";
-    padding: 0.85rem 0.6rem;
+  .pinto-demo {
+    --card-mini: 1.3rem;
+    --card-pile: 3.9rem;
+    --card-hand: clamp(3.2rem, 2.4rem + 4vw, 4rem);
+    --card-me-table: 2.5rem;
   }
-  .pd-seat { padding: 0.5rem 0.2rem; gap: 0.4rem; }
-  .pd-name { font-size: 0.82rem; }
-  .pd-said { font-size: 0.72rem; padding: 0.3rem 0.45rem; }
-  .pd-count { flex-direction: column; gap: 0.3rem; font-size: 0.75rem; text-align: center; }
-  .pd-count__more { display: none; }
+  .pd-board {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    padding: 0.85rem 0.4rem;
+    gap: 0.4rem;
+  }
+  .pd-seat { padding: 0.4rem 0.2rem; gap: 0.35rem; }
+  .pd-label strong { font-size: 0.78rem; }
+  .pd-label span { font-size: 0.72rem; }
+  .pd-pile__note { font-size: 0.85rem; }
   .pd-below { grid-template-columns: minmax(0, 1fr); }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .pd-pile .pd-card.is-new { animation: pd-drop 0.35s ease-out; }
-  @keyframes pd-drop {
-    from { transform: translateY(-24px) rotate(var(--r, 0deg)) scale(1.06); opacity: 0; }
-  }
-}
 @media (prefers-reduced-motion: no-preference) {
   .pd-deal-text { animation: pd-slide 1.2s ease-in-out infinite alternate; }
   .pd-dots i { animation: pd-blink 1s infinite; }
@@ -344,6 +320,6 @@ button.pd-hidden-btn:focus-visible { outline: 3px solid var(--cream); outline-of
   @keyframes pd-blink { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
 }
 @media (prefers-reduced-motion: reduce) {
-  .pd-hand__card, .pd-seat { transition: none; }
+  .pd-hand__card, .pd-seat, .pd-me { transition: none; }
   .pd-hand__card:hover, .pd-hand__card[aria-pressed="true"] { transform: none; }
 }
