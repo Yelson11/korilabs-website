@@ -150,8 +150,16 @@
     var s = {
       players: players, pile: [], discarded: 0, current: 0, opening: null,
       skipNext: false, chain: null, finished: [], over: false, log: [], rng: rng,
-      moves: [] // every play / pickup, so the page can animate cards between seats and the pile
+      moves: [], // every play / pickup, so the page can animate cards between seats and the pile
+      humanChains: !!opts.humanChains // your turn stays open after a play until the page ends it (3 s window)
     };
+    if (opts.humanStarts) {
+      // Demo: you always open the race with a Ritmo 1
+      giveHumanAOne(players, rng);
+      s.current = 0;
+      s.opening = 1;
+      return s;
+    }
     // Lowest rhythm in hand starts. In a real game it's a race; the human gets
     // priority when tied so the opening never feels unfair on screen.
     for (var v = 1; v <= 8; v++) {
@@ -164,6 +172,28 @@
       }
     }
     return s;
+  }
+
+  // Make sure player 0 holds a Ritmo 1 in hand by swapping one in from wherever it was dealt
+  function giveHumanAOne(players, rng) {
+    var me = players[0];
+    var isOne = function (c) { return c.k === 'r' && c.v === 1; };
+    if (me.hand.some(isOne)) return;
+    var spots = [];
+    players.forEach(function (p, i) {
+      ['hand', 'visible', 'hidden'].forEach(function (where) {
+        if (i === 0 && where === 'hand') return;
+        p[where].forEach(function (c, idx) { if (isOne(c)) spots.push([p, where, idx]); });
+      });
+    });
+    // Prefer taking it from a rival's hand so the table cards stay as dealt
+    spots.sort(function (a, b) { return (a[1] === 'hand' ? 0 : 1) - (b[1] === 'hand' ? 0 : 1); });
+    var src = spots[0];
+    var mine = Math.floor(rng() * me.hand.length);
+    var one = src[0][src[1]][src[2]];
+    src[0][src[1]][src[2]] = me.hand[mine];
+    me.hand[mine] = one;
+    players.forEach(function (p) { sortCards(p.hand); });
   }
 
   function stageOf(p) {
@@ -264,7 +294,13 @@
     // cards, as long as the value stays the same and nothing closed the turn.
     var canChain = false;
     var mixed = cards.some(function (c) { return !sameKind(c, cards[0]); });
-    if (!finished && tookVisible && !special && !mixed && !wasOpening &&
+    if (!finished && s.humanChains && p.id === 0 && !special) {
+      // Your turn stays open: you may add more cards of the same value until the
+      // page closes the window (the next player starting ends your turn).
+      canChain = true;
+      endsTurn = false;
+      s.chain = last;
+    } else if (!finished && tookVisible && !special && !mixed && !wasOpening &&
         p.hand.some(function (c) { return sameKind(c, last); })) {
       canChain = true;
       endsTurn = false;
@@ -324,6 +360,24 @@
     var r = putOnPile(s, p, [c], index);
     r.revealed = c;
     return r;
+  }
+
+  // Stage 3 for the human: the hidden card goes to your hand first. During an open
+  // turn it has to match the value you're chaining, otherwise your turn ends.
+  function revealToHand(s, index) {
+    var p = s.players[s.current];
+    if (p.hand.length || p.visible.length || !p.hidden[index]) return { error: 'Primero juega las cartas de tu mano.' };
+    var c = p.hidden.splice(index, 1)[0];
+    p.hand.push(c);
+    s.moves.push({ type: 'reveal', pid: p.id, card: c, hiddenIndex: index });
+    log(s, p.name + (p.id === 0 ? ' revelas ' : ' revela ') + cardName(c), p.id);
+    if (s.chain && !sameKind(c, s.chain)) {
+      log(s, p.name + (p.id === 0 ? ' no puedes' : ' no puede') + ' seguir con ' + cardName(c) + ': termina el turno', p.id);
+      s.chain = null;
+      advance(s);
+      return { ok: true, revealed: c, endsTurn: true, broke: true };
+    }
+    return { ok: true, revealed: c, endsTurn: false };
   }
 
   function advance(s) {
@@ -440,7 +494,7 @@
   }
 
   var api = {
-    newGame: newGame, play: play, pickUp: pickUp, revealHidden: revealHidden, endChain: endChain,
+    newGame: newGame, play: play, pickUp: pickUp, revealHidden: revealHidden, revealToHand: revealToHand, endChain: endChain,
     legalMoves: legalMoves, playableIds: playableIds, checkPlay: checkPlay, botStep: botStep,
     pileHint: pileHint, effectiveTop: effectiveTop, cardName: cardName, cardFile: cardFile,
     stageOf: stageOf, sameKind: sameKind, defaultNames: DEFAULT_NAMES, deckSize: function (n) { return makeDeck(n || 4).length; }

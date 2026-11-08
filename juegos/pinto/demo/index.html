@@ -26,9 +26,9 @@
 
   <link rel="stylesheet" href="../../../css/styles.css?v=2">
   <link rel="stylesheet" href="../../../css/pinto.css?v=12">
-  <link rel="stylesheet" href="../../../css/pinto-demo.css?v=7">
-  <script src="pinto-engine.js?v=7" defer></script>
-  <script src="demo.js?v=7" defer></script>
+  <link rel="stylesheet" href="../../../css/pinto-demo.css?v=8">
+  <script src="pinto-engine.js?v=8" defer></script>
+  <script src="demo.js?v=8" defer></script>
 </head>
 <body class="pinto pinto-demo">
 
@@ -61,22 +61,9 @@
       <section class="pd-intro" aria-labelledby="demo-title">
         <p class="p-eyebrow">Demo · 4 jugadores</p>
         <h1 class="p-h2 p-h1" id="demo-title">Prueba <span class="p-red">PINTO</span></h1>
-        <p class="p-intro__lead">Corre una carrera contra tres bots con las reglas oficiales. Deshazte de tu mano, luego de tus cartas visibles y por último de las ocultas. El último que se quede con cartas pierde.</p>
         <div class="pd-intro__actions">
           <button type="button" class="p-button" data-act="restart">Nueva carrera</button>
           <a class="p-button p-button--cream p-button--small" href="../instrucciones/">Ver instrucciones <span aria-hidden="true">→</span></a>
-        </div>
-        <div class="pd-controls">
-          <div class="pd-seg" role="group" aria-label="Velocidad de los bots">
-            <span class="pd-seg__label">Velocidad de los bots</span>
-            <button type="button" data-speed="lenta" aria-pressed="true">Lenta</button>
-            <button type="button" data-speed="normal" aria-pressed="false">Normal</button>
-            <button type="button" data-speed="rapida" aria-pressed="false">Rápida</button>
-          </div>
-          <label class="pd-switch" for="pd-step">
-            <input type="checkbox" id="pd-step">
-            <span>Paso a paso <small>(cada bot espera a que toques “Siguiente jugada”)</small></span>
-          </label>
         </div>
       </section>
 
@@ -98,11 +85,11 @@
         <section class="pd-help" aria-labelledby="help-title">
           <h2 id="help-title">Cómo se juega aquí</h2>
           <ul>
-            <li><strong>Toca tus cartas</strong> para elegirlas y luego pulsa “Jugar”. Puedes jugar varias juntas si son del mismo valor.</li>
-            <li>Las cartas que <strong>no se pueden jugar</strong> se ven más apagadas.</li>
-            <li><strong>Rebufo:</strong> elige el Rebufo y hasta dos valores consecutivos de 5 o más (por ejemplo, Rebufo + 6 + 7).</li>
-            <li>Si no tienes jugada, <strong>recoges la pila</strong> y tu turno termina.</li>
-            <li>Al final, <strong>toca una carta oculta</strong> para revelarla. Si no entra, te llevas la pila con ella.</li>
+            <li><strong>Toca una carta</strong> para elegirla (se marca en amarillo). Puedes elegir varias del mismo valor.</li>
+            <li>Para jugar, <strong>toca dos veces</strong> la carta o <strong>arrástrala a la pila</strong>. Si elegiste varias, arrastra una y se van todas.</li>
+            <li>Después de jugar tienes <strong>3 segundos</strong> para seguir con otra carta del mismo valor. Luego juega el siguiente.</li>
+            <li>Las cartas que <strong>no se pueden jugar</strong> se ven más apagadas. Si no tienes jugada, recoges la pila.</li>
+            <li>Al final, <strong>toca una carta oculta</strong>: pasa a tu mano y, si entra, la juegas.</li>
           </ul>
         </section>
       </div>

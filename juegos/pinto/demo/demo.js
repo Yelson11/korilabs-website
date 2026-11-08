@@ -1,7 +1,10 @@
 /* PINTO web demo: renders the table and drives the turns.
    Rules live in pinto-engine.js (window.PintoEngine).
    Seats: 0 = you (bottom), 1 = left, 2 = top, 3 = right. Each bot's cards are
-   drawn on a "mat" rotated to face that player, like a real table. */
+   drawn on a "mat" rotated to face that player, like a real table.
+   You play by double-tapping a card or dragging your selection onto the pile.
+   After each play your turn stays open for 3 s so you can add another card of
+   the same value; then the next player starts. */
 (function () {
   'use strict';
   var E = window.PintoEngine;
@@ -10,20 +13,29 @@
 
   var BASE = board.getAttribute('data-cards') || '../img/cartas/';
   var VER = '?v=4';
-  // How long each bot "thinks" before moving. Slow by default so new players can follow along.
-  var SPEEDS = { lenta: 2600, normal: 1600, rapida: 900 };
-  var FAST_DELAY = 200;  // only after you finished and chose to skip ahead
-  var FLY_MS = 750;      // a played card travelling from a seat to the pile
+  var BOT_DELAY = 2600;      // each bot "thinks" this long, so new players can follow
+  var AFTER_CHAIN = 700;     // first bot after your 3 s window (you already waited)
+  var CHAIN_MS = 3000;       // time you have to add another card of the same value
+  var FAST_DELAY = 200;      // only after you finished and chose to skip ahead
+  var FLY_MS = 750;          // a played card travelling from a seat to the pile
+  var DOUBLE_TAP_MS = 380;
   var ORIENT = [0, 90, 180, -90];
   var SIDES = ['', 'left', 'top', 'right'];
 
-  var speed = load('pd-speed', 'lenta');
-  var stepMode = load('pd-step', '') === '1';
-  if (!SPEEDS[speed]) speed = 'lenta';
+  // What each special card does (shown once when you pick it)
+  var INFO = {
+    reb: 'Se juega sobre un ritmo del 1 al 4, con vía libre, sobre una Bandera Roja u otro Rebufo. Te deja sumar hasta dos valores seguidos de 5 o más, por ejemplo Rebufo + 6 + 7.',
+    roja: 'Cierra la pista sin descartar la pila: el siguiente jugador tiene vía libre. Se puede jugar sobre cualquier carta.',
+    ama: 'Obliga al siguiente jugador a jugar ritmos bajos, del 1 al 4. No se puede jugar sobre ritmos altos, Vuelta Rápida ni Rebufo.',
+    azul: 'Salta el turno del siguiente jugador. No se puede jugar sobre Bandera Amarilla, Rebufo ni Vuelta Rápida.',
+    cuad: 'Descarta toda la pila y termina tu turno. El siguiente jugador tiene vía libre. Se juega de una en una y entra sobre cualquier carta.',
+    vr: 'Es el ritmo más alto del juego. Se puede jugar sobre cualquier carta, excepto sobre la Bandera Amarilla.'
+  };
 
-  var s = null, dealing = false, fastForward = false, timer = null, botSteps = 0;
-  var selected = [], message = '', messageError = false;
+  var s = null, dealing = false, fastForward = false, timer = null, chainTimer = null, chainStart = 0, botSteps = 0;
+  var selected = [], message = '', messageError = false, infoCard = null;
   var movesSeen = 0, arriving = {}, origins = {}, pileNote = '';
+  var lastTap = { id: null, time: 0 }, drag = null, suppressClick = false;
 
   var $ = function (sel) { return board.querySelector(sel); };
   var seats = [$('[data-seat="0"]'), $('[data-seat="1"]'), $('[data-seat="2"]'), $('[data-seat="3"]')];
@@ -37,6 +49,8 @@
     try { var v = localStorage.getItem(key); return v === null ? fallback : v; } catch (e) { return fallback; }
   }
   function save(key, value) { try { localStorage.setItem(key, value); } catch (e) { /* storage blocked: keep in memory */ } }
+  var hiddenTips = {};
+  function tipHidden(k) { return hiddenTips[k] || load('pd-tip-' + k, '') === '1'; }
 
   function src(card) { return BASE + (card ? E.cardFile(card) : 'reverso') + '.webp' + VER; }
   function img(card, cls, extra) {
@@ -47,7 +61,7 @@
 
   // "Jugador 1 juega 2× Ritmo 5 · vía libre…" → "jugó 2× Ritmo 5 · vía libre…"
   var PAST = {
-    juega: 'jugó', recoge: 'recogió', revela: 'reveló', toma: 'tomó', pierde: 'perdió', cruza: 'cruzó', se: 'se',
+    juega: 'jugó', recoge: 'recogió', revela: 'reveló', toma: 'tomó', pierde: 'perdió', cruza: 'cruzó', se: 'se', no: 'no',
     juegas: 'jugaste', recoges: 'recogiste', revelas: 'revelaste', tomas: 'tomaste', pierdes: 'perdiste', cruzas: 'cruzaste', te: 'te'
   };
   function pastTense(entry) {
@@ -108,44 +122,59 @@
     el.innerHTML = label(p.name, p.place ? p.place + '.º lugar' : 'x' + plural(p.hand.length, 'carta', 'cartas')) + mat(p, i);
   }
 
+  function myTurn() { return s && !s.over && s.current === 0 && !s.players[0].place; }
+  function hiddenStage() { var p = s.players[0]; return myTurn() && !p.hand.length && !p.visible.length && p.hidden.length > 0; }
+
   function renderMe(p) {
     var el = seats[0];
-    var myTurn = !s.over && s.current === 0 && !p.place;
-    var playable = myTurn ? E.playableIds(s) : {};
-    var hiddenStage = myTurn && !p.hand.length && !p.visible.length && p.hidden.length;
+    var mine = myTurn();
+    var playable = mine ? E.playableIds(s) : {};
+    var revealing = hiddenStage();
+    var next = s.players[nextAliveIndex(0)];
 
     var hand = p.hand.map(function (c) {
       var on = selected.indexOf(c.id) >= 0;
-      var dim = myTurn && !playable[c.id];
-      return '<button type="button" class="pd-hand__card' + (dim ? ' is-dim' : '') + '" data-card="' + c.id + '" aria-pressed="' + on + '">' + img(c) + '</button>';
+      var dim = mine && !playable[c.id];
+      return '<button type="button" class="pd-hand__card' + (dim ? ' is-dim' : '') + '" data-card="' + c.id + '" aria-pressed="' + on + '"' +
+        ' aria-label="' + E.cardName(c) + (on ? ', elegida' : '') + '">' + img(c, arriving[c.id] ? 'is-arriving' : '') + '</button>';
     }).join('');
 
     var actions = '';
-    if (myTurn) {
+    if (mine) {
       var moves = E.legalMoves(s);
-      if (hiddenStage) {
+      if (s.chain) {
+        var left = Math.max(0, CHAIN_MS - (Date.now() - chainStart));
+        actions = '<p class="pd-status">' + (revealing
+            ? '¿Revelas otra oculta? Si es ' + E.cardName(s.chain) + ' la puedes jugar.'
+            : '¿Juegas otro ' + E.cardName(s.chain) + '? Si no, sigue ' + next.name + '.') + '</p>' +
+          '<div class="pd-timer" aria-hidden="true"><i style="animation-duration:' + CHAIN_MS + 'ms;animation-delay:-' + (CHAIN_MS - left) + 'ms"></i></div>';
+      } else if (revealing) {
         actions = '<p class="pd-status">Toca una de tus cartas ocultas para revelarla.</p>';
-      } else if (s.chain) {
-        actions = (selected.length ? '<button type="button" class="p-button" data-act="play">Seguir con ' + plural(selected.length, 'carta', 'cartas') + '</button>' : '') +
-          '<button type="button" class="p-button p-button--cream" data-act="endchain">Terminar turno</button>';
       } else if (!moves.length) {
-        actions = '<p class="pd-status">No tienes jugada.</p><button type="button" class="p-button" data-act="pickup">Recoger la pila</button>';
-      } else if (selected.length) {
-        actions = '<button type="button" class="p-button" data-act="play">Jugar ' + plural(selected.length, 'carta', 'cartas') + '</button>' +
-          '<button type="button" class="p-button p-button--cream p-button--small" data-act="clear">Quitar selección</button>';
+        actions = '<p class="pd-status">No tienes jugada.</p><button type="button" class="p-button" data-act="pickup">Recoger la pila y reajustar la estrategia</button>';
+      } else if (s.opening) {
+        actions = '<p class="pd-status">Arrancas tú: juega tu Ritmo 1. Tócalo dos veces o arrástralo a la pila.</p>';
       } else {
-        actions = '<p class="pd-status">' + (s.opening ? 'Arrancas tú con el Ritmo ' + s.opening + '.' : 'Elige cartas para jugar.') + '</p>';
+        actions = '<p class="pd-status pd-status--hint">Toca para elegir · doble toque o arrastra a la pila para jugar</p>';
       }
-    } else if (!s.over) {
-      if (stepMode && !fastForward) actions = '<button type="button" class="p-button" data-act="next">Siguiente jugada</button>';
-      if (p.place && !fastForward) actions += '<button type="button" class="p-button p-button--cream p-button--small" data-act="skip">Ir al resultado</button>';
+    } else if (!s.over && p.place && !fastForward) {
+      actions = '<button type="button" class="p-button p-button--cream p-button--small" data-act="skip">Ir al resultado</button>';
     }
     if (message) actions = '<p class="pd-status' + (messageError ? ' pd-status--error' : '') + '">' + message + '</p>' + actions;
 
+    var tip = '';
+    if (infoCard) {
+      tip = '<div class="pd-tip" role="status">' +
+        '<p><strong>' + E.cardName(infoCard) + '.</strong> ' + INFO[infoCard.k] + '</p>' +
+        '<div class="pd-tip__actions"><button type="button" class="pd-tip__btn" data-act="tip-ok">OK</button>' +
+        '<button type="button" class="pd-tip__btn pd-tip__btn--ghost" data-act="tip-never">No volver a mostrar</button></div></div>';
+    }
+
     el.innerHTML =
       label('Tú', p.place ? p.place + '.º lugar' : '') +
-      slots(p, 'pd-table pd-table--me', hiddenStage) +
-      '<div class="pd-hand" role="group" aria-label="Tu mano">' + hand + '</div>' +
+      slots(p, 'pd-table pd-table--me', revealing) +
+      tip +
+      '<div class="pd-hand' + (mine ? ' is-active' : '') + '" role="group" aria-label="Tu mano">' + hand + '</div>' +
       '<div class="pd-actions" aria-live="polite">' + actions + '</div>';
   }
 
@@ -187,6 +216,14 @@
     resultBox.hidden = false;
   }
 
+  function nextAliveIndex(from) {
+    for (var k = 1; k <= s.players.length; k++) {
+      var j = (from + k) % s.players.length;
+      if (!s.players[j].place) return j;
+    }
+    return from;
+  }
+
   /* ---------- Card flights ---------- */
 
   function center(rect) { return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }; }
@@ -201,7 +238,6 @@
     return w || (pid === 0 ? 70 : 32);
   }
 
-  // Where a seat's cards live on screen, and how big one card is there
   function seatSpot(pid) {
     var el = pid === 0 ? seats[0].querySelector('.pd-hand') || seats[0] : seats[pid].querySelector('.pd-matbox') || seats[pid];
     return { c: center(el.getBoundingClientRect()), w: cardWidthAt(pid), rot: ORIENT[pid] };
@@ -212,6 +248,8 @@
     var sample = pile && pile.querySelector('.pd-card, .pd-pile__empty');
     return { c: center(pile.getBoundingClientRect()), w: sample ? sample.offsetWidth : pile.offsetWidth, rot: 0 };
   }
+
+  function spotOf(el, rot) { return { c: center(el.getBoundingClientRect()), w: el.offsetWidth, rot: rot || 0 }; }
 
   // Animate one card image from spot A to spot B (position, size and angle)
   function fly(card, from, to, opts) {
@@ -253,6 +291,13 @@
           });
         });
         t += FLY_MS + (shown.length - 1) * 110;
+      } else if (m.type === 'reveal') {
+        // Your hidden card flips into your hand
+        var dest = seats[0].querySelector('[data-card="' + m.card.id + '"] .pd-card');
+        if (dest) {
+          fly(m.card, origins.hidden || seatSpot(0), spotOf(dest), { duration: 600, delay: t, done: function () { dest.classList.remove('is-arriving'); } });
+          t += 600;
+        }
       } else {
         // Pickup: the pile travels to the player face down (up to 5 cards)
         var n = Math.min(m.n, 5), to = seatSpot(m.pid), from = pileSpot();
@@ -284,19 +329,22 @@
     movesSeen = s.moves.length;
     arriving = {};
     if (canAnimate() && !fastForward) {
-      pending.forEach(function (m) { if (m.type === 'play' && !m.discarded) m.cards.forEach(function (c) { arriving[c.id] = true; }); });
+      pending.forEach(function (m) {
+        if (m.type === 'play' && !m.discarded) m.cards.forEach(function (c) { arriving[c.id] = true; });
+        if (m.type === 'reveal') arriving[m.card.id] = true;
+      });
     }
     render();
     return animateMoves(pending);
   }
 
-  function schedule(before) {
+  function schedule(before, firstDelay) {
     clearTimeout(timer);
     var animTime = update(before);
     if (s.over || s.current === 0) return;
     var meDone = !!s.players[0].place;
-    if (meDone && fastForward) timer = setTimeout(botTurn, FAST_DELAY);
-    else if (!stepMode) timer = setTimeout(botTurn, Math.max(SPEEDS[speed], animTime + 600));
+    var wait = meDone && fastForward ? FAST_DELAY : Math.max(firstDelay || BOT_DELAY, animTime + 500);
+    timer = setTimeout(botTurn, wait);
   }
 
   function botTurn() {
@@ -320,40 +368,151 @@
     schedule(before);
   }
 
+  // Your open turn: 3 s to add another card of the same value, then the next player goes
+  function startChainWindow() {
+    clearTimeout(chainTimer);
+    chainStart = Date.now();
+    chainTimer = setTimeout(endMyTurn, CHAIN_MS);
+  }
+  function endMyTurn() {
+    clearTimeout(chainTimer);
+    if (!s || !s.chain || s.current !== 0) return;
+    selected = [];
+    E.endChain(s);
+    say('');
+    schedule(undefined, AFTER_CHAIN);
+  }
+
+  function findInHand(id) { return s.players[0].hand.find(function (c) { return c.id === id; }); }
+
+  function compatibleWith(sel, card) {
+    var cards = sel.map(findInHand).filter(Boolean);
+    return cards.every(function (c) { return E.sameKind(c, card); }) ||
+      cards.concat([card]).some(function (c) { return c.k === 'reb'; });
+  }
+
   function toggleCard(id) {
-    var p = s.players[0];
-    var card = p.hand.find(function (c) { return c.id === id; });
+    var card = findInHand(id);
     if (!card) return;
     var i = selected.indexOf(id);
     if (i >= 0) { selected.splice(i, 1); say(''); render(); return; }
     // Picking a card of another kind starts a new selection, unless it builds a Rebufo combo
-    var sel = selected.map(function (sid) { return p.hand.find(function (c) { return c.id === sid; }); });
-    var compatible = sel.every(function (c) { return E.sameKind(c, card); }) ||
-      sel.concat([card]).some(function (c) { return c.k === 'reb'; });
-    if (!compatible) selected = [];
+    if (!compatibleWith(selected, card)) selected = [];
     selected.push(id);
+    if (card.k !== 'r' && !tipHidden(card.k)) infoCard = card;
     say('');
     render();
   }
 
-  // Remember where your selected cards are, so they fly from your hand to the pile
+  // Remember where your cards are, so they fly from your hand to the pile
   function rememberOrigins(ids) {
-    origins = {};
     ids.forEach(function (id) {
+      if (origins[id]) return;
       var el = seats[0].querySelector('[data-card="' + id + '"] .pd-card');
-      if (el) origins[id] = { c: center(el.getBoundingClientRect()), w: el.offsetWidth, rot: 0 };
+      if (el) origins[id] = spotOf(el);
     });
   }
 
-  function playSelected() {
-    rememberOrigins(selected);
+  function playIds(ids) {
+    if (!myTurn() || !ids.length) return;
+    rememberOrigins(ids);
     var before = s.log.length;
-    var r = E.play(s, selected.slice());
+    var r = E.play(s, ids.slice());
     if (r.error) { origins = {}; say(r.error, true); render(); return; }
     selected = [];
-    say(r.canChain ? 'Tomaste tus cartas visibles: puedes seguir con más del mismo valor o terminar el turno.' : '');
+    infoCard = null;
+    say('');
+    if (r.canChain && s.current === 0) startChainWindow();
+    else clearTimeout(chainTimer);
     schedule(before);
   }
+
+  /* ---------- Input: tap, double tap and drag ---------- */
+
+  function onHandTap(id) {
+    var now = Date.now();
+    if (lastTap.id === id && now - lastTap.time < DOUBLE_TAP_MS) {
+      // Double tap: play the selection this card belongs to (or the card alone)
+      lastTap = { id: null, time: 0 };
+      var card = findInHand(id);
+      if (!card) return;
+      if (selected.indexOf(id) < 0) selected = compatibleWith(selected, card) ? selected.concat([id]) : [id];
+      playIds(selected);
+      return;
+    }
+    lastTap = { id: id, time: now };
+    toggleCard(id);
+  }
+
+  function pileHit(x, y) {
+    var pile = $('.pd-pile');
+    if (!pile) return false;
+    var r = pile.getBoundingClientRect(), pad = 40;
+    return x > r.left - pad && x < r.right + pad && y > r.top - pad && y < r.bottom + pad;
+  }
+
+  board.addEventListener('pointerdown', function (e) {
+    var btn = e.target.closest('.pd-hand__card');
+    if (!btn || !myTurn() || e.button > 0) return;
+    drag = { id: +btn.getAttribute('data-card'), x: e.clientX, y: e.clientY, started: false, pid: e.pointerId };
+  });
+
+  window.addEventListener('pointermove', function (e) {
+    if (!drag || e.pointerId !== drag.pid) return;
+    var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+    if (!drag.started) {
+      if (Math.abs(dx) + Math.abs(dy) < 10) return;
+      var card = findInHand(drag.id);
+      if (!card) { drag = null; return; }
+      if (selected.indexOf(drag.id) < 0) selected = compatibleWith(selected, card) ? selected.concat([drag.id]) : [drag.id];
+      drag.ids = selected.slice();
+      drag.started = true;
+      // Floating copy of the selected cards that follows the pointer
+      var ghost = document.createElement('div');
+      ghost.className = 'pd-drag';
+      drag.ids.forEach(function (id, k) {
+        var c = findInHand(id);
+        var im = document.createElement('img');
+        im.className = 'pd-card';
+        im.src = src(c);
+        im.alt = '';
+        im.setAttribute('data-id', id);
+        im.style.transform = 'rotate(' + ((k - (drag.ids.length - 1) / 2) * 6) + 'deg)';
+        ghost.appendChild(im);
+        var orig = seats[0].querySelector('[data-card="' + id + '"]');
+        if (orig) orig.classList.add('is-dragging');
+      });
+      document.body.appendChild(ghost);
+      drag.ghost = ghost;
+    }
+    drag.ghost.style.left = e.clientX + 'px';
+    drag.ghost.style.top = e.clientY + 'px';
+    var pile = $('.pd-pile');
+    if (pile) pile.classList.toggle('is-drop', pileHit(e.clientX, e.clientY));
+    e.preventDefault();
+  }, { passive: false });
+
+  function endDrag(e, cancelled) {
+    if (!drag || (e && e.pointerId !== drag.pid)) return;
+    var d = drag;
+    drag = null;
+    if (!d.started) return;
+    suppressClick = true;
+    setTimeout(function () { suppressClick = false; }, 0);
+    var pile = $('.pd-pile');
+    if (pile) pile.classList.remove('is-drop');
+    var hit = !cancelled && e && pileHit(e.clientX, e.clientY);
+    if (hit) {
+      origins = {};
+      d.ghost.querySelectorAll('img').forEach(function (im) { origins[+im.getAttribute('data-id')] = spotOf(im); });
+    }
+    d.ghost.remove();
+    seats[0].querySelectorAll('.is-dragging').forEach(function (b) { b.classList.remove('is-dragging'); });
+    if (hit) playIds(d.ids);
+    else render();
+  }
+  window.addEventListener('pointerup', function (e) { endDrag(e, false); });
+  window.addEventListener('pointercancel', function (e) { endDrag(e, true); });
 
   /* ---------- Before the race: face-down deck, then the deal ---------- */
 
@@ -399,16 +558,15 @@
   function newGame() {
     if (dealing) return;
     clearTimeout(timer);
+    clearTimeout(chainTimer);
     dealing = true;
     s = null;
     renderIdle();
-    var game = E.newGame();
+    var game = E.newGame({ humanStarts: true, humanChains: true });
     dealAnimation(game, function () {
       dealing = false;
       s = game;
-      selected = []; botSteps = 0; fastForward = false; movesSeen = 0; origins = {}; pileNote = '';
-      var starter = s.players[s.current];
-      if (starter.id !== 0) pileNote = '<strong>' + starter.name + '</strong> tiene el Ritmo ' + s.opening + ' y arranca.';
+      selected = []; botSteps = 0; fastForward = false; movesSeen = 0; origins = {}; pileNote = ''; infoCard = null;
       say('');
       schedule();
     });
@@ -420,53 +578,36 @@
     if (t.getAttribute('data-act') === 'new') { newGame(); return; }
     if (!s) return;
     if (t.hasAttribute('data-card')) {
-      if (s.current === 0 && !s.over) toggleCard(+t.getAttribute('data-card'));
+      if (suppressClick) return;
+      if (myTurn()) onHandTap(+t.getAttribute('data-card'));
       return;
     }
     if (t.hasAttribute('data-hidden')) {
       var slotImg = t.querySelector('.pd-card');
-      var spot = slotImg ? { c: center(slotImg.getBoundingClientRect()), w: slotImg.offsetWidth, rot: 0 } : null;
+      var spot = slotImg ? spotOf(slotImg) : null;
       var before = s.log.length;
-      var r = E.revealHidden(s, +t.getAttribute('data-hidden'));
+      var r = E.revealToHand(s, +t.getAttribute('data-hidden'));
       if (r.error) { say(r.error, true); render(); return; }
       origins = {};
-      if (spot) { origins[r.revealed.id] = spot; origins.hidden = spot; }
+      if (spot) origins.hidden = spot;
+      if (r.broke) { clearTimeout(chainTimer); say(''); schedule(before); return; }
+      if (s.chain) startChainWindow();
       say('');
       schedule(before);
       return;
     }
     var b0;
     switch (t.getAttribute('data-act')) {
-      case 'play': playSelected(); break;
-      case 'clear': selected = []; say(''); render(); break;
-      case 'pickup': b0 = s.log.length; E.pickUp(s); selected = []; say(''); schedule(b0); break;
-      case 'endchain': E.endChain(s); selected = []; say(''); schedule(); break;
-      case 'next': botTurn(); break;
+      case 'pickup': b0 = s.log.length; clearTimeout(chainTimer); E.pickUp(s); selected = []; say(''); schedule(b0); break;
       case 'skip': fastForward = true; schedule(); break;
+      case 'tip-ok': infoCard = null; render(); break;
+      case 'tip-never':
+        if (infoCard) { hiddenTips[infoCard.k] = true; save('pd-tip-' + infoCard.k, '1'); }
+        infoCard = null; render(); break;
     }
   });
 
   document.querySelectorAll('[data-act="restart"]').forEach(function (b) { b.addEventListener('click', newGame); });
-
-  // Speed buttons and step-by-step switch (in the intro, outside the board)
-  var speedBtns = document.querySelectorAll('[data-speed]');
-  function syncControls() {
-    speedBtns.forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-speed') === speed)); });
-    var step = document.getElementById('pd-step');
-    if (step) step.checked = stepMode;
-  }
-  speedBtns.forEach(function (b) {
-    b.addEventListener('click', function () {
-      speed = b.getAttribute('data-speed'); save('pd-speed', speed); syncControls();
-      if (s && !stepMode && s.current !== 0 && !s.over) { clearTimeout(timer); timer = setTimeout(botTurn, SPEEDS[speed]); }
-    });
-  });
-  var stepBox = document.getElementById('pd-step');
-  if (stepBox) stepBox.addEventListener('change', function () {
-    stepMode = stepBox.checked; save('pd-step', stepMode ? '1' : '');
-    if (s && !s.over) { clearTimeout(timer); render(); if (!stepMode && s.current !== 0) timer = setTimeout(botTurn, SPEEDS[speed]); }
-  });
-  syncControls();
 
   renderIdle();
 })();
