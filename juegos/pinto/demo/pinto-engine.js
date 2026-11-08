@@ -134,7 +134,7 @@
   function newGame(opts) {
     opts = opts || {};
     var rng = opts.rng || Math.random;
-    var n = 4;
+    var n = opts.players || 4; // the solo demo uses 4, multiplayer uses 2
     var names = opts.names || DEFAULT_NAMES;
     var deck = shuffle(makeDeck(n), rng);
     var players = names.slice(0, n).map(function (name, i) {
@@ -151,7 +151,10 @@
       players: players, pile: [], discarded: 0, current: 0, opening: null,
       skipNext: false, chain: null, finished: [], over: false, log: [], rng: rng,
       moves: [], // every play / pickup, so the page can animate cards between seats and the pile
-      humanChains: !!opts.humanChains // your turn stays open after a play until the page ends it (3 s window)
+      // players whose turn stays open after a play until the page ends it (the 5 s window)
+      openTurns: opts.openTurns || (opts.humanChains ? [0] : []),
+      // logs talk to player 0 as "Tú" ("Tú juegas…"); multiplayer turns this off and uses names
+      secondPerson: opts.secondPerson !== false
     };
     if (opts.humanStarts) {
       // Demo: you always open the race with a Ritmo 1
@@ -203,6 +206,8 @@
     return 'Ocultas';
   }
 
+  function you(s, p) { return s.secondPerson && p.id === 0; }
+
   function log(s, text, pid) { s.log.push({ text: text, pid: pid }); }
 
   function alive(s) { return s.players.filter(function (p) { return !p.place; }); }
@@ -221,13 +226,13 @@
     if (!p.place && !p.hand.length && !p.visible.length && !p.hidden.length) {
       s.finished.push(p.id);
       p.place = s.finished.length;
-      log(s, p.name + (p.id === 0 ? ' cruzas' : ' cruza') + ' la meta en ' + p.place + '.º lugar', p.id);
+      log(s, p.name + (you(s, p) ? ' cruzas' : ' cruza') + ' la meta en ' + p.place + '.º lugar', p.id);
       var left = alive(s);
       if (left.length === 1) {
         s.finished.push(left[0].id);
         left[0].place = s.finished.length;
         s.over = true;
-        log(s, left[0].name + (left[0].id === 0 ? ' te quedas' : ' se queda') + ' con cartas: último lugar', left[0].id);
+        log(s, left[0].name + (you(s, left[0]) ? ' te quedas' : ' se queda') + ' con cartas: último lugar', left[0].id);
       }
       return true;
     }
@@ -314,18 +319,18 @@
     } else if (last.k === 'roja') {
       special = ' · vía libre para el siguiente';
     }
-    log(s, p.name + (p.id === 0 ? ' juegas ' : ' juega ') + label + special, p.id);
+    log(s, p.name + (you(s, p) ? ' juegas ' : ' juega ') + label + special, p.id);
     s.moves.push({ type: 'play', pid: p.id, cards: cards.slice(), discarded: last.k === 'cuad' || full, fromHidden: fromHidden });
 
     var tookVisible = refillFromVisible(p);
-    if (tookVisible) log(s, p.name + (p.id === 0 ? ' tomas' : ' toma') + ' sus cartas visibles', p.id);
+    if (tookVisible) log(s, p.name + (you(s, p) ? ' tomas' : ' toma') + ' sus cartas visibles', p.id);
     var finished = checkFinish(s, p);
 
     // Chaining: after emptying the hand you may keep going with the visible
     // cards, as long as the value stays the same and nothing closed the turn.
     var canChain = false;
     var mixed = cards.some(function (c) { return !sameKind(c, cards[0]); });
-    if (!finished && s.humanChains && p.id === 0 && !special) {
+    if (!finished && s.openTurns.indexOf(p.id) >= 0 && !special) {
       // Your turn stays open: you may add more cards of the same value until the
       // page closes the window (the next player starting ends your turn).
       canChain = true;
@@ -374,7 +379,7 @@
     p.hand = sortCards(p.hand.concat(s.pile));
     s.pile = [];
     s.chain = null;
-    log(s, p.name + (p.id === 0 ? ' recoges' : ' recoge') + ' la pila (' + n + (n === 1 ? ' carta)' : ' cartas)'), p.id);
+    log(s, p.name + (you(s, p) ? ' recoges' : ' recoge') + ' la pila (' + n + (n === 1 ? ' carta)' : ' cartas)'), p.id);
     s.moves.push({ type: 'pickup', pid: p.id, n: n });
     advance(s);
     return { ok: true, endsTurn: true };
@@ -392,11 +397,11 @@
       p.hand = sortCards(s.pile.concat([c]));
       s.pile = [];
       s.moves.push({ type: 'pickup', pid: p.id, n: n + 1, revealed: c, hiddenIndex: index });
-      log(s, p.name + (p.id === 0 ? ' revelas ' : ' revela ') + cardName(c) + ' y no entra: ' + (p.id === 0 ? 'recoges' : 'recoge') + ' la pila (' + (n + 1) + ' cartas)', p.id);
+      log(s, p.name + (you(s, p) ? ' revelas ' : ' revela ') + cardName(c) + ' y no entra: ' + (you(s, p) ? 'recoges' : 'recoge') + ' la pila (' + (n + 1) + ' cartas)', p.id);
       advance(s);
       return { ok: true, endsTurn: true, revealed: c, failed: true };
     }
-    log(s, p.name + (p.id === 0 ? ' revelas ' : ' revela ') + cardName(c), p.id);
+    log(s, p.name + (you(s, p) ? ' revelas ' : ' revela ') + cardName(c), p.id);
     var r = putOnPile(s, p, [c], index);
     r.revealed = c;
     return r;
@@ -410,9 +415,9 @@
     var c = p.hidden.splice(index, 1)[0];
     p.hand.push(c);
     s.moves.push({ type: 'reveal', pid: p.id, card: c, hiddenIndex: index });
-    log(s, p.name + (p.id === 0 ? ' revelas ' : ' revela ') + cardName(c), p.id);
+    log(s, p.name + (you(s, p) ? ' revelas ' : ' revela ') + cardName(c), p.id);
     if (s.chain && !sameKind(c, s.chain)) {
-      log(s, p.name + (p.id === 0 ? ' no puedes' : ' no puede') + ' seguir con ' + cardName(c) + ': termina el turno', p.id);
+      log(s, p.name + (you(s, p) ? ' no puedes' : ' no puede') + ' seguir con ' + cardName(c) + ': termina el turno', p.id);
       s.chain = null;
       advance(s);
       return { ok: true, revealed: c, endsTurn: true, broke: true };
@@ -426,7 +431,7 @@
     var i = nextAliveIndex(s, s.current);
     if (s.skipNext) {
       var skipped = s.players[i];
-      log(s, skipped.name + (skipped.id === 0 ? ' pierdes' : ' pierde') + ' el turno por la Bandera Azul', skipped.id);
+      log(s, skipped.name + (you(s, skipped) ? ' pierdes' : ' pierde') + ' el turno por la Bandera Azul', skipped.id);
       i = nextAliveIndex(s, i);
     }
     s.skipNext = false;

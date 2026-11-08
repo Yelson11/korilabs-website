@@ -21,7 +21,7 @@
   --card-mini: clamp(1.8rem, 1.2rem + 2vw, 3rem);
   /* bot mat: table cards on top, fanned hand below (upright frame, before rotation) */
   --mat-w: calc(var(--card-mini) * 4.2);
-  --mat-h: calc(var(--card-mini) * 3.5);
+  --mat-h: calc(var(--card-mini) * 3.9);
   color-scheme: dark;
 }
 
@@ -133,7 +133,8 @@ img.pd-card { height: auto; object-fit: cover; }
 .pd-slot .pd-card--up { position: absolute; top: 14%; left: 0; }
 .pd-mat .pd-slot { padding-bottom: 14%; }
 
-.pd-fan { position: absolute; bottom: 0; left: 50%; width: var(--card-mini); height: calc(var(--card-mini) * 1.4); transform: translateX(-50%); }
+/* lifted a bit so the outer fanned cards stay inside the mat */
+.pd-fan { position: absolute; bottom: calc(var(--card-mini) * 0.4); left: 50%; width: var(--card-mini); height: calc(var(--card-mini) * 1.4); transform: translateX(-50%); }
 .pd-fan__card { --w: var(--card-mini); position: absolute; inset: 0; transform-origin: 50% 170%; }
 
 /* ---------- Pile ---------- */
@@ -380,6 +381,66 @@ button.pd-hidden-btn:focus-visible { outline: 3px solid var(--cream); outline-of
   .pd-label span { font-size: 0.72rem; }
   .pd-pile__note { font-size: 0.85rem; }
   .pd-below { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ---------- Online (demo/multijugador): lobby and 2-player board ---------- */
+.mp-lobby { display: grid; gap: 1.25rem; max-width: 52rem; padding-block: 0 2.5rem; }
+.mp-field { display: grid; gap: 0.4rem; max-width: 22rem; color: var(--cream-dim); font-size: 0.9rem; }
+.mp-field input, .mp-join input {
+  padding: 0.7rem 0.9rem;
+  border: 1.5px solid rgb(245 240 232 / 0.25);
+  border-radius: 0.75rem;
+  background: var(--asphalt-2);
+  color: var(--cream);
+  font: 600 1rem var(--font);
+}
+.mp-field input:focus-visible, .mp-join input:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+.mp-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); gap: 1rem; }
+.mp-card { display: grid; align-content: start; gap: 0.6rem; padding: 1.25rem; border: 1px solid var(--line); border-radius: 1.1rem; background: var(--asphalt-2); }
+.mp-card h2 { margin: 0; font-family: var(--display); font-size: 1.1rem; font-style: italic; font-weight: 800; text-transform: uppercase; }
+.mp-card p { margin: 0; color: var(--cream-dim); font-size: 0.92rem; }
+.mp-card .p-button { justify-self: start; margin-top: 0.25rem; }
+.mp-join { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.mp-join input { width: 7.5rem; letter-spacing: 0.25em; text-transform: uppercase; }
+.mp-join .p-button { margin-top: 0; }
+.mp-room { display: grid; gap: 0.35rem; margin-top: 0.5rem; padding: 0.9rem 1rem; border-radius: 0.9rem; background: var(--asphalt-3); }
+.mp-room__code { color: var(--cream) !important; font-family: var(--display); font-size: 2.2rem !important; font-weight: 800; letter-spacing: 0.2em; }
+.mp-room__link { overflow-wrap: anywhere; font-size: 0.8rem !important; }
+.mp-room .p-button { justify-self: start; }
+.mp-status { min-height: 1.5em; margin: 0; color: var(--cream); font-size: 0.95rem; }
+.mp-status.is-error { color: #ffb3a6; }
+.pd-board--duo { grid-template-columns: minmax(0, 1fr); grid-template-areas: "top" "center" "me"; justify-items: center; }
+.pd-board--duo .pd-me { width: 100%; }
+.pd-board--duo .pd-matbox--top { --mat-w: calc(var(--card-mini) * 6.4); }
+
+/* ---------- Computers: fit the whole table in one screen ----------
+   Card sizes follow the window height too (laptops are wide but short), and
+   your table cards sit to the left of your hand instead of above it. */
+@media (min-width: 44.01rem) {
+  .pinto-demo {
+    --card-mini: clamp(1.4rem, min(2vw, 4.2vh), 3rem);
+    --card-pile: clamp(3.8rem, min(5vw, 11.5vh), 6.8rem);
+    --card-hand: clamp(3.2rem, min(4.6vw, 10.5vh), 5.6rem);
+    --card-me-table: clamp(2.2rem, min(2.4vw, 6.5vh), 3.8rem);
+  }
+  .pd-board { padding: 1rem 1.25rem; gap: 0.5rem 1rem; }
+  .pd-seat { padding: 0.35rem 0.5rem; gap: 0.35rem; }
+  .pd-me {
+    grid-template-columns: auto minmax(0, auto);
+    grid-template-areas: "label label" "tip tip" "table hand" "actions actions";
+    justify-content: center;
+    column-gap: 1.75rem;
+    row-gap: 0.4rem;
+    padding: 0.5rem 1rem;
+  }
+  .pd-me > .pd-label { grid-area: label; }
+  .pd-me > .pd-tip { grid-area: tip; justify-self: center; }
+  .pd-me > .pd-table--me { grid-area: table; align-self: center; }
+  .pd-me > .pd-hand { grid-area: hand; justify-content: flex-start; min-height: calc(var(--card-hand) * 1.4 + 0.75rem); }
+  .pd-me > .pd-actions { grid-area: actions; min-height: 2.6rem; }
+  /* many cards in hand: overlap them so they stay on one row */
+  .pd-hand.is-crowded { flex-wrap: nowrap; gap: 0; }
+  .pd-hand.is-crowded .pd-hand__card + .pd-hand__card { margin-left: calc(var(--card-hand) * -0.42); }
 }
 
 @media (prefers-reduced-motion: no-preference) {
