@@ -51,12 +51,12 @@ assets/pinto-caja.webp     Caja de PINTO para la tarjeta de la portada
 - Las reglas están en `demo/pinto-engine.js`. Si cambia el reglamento, se ajusta ahí. `demo/demo.js` dibuja la mesa y maneja los turnos, y los estilos están en `css/pinto-demo.css`.
 - Usa las mismas imágenes de `img/cartas/`, así que al cambiar las cartas el demo se actualiza solo.
 
-### Partida en línea con un amigo (`juegos/pinto/demo/multijugador/`)
+### Partida en línea con amigos (`juegos/pinto/demo/multijugador/`)
 
-- También escondida (sin enlaces y con `noindex`). Es uno contra uno con las reglas de 2 jugadores.
-- Uno escribe su nombre y toca **Crear partida**: aparece un código de 4 letras y un enlace para copiar. El otro abre el enlace (o escribe el código) y toca **Unirme**.
-- El navegador de quien crea la sala hace de árbitro: no debe cerrar la página hasta terminar. Si el otro se desconecta, puede volver a entrar con el mismo código y sigue la misma partida.
-- La conexión usa PeerJS (gratis, sin servidor propio). Para probar en una sola computadora, abre dos pestañas con `?transporte=local` al final de la dirección.
+- También escondida (sin enlaces y con `noindex`). De 2 a 4 jugadores, con las reglas oficiales según cuántos sean.
+- Quien crea la sala escribe su nombre y toca **Crear partida**: aparece un código de 4 letras y un enlace para copiar. Los demás abren el enlace (o escriben el código) y tocan **Unirme**. Todos ven la lista de quiénes van entrando; quien creó la sala toca **Empezar carrera** cuando estén todos.
+- El navegador de quien crea la sala hace de árbitro: no debe cerrar la página hasta terminar. Si alguien se desconecta, la mesa avisa a todos y esa persona puede volver a entrar con el mismo código y su mismo nombre: recupera su lugar y sus cartas.
+- La conexión usa PeerJS (gratis, sin servidor propio). Para probar en una sola computadora, abre varias pestañas con `?transporte=local` al final de la dirección.
 
 ## Suscripción (Sender)
 

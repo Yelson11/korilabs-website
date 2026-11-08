@@ -1,9 +1,9 @@
-/* PINTO online (2 players): one creates a room, the other joins with its code.
-   The room creator's browser is the referee: it runs pinto-engine.js and sends
-   each player only what they're allowed to see (their own hand, the rival's
-   card count, the table and the pile). Connection: PeerJS (WebRTC, free public
-   broker, no backend of our own). Add ?transporte=local to test with two tabs
-   of the same browser (BroadcastChannel). */
+/* PINTO online (2 to 4 players): one creates a room, the others join with its
+   code. The room creator's browser is the referee: it runs pinto-engine.js and
+   sends each player only what they're allowed to see (their own hand, how many
+   cards the others hold, the tables and the pile). Connection: PeerJS (WebRTC,
+   free public broker, no backend of our own). Add ?transporte=local to test with
+   several tabs of the same browser (BroadcastChannel). */
 (function () {
   'use strict';
   var E = window.PintoEngine;
@@ -16,6 +16,7 @@
   var CHAIN_MS = 5000;
   var FLY_MS = 750;
   var DOUBLE_TAP_MS = 380;
+  var MAX_PLAYERS = 4;
   var ID_PREFIX = 'korilabs-pinto-';
   var CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
   var params = new URLSearchParams(location.search);
@@ -25,6 +26,7 @@
     reb: 'Se juega sobre un ritmo del 1 al 4, con vía libre, sobre una Bandera Roja u otro Rebufo. Te deja sumar hasta dos valores seguidos de 5 o más, por ejemplo Rebufo + 6 + 7. Puedes jugarlo solo y seguir con los ritmos en tus 5 segundos.',
     roja: 'Cierra la pista sin descartar la pila: el siguiente jugador tiene vía libre. Se puede jugar sobre cualquier carta.',
     ama: 'Obliga al siguiente jugador a jugar ritmos bajos, del 1 al 4. No se puede jugar sobre ritmos altos, Vuelta Rápida ni Rebufo.',
+    azul: 'Salta el turno del siguiente jugador. No se puede jugar sobre Bandera Amarilla, Rebufo ni Vuelta Rápida.',
     cuad: 'Descarta toda la pila y termina tu turno. El siguiente jugador tiene vía libre. Se juega de una en una y entra sobre cualquier carta.',
     vr: 'Es el ritmo más alto del juego. Se puede jugar sobre cualquier carta, excepto sobre la Bandera Amarilla.'
   };
@@ -35,6 +37,7 @@
   var codeInput = document.getElementById('mp-code');
   var statusEl = document.getElementById('mp-status');
   var roomBox = document.getElementById('mp-room');
+  var waitBox = document.getElementById('mp-wait');
   var game = document.getElementById('mp-game');
   var logList = document.getElementById('log');
 
@@ -42,17 +45,19 @@
   if (params.get('sala')) codeInput.value = params.get('sala').toUpperCase();
 
   /* ---------- Shared state ---------- */
-  var role = null;           // 'host' or 'guest'
-  var myName = '', rivalName = '';
-  var link = null;           // transport to the other player
-  var view = null;           // what this screen shows (built by the host)
+  var role = null;            // 'host' or 'guest'
+  var myName = '';
+  var link = null;            // guest: connection to the host. host: transport accepting guests
+  var view = null;            // what this screen shows (built by the host)
   var selected = [], message = '', messageError = false, infoCard = null;
   var lastTap = { id: null, time: 0 }, drag = null, suppressClick = false;
-  var origins = {};
-  var hiddenTips = {};
+  var origins = {}, hiddenTips = {}, arriving = {};
 
-  // Host only
-  var s = null, chainTimer = null, chainDeadline = 0, sentMoves = [0, 0], caption = '', guestConnected = false;
+  // Host only: everyone in the room, in seat order (index = player id in the engine)
+  // { name, key (connection id; null for the host), connected }
+  var roster = [];
+  var s = null, chainTimer = null, chainDeadline = 0, sentMoves = [], caption = '';
+  var pending = {};           // guests connected but not introduced yet: key -> send()
 
   function setStatus(text, isError) {
     statusEl.textContent = text || '';
@@ -61,11 +66,14 @@
   function load(key, fb) { try { var v = localStorage.getItem(key); return v === null ? fb : v; } catch (e) { return fb; } }
   function save(key, v) { try { localStorage.setItem(key, v); } catch (e) { /* storage blocked */ } }
   function tipHidden(k) { return hiddenTips[k] || load('pd-tip2-' + k, '') === '1'; }
+  function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
 
-  /* ---------- Transport: PeerJS, or BroadcastChannel for local tests ---------- */
+  /* ---------- Transport ----------
+     Host side: handlers.join(key, send) / data(key, msg) / leave(key)
+     Guest side: handlers.open() / data(msg) / close()                     */
 
   function connectionError(type) {
-    if (type === 'peer-unavailable') return 'No encontramos esa sala. Revisa el código o pídele a tu amigo que la cree de nuevo.';
+    if (type === 'peer-unavailable') return 'No encontramos esa sala. Revisa el código o pídele a quien la creó que la abra de nuevo.';
     if (type === 'unavailable-id') return 'Ese código ya está en uso. Crea otra sala.';
     if (type === 'network' || type === 'server-error' || type === 'socket-error' || type === 'socket-closed')
       return 'No pudimos conectar con el servidor de salas. Revisa tu conexión a internet e intenta de nuevo.';
@@ -74,53 +82,61 @@
     return 'Algo falló con la conexión (' + type + '). Intenta de nuevo.';
   }
 
-  function localTransport(code, asHost, handlers) {
+  function localHost(code, h) {
     var ch = new BroadcastChannel('pinto-' + code);
-    var me = asHost ? 'host' : 'guest', other = asHost ? 'guest' : 'host';
     ch.onmessage = function (e) {
       var m = e.data;
-      if (!m || m.to !== me) return;
-      if (m.sys === 'knock' && asHost) { ch.postMessage({ to: other, sys: 'welcome' }); handlers.open(); return; }
-      if (m.sys === 'welcome' && !asHost) { handlers.open(); return; }
-      if (m.sys === 'bye') { handlers.close(); return; }
-      if (m.data) handlers.data(m.data);
+      if (!m || m.to !== 'host') return;
+      if (m.sys === 'knock') { ch.postMessage({ to: m.from, sys: 'welcome' }); h.join(m.from, function (d) { ch.postMessage({ to: m.from, data: d }); }); return; }
+      if (m.sys === 'bye') { h.leave(m.from); return; }
+      if (m.data) h.data(m.from, m.data);
     };
-    if (asHost) handlers.ready();
-    else ch.postMessage({ to: other, sys: 'knock' });
-    window.addEventListener('pagehide', function () { ch.postMessage({ to: other, sys: 'bye' }); });
-    return { send: function (d) { ch.postMessage({ to: other, data: d }); } };
+    window.addEventListener('pagehide', function () { ch.postMessage({ to: 'all', sys: 'bye' }); });
+    h.ready();
+  }
+  function localGuest(code, h) {
+    var ch = new BroadcastChannel('pinto-' + code);
+    var me = 'g' + Math.random().toString(36).slice(2, 8);
+    ch.onmessage = function (e) {
+      var m = e.data;
+      if (!m || (m.to !== me && m.to !== 'all')) return;
+      if (m.sys === 'welcome') { h.open(); return; }
+      if (m.sys === 'bye') { h.close(); return; }
+      if (m.data) h.data(m.data);
+    };
+    ch.postMessage({ to: 'host', from: me, sys: 'knock' });
+    window.addEventListener('pagehide', function () { ch.postMessage({ to: 'host', from: me, sys: 'bye' }); });
+    return { send: function (d) { ch.postMessage({ to: 'host', from: me, data: d }); } };
   }
 
-  function peerTransport(code, asHost, handlers) {
-    if (!window.Peer) { handlers.error('library-missing'); return null; }
-    var t = { conn: null, send: function (d) { if (t.conn && t.conn.open) t.conn.send(d); } };
-    function wire(c) {
-      t.conn = c;
-      c.on('open', handlers.open);
-      c.on('data', handlers.data);
-      c.on('close', handlers.close);
-      c.on('error', function () { handlers.close(); });
-    }
-    var peer = asHost ? new window.Peer(ID_PREFIX + code.toLowerCase()) : new window.Peer();
-    peer.on('error', function (err) { handlers.error(err && err.type ? err.type : 'unknown'); });
-    peer.on('open', function () {
-      if (asHost) handlers.ready();
-      else wire(peer.connect(ID_PREFIX + code.toLowerCase(), { reliable: true }));
+  function peerHost(code, h) {
+    if (!window.Peer) { h.error('library-missing'); return; }
+    var peer = new window.Peer(ID_PREFIX + code.toLowerCase());
+    var n = 0;
+    peer.on('error', function (err) { h.error(err && err.type ? err.type : 'unknown'); });
+    peer.on('open', h.ready);
+    peer.on('connection', function (c) {
+      var key = 'c' + (++n);
+      c.on('open', function () { h.join(key, function (d) { if (c.open) c.send(d); }); });
+      c.on('data', function (d) { h.data(key, d); });
+      c.on('close', function () { h.leave(key); });
+      c.on('error', function () { h.leave(key); });
     });
-    if (asHost) peer.on('connection', function (c) { wire(c); });
-    t.peer = peer;
-    return t;
   }
-
-  function openLink(code, asHost) {
-    var handlers = {
-      ready: function () { onRoomReady(code); },
-      open: onLinkOpen,
-      data: onData,
-      close: onLinkClosed,
-      error: function (type) { setStatus(connectionError(type), true); enableLobby(true); }
-    };
-    return LOCAL ? localTransport(code, asHost, handlers) : peerTransport(code, asHost, handlers);
+  function peerGuest(code, h) {
+    if (!window.Peer) { h.error('library-missing'); return null; }
+    var t = { conn: null, send: function (d) { if (t.conn && t.conn.open) t.conn.send(d); } };
+    var peer = new window.Peer();
+    peer.on('error', function (err) { h.error(err && err.type ? err.type : 'unknown'); });
+    peer.on('open', function () {
+      var c = peer.connect(ID_PREFIX + code.toLowerCase(), { reliable: true });
+      t.conn = c;
+      c.on('open', h.open);
+      c.on('data', h.data);
+      c.on('close', h.close);
+      c.on('error', h.close);
+    });
+    return t;
   }
 
   /* ---------- Lobby actions ---------- */
@@ -131,16 +147,23 @@
     save('pd-mp-name', myName);
     return true;
   }
-  function enableLobby(on) { lobby.querySelectorAll('button, input').forEach(function (el) { el.disabled = !on; }); }
+  function lockLobby() { lobby.querySelectorAll('.mp-options button, .mp-options input, #mp-name').forEach(function (el) { el.disabled = true; }); }
+  function unlockLobby() { lobby.querySelectorAll('button, input').forEach(function (el) { el.disabled = false; }); }
 
   document.getElementById('mp-create').addEventListener('click', function () {
     if (!needName()) return;
     role = 'host';
+    roster = [{ name: myName, key: null, connected: true }];
     var code = '';
     for (var i = 0; i < 4; i++) code += CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)];
-    enableLobby(false);
+    lockLobby();
     setStatus('Creando la sala…');
-    link = openLink(code, true);
+    var h = {
+      ready: function () { onRoomReady(code); },
+      join: guestJoined, data: guestData, leave: guestLeft,
+      error: function (type) { setStatus(connectionError(type), true); unlockLobby(); }
+    };
+    if (LOCAL) localHost(code, h); else peerHost(code, h);
   });
 
   document.getElementById('mp-join').addEventListener('click', function () {
@@ -148,12 +171,22 @@
     var code = codeInput.value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
     if (code.length !== 4) { setStatus('El código tiene 4 letras o números, por ejemplo K7QM.', true); codeInput.focus(); return; }
     role = 'guest';
-    enableLobby(false);
+    lockLobby();
     setStatus('Conectando con la sala ' + code + '…');
-    link = openLink(code, false);
+    var h = {
+      open: function () { link.send({ t: 'hello', name: myName }); },
+      data: hostData,
+      close: function () { lostHost(); },
+      error: function (type) { setStatus(connectionError(type), true); unlockLobby(); }
+    };
+    link = LOCAL ? localGuest(code, h) : peerGuest(code, h);
     setTimeout(function () {
-      if (!view && role === 'guest') setStatus('Está tardando más de lo normal. Algunas redes (de trabajo o del colegio) bloquean las partidas en línea; prueba con otra red o con datos móviles.', true);
+      if (role === 'guest' && !view && waitBox.hidden) setStatus('Está tardando más de lo normal. Algunas redes (de trabajo o del colegio) bloquean las partidas en línea; prueba con otra red o con datos móviles.', true);
     }, 15000);
+  });
+
+  document.getElementById('mp-start').addEventListener('click', function () {
+    if (role === 'host' && connectedCount() >= 2) startGame();
   });
 
   function onRoomReady(code) {
@@ -168,53 +201,99 @@
       if (navigator.clipboard) navigator.clipboard.writeText(url).then(done, function () { selectText(linkEl); });
       else selectText(linkEl);
     };
-    setStatus('Sala lista. Esperando a que tu amigo entre…');
+    setStatus('');
+    renderWaiting();
   }
   function selectText(el) { var r = document.createRange(); r.selectNodeContents(el); var sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); }
 
-  function onLinkOpen() {
-    if (role === 'guest') link.send({ t: 'hello', name: myName });
-  }
-
-  function onLinkClosed() {
-    // Shown on the board too, since the lobby (and its status line) is hidden during a game
-    var msg = role === 'host'
-      ? (rivalName || 'Tu amigo') + ' se desconectó. Puede volver a entrar con el mismo código.'
-      : 'Se perdió la conexión con la sala. Recarga la página y vuelve a entrar con el mismo código.';
-    if (role === 'host') guestConnected = false;
-    setStatus(msg, true);
-    say(msg, true);
-    renderSafe();
-  }
-
-  function onData(m) {
-    if (!m || !m.t) return;
+  // Who's in the room before the race starts (host and guests see the same list)
+  function renderWaiting(names) {
+    names = names || roster.map(function (r) { return r.name; });
+    waitBox.hidden = false;
+    var list = names.map(function (n, i) { return '<li>' + esc(n) + (i === 0 ? ' <span>crea la sala</span>' : '') + '</li>'; }).join('');
+    var empty = '';
+    for (var k = names.length; k < MAX_PLAYERS; k++) empty += '<li class="is-empty">Lugar libre</li>';
+    waitBox.querySelector('.mp-wait__list').innerHTML = list + empty;
+    var startBtn = document.getElementById('mp-start');
+    var hint = waitBox.querySelector('.mp-wait__hint');
     if (role === 'host') {
-      if (m.t === 'hello') {
-        rivalName = String(m.name || 'Invitado').slice(0, 16);
-        guestConnected = true;
-        setStatus('');
-        say('');
-        if (!s) startGame(); else { sentMoves[1] = s.moves.length; broadcast(); }
-      } else if (m.t === 'act') act(1, m.a, m);
-      else if (m.t === 'rematch') startGame();
+      startBtn.hidden = false;
+      startBtn.disabled = names.length < 2;
+      hint.textContent = names.length < 2 ? 'Pásales el código. Cuando entre al menos una persona puedes empezar.' : 'Pueden entrar hasta ' + MAX_PLAYERS + ' jugadores. Empieza cuando estén todos.';
     } else {
-      if (m.t === 'view') { showGame(); applyView(m.v); }
-      else if (m.t === 'error') { say(m.msg, true); renderSafe(); }
+      startBtn.hidden = true;
+      hint.textContent = 'Esperando a que ' + (names[0] || 'quien creó la sala') + ' empiece la carrera…';
     }
   }
 
-  function showGame() {
-    if (game.hidden) { lobby.hidden = true; game.hidden = false; setStatus(''); }
+  function showGame() { if (game.hidden) { lobby.hidden = true; game.hidden = false; setStatus(''); } }
+
+  /* ---------- Host: room and referee ---------- */
+
+  function connectedCount() { return roster.filter(function (r) { return r.connected; }).length; }
+  function slotByKey(key) { for (var i = 0; i < roster.length; i++) if (roster[i].key === key) return i; return -1; }
+
+  function guestJoined(key, send) { pending[key] = send; }
+
+  function guestData(key, m) {
+    if (!m || !m.t) return;
+    if (m.t === 'hello') {
+      var send = pending[key];
+      if (!send) return;
+      var name = String(m.name || 'Invitado').slice(0, 16);
+      var pid = -1;
+      if (s) {
+        // Rejoining a race in progress: take back the empty seat with the same name (or any empty seat)
+        roster.forEach(function (r, i) { if (pid < 0 && !r.connected && r.name === name) pid = i; });
+        roster.forEach(function (r, i) { if (pid < 0 && !r.connected && i > 0) pid = i; });
+        if (pid < 0) { send({ t: 'full', msg: 'La carrera ya empezó y no hay lugares libres.' }); return; }
+        roster[pid].key = key; roster[pid].connected = true; roster[pid].send = send;
+        sentMoves[pid] = s.moves.length;
+        broadcast();
+        return;
+      }
+      if (roster.length >= MAX_PLAYERS) { send({ t: 'full', msg: 'La sala está llena (máximo ' + MAX_PLAYERS + ' jugadores).' }); return; }
+      roster.push({ name: uniqueName(name), key: key, connected: true, send: send });
+      lobbyBroadcast();
+    } else if (m.t === 'act') {
+      var p = slotByKey(key);
+      if (p > 0) act(p, m.a, m);
+    } else if (m.t === 'rematch') {
+      if (s && s.over) startGame();
+    }
   }
 
-  /* ---------- Host: referee ---------- */
+  function uniqueName(name) {
+    var taken = roster.map(function (r) { return r.name; }), n = name, k = 2;
+    while (taken.indexOf(n) >= 0) n = name + ' ' + (k++);
+    return n;
+  }
+
+  function guestLeft(key) {
+    var p = slotByKey(key);
+    if (p < 0) return;
+    if (!s) { roster.splice(p, 1); lobbyBroadcast(); return; }
+    roster[p].connected = false;
+    roster[p].send = null;
+    broadcast(); // every view carries a notice while someone is away
+  }
+
+  function lobbyBroadcast() {
+    var names = roster.map(function (r) { return r.name; });
+    renderWaiting(names);
+    roster.forEach(function (r) { if (r.send) r.send({ t: 'lobby', names: names }); });
+  }
 
   function startGame() {
     clearTimeout(chainTimer);
-    s = E.newGame({ players: 2, names: [myName, rivalName], openTurns: [0, 1], secondPerson: false });
-    sentMoves = [0, 0];
-    caption = s.players[s.current].name + ' tiene el Ritmo ' + s.opening + ' y arranca.';
+    // Players who left before the start lose their seat
+    roster = roster.filter(function (r) { return r.connected; });
+    var n = roster.length, ids = [];
+    for (var i = 0; i < n; i++) ids.push(i);
+    s = E.newGame({ players: n, names: roster.map(function (r) { return r.name; }), openTurns: ids, secondPerson: false });
+    sentMoves = ids.map(function () { return 0; });
+    caption = '<strong>' + esc(s.players[s.current].name) + '</strong> tiene el Ritmo ' + s.opening + ' y arranca.';
+    message = '';
     showGame();
     broadcast();
   }
@@ -243,14 +322,13 @@
       r = E.revealToHand(s, Number(m.idx));
       if (r.error) { sendError(pid, r.error); return; }
       if (r.broke) clearTimeout(chainTimer); else if (s.chain) startChain();
-    } else if (a === 'endchain') {
-      clearTimeout(chainTimer);
-      E.endChain(s);
     } else return;
     var entries = s.log.slice(before);
     if (entries.length) {
       var who = s.players[entries[0].pid];
-      caption = '<strong>' + who.name + '</strong> ' + entries.filter(function (l) { return l.pid === who.id; }).map(pastTense).join('. ');
+      caption = '<strong>' + esc(who.name) + '</strong> ' + esc(entries.filter(function (l) { return l.pid === who.id; }).map(pastTense).join('. '));
+      // A Blue flag also says who lost the turn
+      entries.forEach(function (l) { if (l.pid !== who.id) caption += '<br>' + esc(l.text); });
     }
     broadcast();
   }
@@ -265,24 +343,40 @@
 
   function sendError(pid, msg) {
     if (pid === 0) { say(msg, true); renderSafe(); }
-    else link.send({ t: 'error', msg: msg });
+    else if (roster[pid] && roster[pid].send) roster[pid].send({ t: 'error', msg: msg });
+  }
+
+  // Seats around the table, seen from player `pid`: next player on the left, then top, then right
+  function seatOf(pid, other) {
+    var n = s.players.length, rel = (other - pid + n) % n;
+    if (rel === 0) return 0;
+    if (n === 2) return 2;
+    if (n === 3) return rel === 1 ? 1 : 3;
+    return rel;
   }
 
   // What player `pid` is allowed to see
   function viewFor(pid) {
-    var p = s.players[pid], o = s.players[1 - pid], mine = s.current === pid && !s.over;
+    var p = s.players[pid], mine = s.current === pid && !s.over;
     var moves = s.moves.slice(sentMoves[pid]).map(function (mv) {
-      var who = mv.pid === pid ? 'me' : 'opp';
-      if (mv.type === 'reveal') return { type: 'reveal', who: who, card: who === 'me' ? mv.card : null, idx: mv.hiddenIndex };
-      if (mv.type === 'pickup') return { type: 'pickup', who: who, n: mv.n, revealed: mv.revealed || null };
-      return { type: 'play', who: who, cards: mv.cards, discarded: mv.discarded };
+      var seat = seatOf(pid, mv.pid);
+      if (mv.type === 'reveal') return { type: 'reveal', seat: seat, card: seat === 0 ? mv.card : null };
+      if (mv.type === 'pickup') return { type: 'pickup', seat: seat, n: mv.n };
+      return { type: 'play', seat: seat, cards: mv.cards, discarded: mv.discarded };
     });
     sentMoves[pid] = s.moves.length;
+    var others = s.players.filter(function (o) { return o.id !== pid; }).map(function (o) {
+      return {
+        seat: seatOf(pid, o.id), name: o.name, hand: o.hand.length, visible: o.visible, hidden: o.hidden.length,
+        place: o.place, turn: s.current === o.id && !s.over, away: !roster[o.id].connected
+      };
+    });
     return {
+      n: s.players.length,
       me: { name: p.name, hand: p.hand, visible: p.visible, hidden: p.hidden.length, place: p.place },
-      opp: { name: o.name, hand: o.hand.length, visible: o.visible, hidden: o.hidden.length, place: o.place },
+      others: others,
       pile: s.pile.slice(-4),
-      turn: s.over ? null : (mine ? 'me' : 'opp'),
+      turn: s.over ? null : (mine ? 'me' : s.players[s.current].name),
       opening: s.opening,
       chain: mine ? s.chain : null,
       chainLeft: mine && s.chain ? Math.max(0, chainDeadline - Date.now()) : 0,
@@ -291,6 +385,7 @@
       hiddenStage: mine && !p.hand.length && !p.visible.length && p.hidden.length > 0,
       log: s.log.slice(-8).map(function (l) { return { text: l.text, mine: l.pid === pid }; }),
       caption: caption,
+      notice: roster.filter(function (r) { return !r.connected; }).map(function (r) { return r.name + ' se desconectó; puede volver a entrar con el mismo código.'; }).join(' '),
       over: s.over,
       results: s.over ? s.finished.map(function (id) { return { name: s.players[id].name, place: s.players[id].place, me: id === pid }; }) : null,
       moves: moves
@@ -299,10 +394,24 @@
 
   function broadcast() {
     applyView(viewFor(0));
-    if (guestConnected) link.send({ t: 'view', v: viewFor(1) });
+    roster.forEach(function (r, pid) { if (pid > 0 && r.connected && r.send) r.send({ t: 'view', v: viewFor(pid) }); });
   }
 
-  /* ---------- Both: send an action ---------- */
+  /* ---------- Guest: messages from the host ---------- */
+
+  function hostData(m) {
+    if (!m || !m.t) return;
+    if (m.t === 'lobby') { setStatus(''); renderWaiting(m.names); }
+    else if (m.t === 'view') { showGame(); applyView(m.v); }
+    else if (m.t === 'error') { say(m.msg, true); renderSafe(); }
+    else if (m.t === 'full') { setStatus(m.msg, true); unlockLobby(); }
+  }
+  function lostHost() {
+    var msg = 'Se perdió la conexión con la sala. Recarga la página y vuelve a entrar con el mismo código y tu nombre.';
+    setStatus(msg, true);
+    say(msg, true);
+    renderSafe();
+  }
 
   function sendAction(a, extra) {
     var m = extra || {};
@@ -314,7 +423,9 @@
   /* ---------- Rendering ---------- */
 
   var $ = function (sel) { return board.querySelector(sel); };
-  var seatMe = $('[data-seat="0"]'), seatOpp = $('[data-seat="1"]');
+  var seats = [$('[data-seat="0"]'), $('[data-seat="1"]'), $('[data-seat="2"]'), $('[data-seat="3"]')];
+  var SIDES = ['', 'left', 'top', 'right'];
+  var ORIENT = [0, 90, 180, -90];
   var resultBox = $('.pd-result');
 
   function src(card) { return BASE + (card ? E.cardFile(card) : 'reverso') + '.webp' + VER; }
@@ -322,7 +433,7 @@
     return '<img class="pd-card ' + (cls || '') + '" src="' + src(card) + '" alt="' + (card ? E.cardName(card) : 'Carta boca abajo') + '" width="660" height="922" draggable="false"' + (extra || '') + '>';
   }
   function plural(n, a, b) { return n + ' ' + (n === 1 ? a : b); }
-  function label(name, sub) { return '<p class="pd-label"><strong>' + name + '</strong>' + (sub ? '<span>' + sub + '</span>' : '') + '</p>'; }
+  function label(name, sub) { return '<p class="pd-label"><strong>' + esc(name) + '</strong>' + (sub ? '<span>' + sub + '</span>' : '') + '</p>'; }
 
   function slots(visible, hiddenCount, cls, revealable) {
     var n = Math.max(visible.length, hiddenCount), html = '';
@@ -344,8 +455,6 @@
     return '<div class="pd-fan">' + html + '</div>';
   }
 
-  var arriving = {};
-
   function renderSafe() { if (view) render(); }
 
   function render() {
@@ -353,10 +462,19 @@
     var playable = {};
     v.playable.forEach(function (id) { playable[id] = true; });
 
-    // Rival (top)
-    seatOpp.classList.toggle('is-turn', v.turn === 'opp');
-    seatOpp.innerHTML = label(v.opp.name, v.opp.place ? v.opp.place + '.º lugar' : 'x' + plural(v.opp.hand, 'carta', 'cartas')) +
-      '<div class="pd-matbox pd-matbox--top"><div class="pd-mat">' + slots(v.opp.visible, v.opp.hidden, 'pd-table', false) + fan(v.opp.hand) + '</div></div>';
+    board.classList.toggle('pd-board--duo', v.n === 2);
+    // Other players around the table
+    [1, 2, 3].forEach(function (seat) {
+      var o = v.others.filter(function (x) { return x.seat === seat; })[0], el = seats[seat];
+      el.hidden = !o;
+      if (!o) { el.innerHTML = ''; return; }
+      el.classList.toggle('is-turn', o.turn);
+      el.classList.toggle('is-out', !!o.place);
+      el.classList.toggle('is-away', o.away);
+      var sub = o.away ? 'desconectado' : o.place ? o.place + '.º lugar' : 'x' + plural(o.hand, 'carta', 'cartas');
+      el.innerHTML = label(o.name, sub) + '<div class="pd-matbox pd-matbox--' + SIDES[seat] + '"><div class="pd-mat">' +
+        slots(o.visible, o.hidden, 'pd-table', false) + fan(o.hand) + '</div></div>';
+    });
 
     // Pile
     var html = '';
@@ -387,25 +505,29 @@
       } else {
         actions = '<p class="pd-status pd-status--hint">Toca para elegir · doble toque o arrastra a la pila para jugar</p>';
       }
-    } else if (!v.over) {
-      actions = '<p class="pd-status pd-status--hint">Turno de ' + v.opp.name + '…</p>';
+    } else if (!v.over && v.turn) {
+      actions = '<p class="pd-status pd-status--hint">Turno de ' + esc(v.turn) + '…</p>';
     }
-    if (message) actions = '<p class="pd-status' + (messageError ? ' pd-status--error' : '') + '">' + message + '</p>' + actions;
+    if (v.notice) actions = '<p class="pd-status pd-status--error">' + esc(v.notice) + '</p>' + actions;
+    if (message) actions = '<p class="pd-status' + (messageError ? ' pd-status--error' : '') + '">' + esc(message) + '</p>' + actions;
     var tip = infoCard ? '<div class="pd-tip" role="status">' + img(infoCard, 'pd-tip__card') + '<div class="pd-tip__body"><p class="pd-tip__eyebrow">Carta especial</p><p class="pd-tip__title">' + E.cardName(infoCard) + '</p><p class="pd-tip__text">' + INFO[infoCard.k] + '</p><div class="pd-tip__actions"><button type="button" class="pd-tip__btn" data-act="tip-ok">Entendido</button><label class="pd-tip__check" for="pd-tip-never"><input type="checkbox" id="pd-tip-never"> No volver a mostrar</label></div></div></div>' : '';
-    seatMe.classList.toggle('is-turn', mine);
-    seatMe.innerHTML = label(me.name + ' (tú)', me.place ? me.place + '.º lugar' : '') +
+    seats[0].classList.toggle('is-turn', mine);
+    seats[0].innerHTML = label(me.name + ' (tú)', me.place ? me.place + '.º lugar' : '') +
       slots(me.visible, me.hidden, 'pd-table pd-table--me', v.hiddenStage) + tip +
       '<div class="pd-hand' + (mine ? ' is-active' : '') + (me.hand.length > 10 ? ' is-crowded' : '') + '" role="group" aria-label="Tu mano">' + hand + '</div>' +
       '<div class="pd-actions" aria-live="polite">' + actions + '</div>';
 
     // Log and result
-    logList.innerHTML = v.log.slice().reverse().map(function (l) { return '<li' + (l.mine ? ' class="is-me"' : '') + '>' + l.text + '</li>'; }).join('') || '<li>La carrera está por empezar.</li>';
+    logList.innerHTML = v.log.slice().reverse().map(function (l) { return '<li' + (l.mine ? ' class="is-me"' : '') + '>' + esc(l.text) + '</li>'; }).join('') || '<li>La carrera está por empezar.</li>';
     board.classList.toggle('has-result', !!v.over);
     if (v.over) {
       var meRes = v.results.filter(function (x) { return x.me; })[0];
-      resultBox.innerHTML = '<h2>' + (meRes.place === 1 ? '¡Ganaste la carrera!' : 'Ganó ' + v.opp.name) + '</h2><ol>' +
-        v.results.map(function (x) { return '<li' + (x.me ? ' class="is-me"' : '') + '><span>' + x.place + '.º ' + x.name + '</span><span>' + (x.place === 1 ? 'Cruzó la meta' : 'Se quedó con cartas') + '</span></li>'; }).join('') +
-        '</ol><p>¿Otra vuelta? Cualquiera de los dos puede pedir la revancha.</p><div class="pd-result__actions"><button type="button" class="p-button" data-act="rematch">Otra partida</button></div>';
+      var winner = v.results.filter(function (x) { return x.place === 1; })[0];
+      var last = v.results.length;
+      resultBox.innerHTML = '<h2>' + (meRes.place === 1 ? '¡Ganaste la carrera!' : meRes.place === last ? 'Te quedaste en la pista' : 'Llegaste en ' + meRes.place + '.º lugar') + '</h2>' +
+        (meRes.place !== 1 ? '<p>Ganó ' + esc(winner.name) + '.</p>' : '') + '<ol>' +
+        v.results.map(function (x) { return '<li' + (x.me ? ' class="is-me"' : '') + '><span>' + x.place + '.º ' + esc(x.name) + '</span><span>' + (x.place === last ? 'Se quedó con cartas' : 'Cruzó la meta') + '</span></li>'; }).join('') +
+        '</ol><p>¿Otra vuelta? Cualquiera puede pedir la revancha.</p><div class="pd-result__actions"><button type="button" class="p-button" data-act="rematch">Otra partida</button></div>';
       resultBox.hidden = false;
     } else resultBox.hidden = true;
   }
@@ -414,16 +536,16 @@
 
   function center(rect) { return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }; }
   function spotOf(el, rot) { return { c: center(el.getBoundingClientRect()), w: el.offsetWidth, rot: rot || 0 }; }
-  function cardWidth(who) {
+  function cardWidth(seat) {
     var probe = document.createElement('div');
-    probe.className = who === 'me' ? 'pd-probe pd-probe--hand' : 'pd-probe';
+    probe.className = seat === 0 ? 'pd-probe pd-probe--hand' : 'pd-probe';
     board.appendChild(probe);
     var w = probe.offsetWidth; probe.remove();
     return w || 40;
   }
-  function seatSpot(who) {
-    var el = who === 'me' ? seatMe.querySelector('.pd-hand') || seatMe : seatOpp.querySelector('.pd-matbox') || seatOpp;
-    return { c: center(el.getBoundingClientRect()), w: cardWidth(who), rot: who === 'me' ? 0 : 180 };
+  function seatSpot(seat) {
+    var el = seat === 0 ? seats[0].querySelector('.pd-hand') || seats[0] : seats[seat].querySelector('.pd-matbox') || seats[seat];
+    return { c: center(el.getBoundingClientRect()), w: cardWidth(seat), rot: ORIENT[seat] };
   }
   function pileSpot() {
     var pile = $('.pd-pile'), sample = pile.querySelector('.pd-card, .pd-pile__empty');
@@ -452,9 +574,7 @@
   function applyView(v) {
     var moves = v.moves || [];
     view = v;
-    // keep only selected cards that are still in your hand
-    selected = selected.filter(function (id) { return v.me.hand.some(function (c) { return c.id === id; }); });
-    if (v.turn !== 'me') { selected = []; }
+    selected = v.turn === 'me' ? selected.filter(function (id) { return v.me.hand.some(function (c) { return c.id === id; }); }) : [];
     arriving = {};
     var animate = canAnimate();
     if (animate) moves.forEach(function (m) {
@@ -469,14 +589,14 @@
         m.cards.slice(-4).forEach(function (c, j) {
           var target = m.discarded ? null : $('.pd-pile [data-id="' + c.id + '"]');
           var to = target ? { c: center(target.getBoundingClientRect()), w: target.offsetWidth, rot: ((c.id * 37) % 15) - 7 } : pileSpot();
-          fly(c, origins[c.id] || seatSpot(m.who), to, { delay: t + j * 110, fadeOut: !target, done: function () { if (target) target.classList.remove('is-arriving'); } });
+          fly(c, origins[c.id] || seatSpot(m.seat), to, { delay: t + j * 110, fadeOut: !target, done: function () { if (target) target.classList.remove('is-arriving'); } });
         });
         t += FLY_MS;
       } else if (m.type === 'reveal' && m.card) {
-        var dest = seatMe.querySelector('[data-card="' + m.card.id + '"] .pd-card');
-        if (dest) { fly(m.card, origins.hidden || seatSpot('me'), spotOf(dest), { duration: 600, delay: t, done: function () { dest.classList.remove('is-arriving'); } }); t += 600; }
+        var dest = seats[0].querySelector('[data-card="' + m.card.id + '"] .pd-card');
+        if (dest) { fly(m.card, origins.hidden || seatSpot(0), spotOf(dest), { duration: 600, delay: t, done: function () { dest.classList.remove('is-arriving'); } }); t += 600; }
       } else if (m.type === 'pickup') {
-        var n = Math.min(m.n, 5), to = seatSpot(m.who), from = pileSpot();
+        var n = Math.min(m.n, 5), to = seatSpot(m.seat), from = pileSpot();
         for (var j = 0; j < n; j++) fly(null, from, to, { delay: t + j * 90, fadeOut: true });
         t += FLY_MS;
       }
@@ -496,7 +616,7 @@
   function rememberOrigins(ids) {
     ids.forEach(function (id) {
       if (origins[id]) return;
-      var el = seatMe.querySelector('[data-card="' + id + '"] .pd-card');
+      var el = seats[0].querySelector('[data-card="' + id + '"] .pd-card');
       if (el) origins[id] = spotOf(el);
     });
   }
@@ -556,13 +676,13 @@
       drag.started = true;
       var ghost = document.createElement('div');
       ghost.className = 'pd-drag';
-      ghost.style.setProperty('--drag-w', cardWidth('me') + 'px');
+      ghost.style.setProperty('--drag-w', cardWidth(0) + 'px');
       drag.ids.forEach(function (id, k) {
         var im = document.createElement('img');
         im.className = 'pd-card'; im.src = src(findInHand(id)); im.alt = ''; im.setAttribute('data-id', id);
         im.style.transform = 'rotate(' + ((k - (drag.ids.length - 1) / 2) * 6) + 'deg)';
         ghost.appendChild(im);
-        var orig = seatMe.querySelector('[data-card="' + id + '"]');
+        var orig = seats[0].querySelector('[data-card="' + id + '"]');
         if (orig) orig.classList.add('is-dragging');
       });
       board.appendChild(ghost);
@@ -585,7 +705,7 @@
     var hit = !cancelled && e && pileHit(e.clientX, e.clientY);
     if (hit) { origins = {}; d.ghost.querySelectorAll('img').forEach(function (im) { origins[+im.getAttribute('data-id')] = spotOf(im); }); }
     d.ghost.remove();
-    seatMe.querySelectorAll('.is-dragging').forEach(function (b) { b.classList.remove('is-dragging'); });
+    seats[0].querySelectorAll('.is-dragging').forEach(function (b) { b.classList.remove('is-dragging'); });
     if (hit) playIds(d.ids); else render();
   }
   window.addEventListener('pointerup', function (e) { endDrag(e, false); });
@@ -604,7 +724,10 @@
     }
     switch (t.getAttribute('data-act')) {
       case 'pickup': selected = []; say(''); sendAction('pickup'); break;
-      case 'rematch': if (role === 'host') startGame(); else link.send({ t: 'rematch' }); break;
+      case 'rematch':
+        if (role === 'host') { if (connectedCount() >= 2) startGame(); else { say('Nadie más está conectado para la revancha.', true); render(); } }
+        else link.send({ t: 'rematch' });
+        break;
       case 'tip-ok':
         var never = document.getElementById('pd-tip-never');
         if (never && never.checked && infoCard) { hiddenTips[infoCard.k] = true; save('pd-tip2-' + infoCard.k, '1'); }
