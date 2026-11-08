@@ -470,6 +470,9 @@
       // Floating copy of the selected cards that follows the pointer
       var ghost = document.createElement('div');
       ghost.className = 'pd-drag';
+      // Same size as your hand cards (measured, so it can't fall back to the image's full size)
+      var cw = cardWidthAt(0);
+      ghost.style.setProperty('--drag-w', cw + 'px');
       drag.ids.forEach(function (id, k) {
         var c = findInHand(id);
         var im = document.createElement('img');
@@ -482,7 +485,7 @@
         var orig = seats[0].querySelector('[data-card="' + id + '"]');
         if (orig) orig.classList.add('is-dragging');
       });
-      document.body.appendChild(ghost);
+      board.appendChild(ghost);
       drag.ghost = ghost;
     }
     drag.ghost.style.left = e.clientX + 'px';

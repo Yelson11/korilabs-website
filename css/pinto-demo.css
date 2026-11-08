@@ -1,16 +1,18 @@
 /* ==========================================================================
    Kori Labs · PINTO web demo (juegos/pinto/demo/)
    Loaded after styles.css and pinto.css; reuses the PINTO palette (--asphalt,
-   --cream, --red, --display). Layout: a light wooden table seen from above. Each
+   --cream, --red, --display). Layout: a dark wooden table seen from above. Each
    bot sits on one side with its cards on a "mat" rotated to face it; the pile is
    in the middle and your cards are at the bottom.
    ========================================================================== */
 
 .pinto-demo {
-  --wood: #c9a173;        /* light oak table so the dark cards stand out */
-  --wood-grain: #9c7046;
-  --ink: #2a1a0e;         /* text on the table */
-  --ink-dim: #5b3f26;
+  --wood: #623e2b;        /* walnut table (owner's color) */
+  --wood-dark: #4e2b1d;
+  --wood-light: #8e5b3e;
+  --ink: #f7efe3;         /* text on the table */
+  --ink-dim: #dcc6a6;
+  --shadow-ink: #24130b;  /* dark ring around selected cards */
   --gold: #f2c230;
   --ok: #3dba6a;
   --card-hand: clamp(3.6rem, 2.4rem + 4.6vw, 5.6rem);
@@ -40,17 +42,17 @@
   align-items: center;
   gap: clamp(0.5rem, 2vw, 1.25rem);
   padding: clamp(0.9rem, 3vw, 1.75rem);
-  border: 1px solid #6e4a2a;
+  border: 1px solid var(--wood-dark);
   border-radius: 1.5rem;
   color: var(--ink);
   /* wood: plank seams + fine grain + soft light falloff */
   background:
-    repeating-linear-gradient(0deg, rgb(70 42 18 / 0.22) 0 2px, transparent 2px 140px),
-    repeating-linear-gradient(90deg, rgb(120 78 40 / 0.07) 0 1px, transparent 1px 7px),
-    repeating-linear-gradient(90deg, rgb(110 70 35 / 0.06) 0 2px, transparent 2px 31px),
-    radial-gradient(ellipse at 50% 45%, rgb(255 240 215 / 0.28), transparent 70%),
+    repeating-linear-gradient(0deg, rgb(36 19 11 / 0.45) 0 2px, transparent 2px 140px),
+    repeating-linear-gradient(90deg, rgb(36 19 11 / 0.12) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(90deg, rgb(142 91 62 / 0.18) 0 2px, transparent 2px 31px),
+    radial-gradient(ellipse at 50% 45%, rgb(142 91 62 / 0.55), transparent 70%),
     var(--wood);
-  box-shadow: inset 0 0 0 6px rgb(110 72 40 / 0.35), inset 0 0 40px rgb(60 35 15 / 0.25);
+  box-shadow: inset 0 0 0 6px rgb(78 43 29 / 0.8), inset 0 0 50px rgb(20 10 5 / 0.45);
   overflow: hidden;
 }
 .pd-board::before {
@@ -75,7 +77,7 @@
   max-width: none;
   border-radius: 7%/5%;
   background: var(--asphalt-3);
-  box-shadow: 0 3px 8px rgb(40 22 8 / 0.4);
+  box-shadow: 0 3px 10px rgb(15 7 3 / 0.55);
 }
 img.pd-card { height: auto; object-fit: cover; }
 
@@ -93,7 +95,7 @@ img.pd-card { height: auto; object-fit: cover; }
   border-radius: 1rem;
   transition: border-color 0.25s ease, background-color 0.25s ease;
 }
-.pd-seat.is-turn, .pd-me.is-turn { border-color: rgb(42 26 14 / 0.6); background: rgb(255 248 235 / 0.28); }
+.pd-seat.is-turn, .pd-me.is-turn { border-color: rgb(247 239 227 / 0.65); background: rgb(247 239 227 / 0.08); }
 .pd-seat.is-out { opacity: 0.5; }
 
 .pd-seat {
@@ -158,7 +160,7 @@ img.pd-card { height: auto; object-fit: cover; }
   place-items: center;
   width: var(--card-pile);
   aspect-ratio: 660 / 922;
-  border: 2px dashed rgb(42 26 14 / 0.35);
+  border: 2px dashed rgb(247 239 227 / 0.4);
   border-radius: 7%/5%;
   color: var(--ink-dim);
   font-size: 0.75rem;
@@ -241,18 +243,18 @@ button.pd-hidden-btn:focus-visible { outline: 3px solid var(--cream); outline-of
 /* darken instead of fading, so unplayable cards don't turn beige on the wood */
 .pd-hand__card.is-dim { filter: grayscale(0.7) brightness(0.55); }
 .pd-hand__card[aria-pressed="true"] { transform: translateY(-12px); }
-.pd-hand__card[aria-pressed="true"] .pd-card { outline: 4px solid var(--gold); outline-offset: 1px; box-shadow: 0 0 0 8px var(--ink); }
+.pd-hand__card[aria-pressed="true"] .pd-card { outline: 4px solid var(--gold); outline-offset: 1px; box-shadow: 0 0 0 8px var(--shadow-ink); }
 .pd-hand.is-active .pd-hand__card { touch-action: none; } /* lets you drag cards on phones */
 .pd-hand__card.is-dragging { opacity: 0.25; }
 
 /* Selection being dragged to the pile */
 .pd-drag { position: fixed; z-index: 50; display: flex; pointer-events: none; transform: translate(-50%, -60%); }
-.pd-drag .pd-card { --w: var(--card-hand); width: var(--card-hand); margin-left: calc(var(--card-hand) * -0.55); box-shadow: 0 10px 24px rgb(0 0 0 / 0.45); }
+.pd-drag .pd-card { width: var(--drag-w, 4.5rem); margin-left: calc(var(--drag-w, 4.5rem) * -0.55); box-shadow: 0 10px 24px rgb(0 0 0 / 0.5); }
 .pd-drag .pd-card:first-child { margin-left: 0; }
 .pd-pile.is-drop { outline: 3px dashed var(--ink); outline-offset: 10px; border-radius: 1rem; }
 
 /* Countdown of your 3 s window to keep playing */
-.pd-timer { width: min(16rem, 80%); height: 6px; border-radius: 999px; background: rgb(42 26 14 / 0.18); overflow: hidden; }
+.pd-timer { width: min(16rem, 80%); height: 6px; border-radius: 999px; background: rgb(247 239 227 / 0.2); overflow: hidden; }
 .pd-timer i { display: block; height: 100%; background: var(--ink); transform-origin: left; animation: pd-countdown linear forwards; }
 @keyframes pd-countdown { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 
@@ -263,32 +265,32 @@ button.pd-hidden-btn:focus-visible { outline: 3px solid var(--cream); outline-of
   max-width: 34rem;
   padding: 0.75rem 1rem;
   border-radius: 0.9rem;
-  background: var(--asphalt-2);
-  color: var(--cream);
+  background: var(--cream);
+  color: var(--asphalt);
   font-size: 0.9rem;
   line-height: 1.45;
-  box-shadow: 0 8px 20px rgb(40 22 8 / 0.35);
+  box-shadow: 0 8px 20px rgb(15 7 3 / 0.5);
 }
 .pd-tip p { margin: 0; }
 .pd-tip strong { font-family: var(--display); }
 .pd-tip__actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .pd-tip__btn {
   padding: 0.35rem 0.9rem;
-  border: 1.5px solid var(--cream);
+  border: 1.5px solid var(--asphalt);
   border-radius: 999px;
-  background: var(--cream);
-  color: var(--asphalt);
+  background: var(--asphalt);
+  color: var(--cream);
   font: 600 0.82rem var(--display);
   cursor: pointer;
 }
-.pd-tip__btn--ghost { background: none; color: var(--cream); }
-.pd-tip__btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.pd-tip__btn--ghost { background: none; color: var(--asphalt); }
+.pd-tip__btn:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
 
 .pd-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.6rem 0.9rem; min-height: 3rem; }
 .pd-actions .p-button { margin-top: 0; }
 .pd-status { margin: 0; color: var(--ink); font-size: 0.95rem; font-weight: 700; text-align: center; text-wrap: balance; }
 .pd-status--hint { color: var(--ink-dim); font-weight: 400; font-size: 0.88rem; }
-.pd-status--error { color: #8f1d14; }
+.pd-status--error { color: #ffb3a6; }
 
 /* ---------- Log and help ---------- */
 .pd-below { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 1.5rem; padding-block: 1.5rem 3rem; }
