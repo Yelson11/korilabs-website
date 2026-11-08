@@ -298,8 +298,10 @@ button.pd-hidden-btn:focus-visible { outline: 3px solid var(--cream); outline-of
   cursor: pointer;
 }
 .pd-tip__btn:hover { background: #2b2c31; }
-.pd-tip__btn--ghost { background: none; color: var(--asphalt); }
-.pd-tip__btn--ghost:hover { background: rgb(22 23 27 / 0.08); }
+.pd-tip__actions { align-items: center; }
+.pd-tip__check { display: inline-flex; align-items: center; gap: 0.4rem; color: #3b3127; font-size: 0.82rem; cursor: pointer; }
+.pd-tip__check input { width: 1rem; height: 1rem; margin: 0; accent-color: var(--asphalt); cursor: pointer; }
+.pd-tip__check input:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
 .pd-tip__btn:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
 
 .pd-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.6rem 0.9rem; min-height: 3rem; }

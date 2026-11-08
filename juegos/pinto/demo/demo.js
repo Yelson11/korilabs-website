@@ -167,7 +167,7 @@
           '<p class="pd-tip__title">' + E.cardName(infoCard) + '</p>' +
           '<p class="pd-tip__text">' + INFO[infoCard.k] + '</p>' +
           '<div class="pd-tip__actions"><button type="button" class="pd-tip__btn" data-act="tip-ok">Entendido</button>' +
-          '<button type="button" class="pd-tip__btn pd-tip__btn--ghost" data-act="tip-never">No volver a mostrar</button></div>' +
+          '<label class="pd-tip__check" for="pd-tip-never"><input type="checkbox" id="pd-tip-never"' + (tipHidden(infoCard.k) ? ' checked' : '') + '> No volver a mostrar</label></div>' +
         '</div></div>';
     }
 
@@ -605,10 +605,14 @@
       case 'pickup': b0 = s.log.length; clearTimeout(chainTimer); E.pickUp(s); selected = []; say(''); schedule(b0); break;
       case 'skip': fastForward = true; schedule(); break;
       case 'tip-ok': infoCard = null; render(); break;
-      case 'tip-never':
-        if (infoCard) { hiddenTips[infoCard.k] = true; save('pd-tip-' + infoCard.k, '1'); }
-        infoCard = null; render(); break;
     }
+  });
+
+  // "No volver a mostrar" checkbox: remembered per special card as soon as it's ticked
+  board.addEventListener('change', function (e) {
+    if (e.target.id !== 'pd-tip-never' || !infoCard) return;
+    hiddenTips[infoCard.k] = e.target.checked;
+    save('pd-tip-' + infoCard.k, e.target.checked ? '1' : '');
   });
 
   document.querySelectorAll('[data-act="restart"]').forEach(function (b) { b.addEventListener('click', newGame); });
