@@ -177,7 +177,7 @@
       label('Tú', p.place ? p.place + '.º lugar' : '') +
       slots(p, 'pd-table pd-table--me', revealing) +
       tip +
-      '<div class="pd-hand' + (mine ? ' is-active' : '') + '" role="group" aria-label="Tu mano">' + hand + '</div>' +
+      '<div class="pd-hand' + (mine ? ' is-active' : '') + (p.hand.length > 10 ? ' is-crowded' : '') + '" role="group" aria-label="Tu mano">' + hand + '</div>' +
       '<div class="pd-actions" aria-live="polite">' + actions + '</div>';
   }
 
@@ -570,6 +570,8 @@
     dealing = true;
     s = null;
     renderIdle();
+    // Bring the whole table into view for the race
+    board.scrollIntoView({ block: 'start', behavior: reduceMotion() ? 'auto' : 'smooth' });
     var game = E.newGame({ humanStarts: true, humanChains: true });
     dealAnimation(game, function () {
       dealing = false;
