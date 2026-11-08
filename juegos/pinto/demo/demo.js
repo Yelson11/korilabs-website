@@ -3,7 +3,7 @@
    Seats: 0 = you (bottom), 1 = left, 2 = top, 3 = right. Each bot's cards are
    drawn on a "mat" rotated to face that player, like a real table.
    You play by double-tapping a card or dragging your selection onto the pile.
-   After each play your turn stays open for 3 s so you can add another card of
+   After each play your turn stays open for 5 s so you can add another card of
    the same value; then the next player starts. */
 (function () {
   'use strict';
@@ -14,8 +14,8 @@
   var BASE = board.getAttribute('data-cards') || '../img/cartas/';
   var VER = '?v=4';
   var BOT_DELAY = 2600;      // each bot "thinks" this long, so new players can follow
-  var AFTER_CHAIN = 700;     // first bot after your 3 s window (you already waited)
-  var CHAIN_MS = 3000;       // time you have to add another card of the same value
+  var AFTER_CHAIN = 700;     // first bot after your 5 s window (you already waited)
+  var CHAIN_MS = 5000;       // time you have to add another card of the same value
   var FAST_DELAY = 200;      // only after you finished and chose to skip ahead
   var FLY_MS = 750;          // a played card travelling from a seat to the pile
   var DOUBLE_TAP_MS = 380;
@@ -24,7 +24,7 @@
 
   // What each special card does (shown once when you pick it)
   var INFO = {
-    reb: 'Se juega sobre un ritmo del 1 al 4, con vía libre, sobre una Bandera Roja u otro Rebufo. Te deja sumar hasta dos valores seguidos de 5 o más, por ejemplo Rebufo + 6 + 7. Puedes jugarlo solo y seguir con los ritmos en tus 3 segundos.',
+    reb: 'Se juega sobre un ritmo del 1 al 4, con vía libre, sobre una Bandera Roja u otro Rebufo. Te deja sumar hasta dos valores seguidos de 5 o más, por ejemplo Rebufo + 6 + 7. Puedes jugarlo solo y seguir con los ritmos en tus 5 segundos.',
     roja: 'Cierra la pista sin descartar la pila: el siguiente jugador tiene vía libre. Se puede jugar sobre cualquier carta.',
     ama: 'Obliga al siguiente jugador a jugar ritmos bajos, del 1 al 4. No se puede jugar sobre ritmos altos, Vuelta Rápida ni Rebufo.',
     azul: 'Salta el turno del siguiente jugador. No se puede jugar sobre Bandera Amarilla, Rebufo ni Vuelta Rápida.',
@@ -130,7 +130,6 @@
     var mine = myTurn();
     var playable = mine ? E.playableIds(s) : {};
     var revealing = hiddenStage();
-    var next = s.players[nextAliveIndex(0)];
 
     var hand = p.hand.map(function (c) {
       var on = selected.indexOf(c.id) >= 0;
@@ -144,9 +143,7 @@
       var moves = E.legalMoves(s);
       if (s.chain) {
         var left = Math.max(0, CHAIN_MS - (Date.now() - chainStart));
-        actions = '<p class="pd-status">' + (revealing
-            ? '¿Revelas otra oculta? Si es ' + E.cardName(s.chain) + ' la puedes jugar.'
-            : '¿Juegas otro ' + E.cardName(s.chain) + '? Si no, sigue ' + next.name + '.') + '</p>' +
+        actions = '<p class="pd-status">¿Tienes otra carta para jugar?</p>' +
           '<div class="pd-timer" aria-hidden="true"><i style="animation-duration:' + CHAIN_MS + 'ms;animation-delay:-' + (CHAIN_MS - left) + 'ms"></i></div>';
       } else if (revealing) {
         actions = '<p class="pd-status">Toca una de tus cartas ocultas para revelarla.</p>';
@@ -372,7 +369,7 @@
     schedule(before);
   }
 
-  // Your open turn: 3 s to add another card of the same value, then the next player goes
+  // Your open turn: 5 s to add another card of the same value, then the next player goes
   function startChainWindow() {
     clearTimeout(chainTimer);
     chainStart = Date.now();
