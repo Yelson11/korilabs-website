@@ -258,24 +258,38 @@ button.pd-hidden-btn:focus-visible { outline: 3px solid var(--cream); outline-of
 .pd-timer i { display: block; height: 100%; background: var(--ink); transform-origin: left; animation: pd-countdown linear forwards; }
 @keyframes pd-countdown { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 
-/* What a special card does: small, dismissible, doesn't block the table */
+/* What a special card does: small, dismissible, doesn't block the table.
+   Card thumbnail + short text on a cream note with a racing-stripe edge. */
 .pd-tip {
+  position: relative;
   display: grid;
-  gap: 0.6rem;
-  max-width: 34rem;
-  padding: 0.75rem 1rem;
-  border-radius: 0.9rem;
-  background: var(--cream);
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.9rem;
+  max-width: 32rem;
+  padding: 0.85rem 1rem 0.85rem 0.85rem;
+  border-radius: 1rem;
+  background: linear-gradient(180deg, #fbf7ef, #efe6d6);
   color: var(--asphalt);
-  font-size: 0.9rem;
-  line-height: 1.45;
-  box-shadow: 0 8px 20px rgb(15 7 3 / 0.5);
+  box-shadow: 0 10px 26px rgb(15 7 3 / 0.5), inset 0 0 0 1px rgb(255 255 255 / 0.6);
+  overflow: hidden;
 }
-.pd-tip p { margin: 0; }
-.pd-tip strong { font-family: var(--display); }
-.pd-tip__actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.pd-tip::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: linear-gradient(90deg, #e63c3c 0 12.5%, #f08c28 0 25%, #f2c230 0 37.5%, #3dba6a 0 50%, #22b3c4 0 62.5%, #2f86de 0 75%, #9b4fd8 0 87.5%, #e23b86 0);
+}
+.pd-tip__card { --w: 3.6rem; transform: rotate(-4deg); box-shadow: 0 6px 14px rgb(15 7 3 / 0.35); }
+.pd-tip__body { display: grid; gap: 0.3rem; min-width: 0; }
+.pd-tip__body p { margin: 0; }
+.pd-tip__eyebrow { color: var(--red); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+.pd-tip__title { font-family: var(--display); font-size: 1.05rem; font-style: italic; font-weight: 800; text-transform: uppercase; line-height: 1.1; }
+.pd-tip__text { color: #3b3127; font-size: 0.88rem; line-height: 1.45; }
+.pd-tip__actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.35rem; }
 .pd-tip__btn {
-  padding: 0.35rem 0.9rem;
+  padding: 0.38rem 1rem;
   border: 1.5px solid var(--asphalt);
   border-radius: 999px;
   background: var(--asphalt);
@@ -283,7 +297,9 @@ button.pd-hidden-btn:focus-visible { outline: 3px solid var(--cream); outline-of
   font: 600 0.82rem var(--display);
   cursor: pointer;
 }
+.pd-tip__btn:hover { background: #2b2c31; }
 .pd-tip__btn--ghost { background: none; color: var(--asphalt); }
+.pd-tip__btn--ghost:hover { background: rgb(22 23 27 / 0.08); }
 .pd-tip__btn:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
 
 .pd-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.6rem 0.9rem; min-height: 3rem; }
@@ -346,6 +362,8 @@ button.pd-hidden-btn:focus-visible { outline: 3px solid var(--cream); outline-of
 }
 
 @media (prefers-reduced-motion: no-preference) {
+  .pd-tip { animation: pd-tip-in 0.25s ease-out; }
+  @keyframes pd-tip-in { from { opacity: 0; transform: translateY(8px); } }
   .pd-deal-text { animation: pd-slide 1.2s ease-in-out infinite alternate; }
   .pd-dots i { animation: pd-blink 1s infinite; }
   .pd-dots i:nth-child(2) { animation-delay: 0.2s; }

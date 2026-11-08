@@ -251,13 +251,44 @@
     var p = s.players[s.current];
     var cards = ids.map(function (id) { return p.hand.find(function (c) { return c.id === id; }); });
     if (cards.some(function (c) { return !c; })) return { error: 'Esas cartas no están en tu mano.' };
-    if (s.chain && !cards.every(function (c) { return sameKind(c, s.chain); })) {
-      return { error: 'Para seguir en este turno tienes que mantener el mismo valor (' + cardName(s.chain) + ').' };
-    }
-    var res = checkPlay(cards, s.pile, s.opening);
+    var res = checkTurnPlay(s, cards);
     if (res.error) return res;
     p.hand = p.hand.filter(function (c) { return ids.indexOf(c.id) < 0; });
     return putOnPile(s, p, res.cards);
+  }
+
+  /* A Rebufo played during your open turn can be completed afterwards: more
+     Rebufos (before any rhythm) or rhythms of 5+ with at most two consecutive
+     values in total, e.g. Rebufo → 5 → 6 → 6. */
+  function comboFits(s, cards) {
+    if (!s.combo) return false;
+    var vals = s.combo.vals.slice();
+    var ok = cards.every(function (c) {
+      if (c.k === 'reb') return !vals.length;
+      if (c.k !== 'r' || c.v < 5) return false;
+      if (vals.indexOf(c.v) < 0) vals.push(c.v);
+      return true;
+    });
+    vals.sort();
+    return ok && vals.length <= 2 && (vals.length < 2 || vals[1] - vals[0] === 1);
+  }
+
+  // Everything a play has to satisfy, including the open-turn rules (same value, or completing a Rebufo)
+  function checkTurnPlay(s, cards) {
+    if (s.chain) {
+      var same = cards.every(function (c) { return sameKind(c, s.chain); });
+      if (!same && comboFits(s, cards)) {
+        var sorted = cards.slice().sort(function (a, b) { return (a.k === 'reb' ? 0 : a.v) - (b.k === 'reb' ? 0 : b.v); });
+        if (!canPlayKind(sorted[0], s.pile)) return { error: reasonFor(sorted[0], s.pile) };
+        return { cards: sorted };
+      }
+      if (!same) {
+        return { error: s.combo
+          ? 'Después del Rebufo puedes seguir con ritmos de 5 o más, hasta dos valores seguidos (por ejemplo 5 y 6).'
+          : 'Para seguir en este turno tienes que mantener el mismo valor (' + cardName(s.chain) + ').' };
+      }
+    }
+    return checkPlay(cards, s.pile, s.opening);
   }
 
   function putOnPile(s, p, cards, fromHidden) {
@@ -300,6 +331,13 @@
       canChain = true;
       endsTurn = false;
       s.chain = last;
+      // Keep track of an open Rebufo so it can still be completed with high rhythms
+      var hasReb = cards.some(function (c) { return c.k === 'reb'; });
+      if (hasReb || s.combo) {
+        var vals = s.combo ? s.combo.vals.slice() : [];
+        cards.forEach(function (c) { if (c.k === 'r' && vals.indexOf(c.v) < 0) vals.push(c.v); });
+        s.combo = { vals: vals };
+      }
     } else if (!finished && tookVisible && !special && !mixed && !wasOpening &&
         p.hand.some(function (c) { return sameKind(c, last); })) {
       canChain = true;
@@ -308,6 +346,7 @@
     } else {
       s.chain = null;
     }
+    if (!s.chain) s.combo = null;
     if (endsTurn) advance(s);
     return { ok: true, endsTurn: endsTurn, canChain: canChain };
   }
@@ -324,6 +363,7 @@
   function endChain(s) {
     if (!s.chain) return;
     s.chain = null;
+    s.combo = null;
     advance(s);
   }
 
@@ -381,6 +421,7 @@
   }
 
   function advance(s) {
+    s.combo = null;
     if (s.over) return;
     var i = nextAliveIndex(s, s.current);
     if (s.skipNext) {
@@ -417,9 +458,8 @@
     if (!p.hand.length) return [];
     var moves = [];
     groupsOf(p.hand).forEach(function (g) {
-      if (s.chain && !sameKind(g[0], s.chain)) return;
       var cards = g[0].k === 'cuad' ? [g[0]] : g;
-      if (!checkPlay(cards, s.pile, s.opening).error) moves.push(cards);
+      if (!checkTurnPlay(s, cards).error) moves.push(cards);
     });
     // Rebufo combos (best pair of consecutive high values)
     var rebs = p.hand.filter(function (c) { return c.k === 'reb'; });

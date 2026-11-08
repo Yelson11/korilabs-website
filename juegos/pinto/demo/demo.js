@@ -24,7 +24,7 @@
 
   // What each special card does (shown once when you pick it)
   var INFO = {
-    reb: 'Se juega sobre un ritmo del 1 al 4, con vía libre, sobre una Bandera Roja u otro Rebufo. Te deja sumar hasta dos valores seguidos de 5 o más, por ejemplo Rebufo + 6 + 7.',
+    reb: 'Se juega sobre un ritmo del 1 al 4, con vía libre, sobre una Bandera Roja u otro Rebufo. Te deja sumar hasta dos valores seguidos de 5 o más, por ejemplo Rebufo + 6 + 7. Puedes jugarlo solo y seguir con los ritmos en tus 3 segundos.',
     roja: 'Cierra la pista sin descartar la pila: el siguiente jugador tiene vía libre. Se puede jugar sobre cualquier carta.',
     ama: 'Obliga al siguiente jugador a jugar ritmos bajos, del 1 al 4. No se puede jugar sobre ritmos altos, Vuelta Rápida ni Rebufo.',
     azul: 'Salta el turno del siguiente jugador. No se puede jugar sobre Bandera Amarilla, Rebufo ni Vuelta Rápida.',
@@ -164,10 +164,14 @@
 
     var tip = '';
     if (infoCard) {
-      tip = '<div class="pd-tip" role="status">' +
-        '<p><strong>' + E.cardName(infoCard) + '.</strong> ' + INFO[infoCard.k] + '</p>' +
-        '<div class="pd-tip__actions"><button type="button" class="pd-tip__btn" data-act="tip-ok">OK</button>' +
-        '<button type="button" class="pd-tip__btn pd-tip__btn--ghost" data-act="tip-never">No volver a mostrar</button></div></div>';
+      tip = '<div class="pd-tip" role="status">' + img(infoCard, 'pd-tip__card') +
+        '<div class="pd-tip__body">' +
+          '<p class="pd-tip__eyebrow">Carta especial</p>' +
+          '<p class="pd-tip__title">' + E.cardName(infoCard) + '</p>' +
+          '<p class="pd-tip__text">' + INFO[infoCard.k] + '</p>' +
+          '<div class="pd-tip__actions"><button type="button" class="pd-tip__btn" data-act="tip-ok">Entendido</button>' +
+          '<button type="button" class="pd-tip__btn pd-tip__btn--ghost" data-act="tip-never">No volver a mostrar</button></div>' +
+        '</div></div>';
     }
 
     el.innerHTML =
