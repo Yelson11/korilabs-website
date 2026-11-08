@@ -45,7 +45,7 @@ assets/pinto-caja.webp     Caja de PINTO para la tarjeta de la portada
 
 ## Demo de PINTO
 
-`juegos/pinto/demo/` es una carrera jugable contra tres bots (4 jugadores) que corre en el navegador, sin servidor.
+`juegos/pinto/demo/` es una carrera jugable uno contra uno (tú contra un bot, reglas de 2 jugadores) que corre en el navegador, sin servidor.
 
 - Por ahora no está enlazada desde el menú y tiene `noindex`, para probarla antes de anunciarla. Para publicarla, agrega un botón hacia `juegos/pinto/demo/` en la página de PINTO y quita la línea `robots noindex` de `demo/index.html`.
 - Las reglas están en `demo/pinto-engine.js`. Si cambia el reglamento, se ajusta ahí. `demo/demo.js` dibuja la mesa y maneja los turnos, y los estilos están en `css/pinto-demo.css`.

@@ -1,9 +1,9 @@
 /* ==========================================================================
    Kori Labs · PINTO web demo (juegos/pinto/demo/)
    Loaded after styles.css and pinto.css; reuses the PINTO palette (--asphalt,
-   --cream, --red, --display). Layout: a table seen from above. Each bot sits on
-   one side with its cards on a "mat" rotated to face it; the pile is in the
-   middle and your cards are at the bottom.
+   --cream, --red, --display). Layout: a table seen from above for two players.
+   The rival sits at the top with its cards on a "mat" turned to face it, the
+   pile is in the middle and your cards are at the bottom.
    ========================================================================== */
 
 .pinto-demo {
@@ -14,10 +14,10 @@
   --card-hand: clamp(3.6rem, 2.4rem + 4.6vw, 5.6rem);
   --card-me-table: clamp(2.6rem, 2rem + 2.4vw, 3.8rem);
   --card-pile: clamp(4.4rem, 3rem + 5vw, 6.8rem);
-  --card-mini: clamp(1.45rem, 1rem + 1.6vw, 2.5rem);
-  /* bot mat: table cards on top, fanned hand below (upright frame, before rotation) */
-  --mat-w: calc(var(--card-mini) * 4.2);
-  --mat-h: calc(var(--card-mini) * 3.5);
+  --card-mini: clamp(2rem, 1.5rem + 2vw, 3rem);
+  /* bot mat: 5 table cards on top, fanned hand below (upright frame, before rotation) */
+  --mat-w: calc(var(--card-mini) * 6.2);
+  --mat-h: calc(var(--card-mini) * 3.9);
   color-scheme: dark;
 }
 
@@ -50,11 +50,9 @@
 .pd-board {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 1fr);
-  grid-template-areas:
-    ".    top    ."
-    "left center right"
-    "me   me     me";
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "top" "center" "me";
+  justify-items: center;
   align-items: center;
   gap: clamp(0.5rem, 2vw, 1.25rem);
   padding: clamp(0.9rem, 3vw, 1.75rem);
@@ -74,10 +72,8 @@
 }
 
 .pd-seat--top { grid-area: top; }
-.pd-seat--left { grid-area: left; }
-.pd-seat--right { grid-area: right; }
 .pd-center { grid-area: center; }
-.pd-me { grid-area: me; }
+.pd-me { grid-area: me; width: 100%; }
 
 /* ---------- Cards ---------- */
 .pd-card {
@@ -114,14 +110,14 @@ img.pd-card { height: auto; object-fit: cover; }
   align-items: center;
   gap: 0.5rem;
   min-width: 0;
-  padding: 0.6rem 0.4rem;
+  padding: 0.6rem 1.25rem;
 }
 
 .pd-label { display: grid; justify-items: center; gap: 0.1rem; margin: 0; text-align: center; line-height: 1.2; }
 .pd-label strong { font-family: var(--display); font-weight: 600; font-size: 0.95rem; }
 .pd-label span { color: var(--cream-dim); font-size: 0.82rem; font-variant-numeric: tabular-nums; }
 
-/* Bot mat, rotated to face its player: top seat 180°, left 90°, right −90° */
+/* Bot mat, turned 180° so the rival's cards face it (rules for left/right seats kept for 3–4 players) */
 .pd-matbox { position: relative; flex: none; width: var(--mat-w); height: var(--mat-h); }
 .pd-matbox--left, .pd-matbox--right { width: var(--mat-h); height: var(--mat-w); }
 .pd-mat {
@@ -142,7 +138,8 @@ img.pd-card { height: auto; object-fit: cover; }
 .pd-slot .pd-card--up { position: absolute; top: 14%; left: 0; }
 .pd-mat .pd-slot { padding-bottom: 14%; }
 
-.pd-fan { position: absolute; bottom: 0; left: 50%; width: var(--card-mini); height: calc(var(--card-mini) * 1.4); transform: translateX(-50%); }
+/* lifted a bit so the outer fanned cards stay inside the mat */
+.pd-fan { position: absolute; bottom: calc(var(--card-mini) * 0.4); left: 50%; width: var(--card-mini); height: calc(var(--card-mini) * 1.4); transform: translateX(-50%); }
 .pd-fan__card { --w: var(--card-mini); position: absolute; inset: 0; transform-origin: 50% 170%; }
 
 /* ---------- Pile ---------- */
@@ -294,16 +291,12 @@ button.pd-hidden-btn:focus-visible { outline: 3px solid var(--cream); outline-of
 /* ---------- Phones: same table, smaller cards ---------- */
 @media (max-width: 44rem) {
   .pinto-demo {
-    --card-mini: 1.3rem;
-    --card-pile: 3.9rem;
+    --card-mini: 1.75rem;
+    --card-pile: 4.2rem;
     --card-hand: clamp(3.2rem, 2.4rem + 4vw, 4rem);
     --card-me-table: 2.5rem;
   }
-  .pd-board {
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    padding: 0.85rem 0.4rem;
-    gap: 0.4rem;
-  }
+  .pd-board { padding: 0.85rem 0.4rem; gap: 0.4rem; }
   .pd-seat { padding: 0.4rem 0.2rem; gap: 0.35rem; }
   .pd-label strong { font-size: 0.78rem; }
   .pd-label span { font-size: 0.72rem; }
