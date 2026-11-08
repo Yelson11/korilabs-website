@@ -299,8 +299,24 @@ button.pd-hidden-btn:focus-visible { outline: 3px solid var(--cream); outline-of
 }
 .pd-tip__btn:hover { background: #2b2c31; }
 .pd-tip__actions { align-items: center; }
-.pd-tip__check { display: inline-flex; align-items: center; gap: 0.4rem; color: #6b6158; font-size: 0.82rem; cursor: pointer; }
-.pd-tip__check input { width: 1rem; height: 1rem; margin: 0; accent-color: #8c8c8c; cursor: pointer; }
+.pd-tip__check { display: inline-flex; align-items: center; gap: 0.4rem; color: #8a8178; font-size: 0.82rem; cursor: pointer; }
+/* light grey custom checkbox */
+.pd-tip__check input {
+  appearance: none;
+  display: grid;
+  place-items: center;
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  border: 1.5px solid #c2bbb1;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+}
+.pd-tip__check input:checked {
+  border-color: #c2bbb1;
+  background: #d6d0c7 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%23ffffff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 80% no-repeat;
+}
 .pd-tip__check input:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
 .pd-tip__btn:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
 

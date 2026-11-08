@@ -49,8 +49,10 @@
     try { var v = localStorage.getItem(key); return v === null ? fallback : v; } catch (e) { return fallback; }
   }
   function save(key, value) { try { localStorage.setItem(key, value); } catch (e) { /* storage blocked: keep in memory */ } }
+  // v2 key: choices saved before the checkbox only applied on "Entendido" are reset
+  var TIP_KEY = 'pd-tip2-';
   var hiddenTips = {};
-  function tipHidden(k) { return hiddenTips[k] || load('pd-tip-' + k, '') === '1'; }
+  function tipHidden(k) { return hiddenTips[k] || load(TIP_KEY + k, '') === '1'; }
 
   function src(card) { return BASE + (card ? E.cardFile(card) : 'reverso') + '.webp' + VER; }
   function img(card, cls, extra) {
@@ -167,7 +169,7 @@
           '<p class="pd-tip__title">' + E.cardName(infoCard) + '</p>' +
           '<p class="pd-tip__text">' + INFO[infoCard.k] + '</p>' +
           '<div class="pd-tip__actions"><button type="button" class="pd-tip__btn" data-act="tip-ok">Entendido</button>' +
-          '<label class="pd-tip__check" for="pd-tip-never"><input type="checkbox" id="pd-tip-never"' + (tipHidden(infoCard.k) ? ' checked' : '') + '> No volver a mostrar</label></div>' +
+          '<label class="pd-tip__check" for="pd-tip-never"><input type="checkbox" id="pd-tip-never"> No volver a mostrar</label></div>' +
         '</div></div>';
     }
 
@@ -606,23 +608,21 @@
     switch (t.getAttribute('data-act')) {
       case 'pickup': b0 = s.log.length; clearTimeout(chainTimer); E.pickUp(s); selected = []; say(''); schedule(b0); break;
       case 'skip': fastForward = true; schedule(); break;
-      case 'tip-ok': infoCard = null; render(); break;
+      case 'tip-ok':
+        // "No volver a mostrar" only counts when you close the tip with the box ticked
+        var never = document.getElementById('pd-tip-never');
+        if (never && never.checked && infoCard) { hiddenTips[infoCard.k] = true; save(TIP_KEY + infoCard.k, '1'); }
+        infoCard = null; render(); break;
     }
   });
 
-  // "No volver a mostrar" checkbox: remembered per special card as soon as it's ticked
-  board.addEventListener('change', function (e) {
-    if (e.target.id !== 'pd-tip-never' || !infoCard) return;
-    hiddenTips[infoCard.k] = e.target.checked;
-    save('pd-tip-' + infoCard.k, e.target.checked ? '1' : '');
-  });
 
   document.querySelectorAll('[data-act="restart"]').forEach(function (b) { b.addEventListener('click', newGame); });
 
   // Bring back every special-card explanation hidden with "No volver a mostrar"
   var resetTips = document.querySelector('[data-act="reset-tips"]');
   if (resetTips) resetTips.addEventListener('click', function () {
-    Object.keys(INFO).forEach(function (k) { hiddenTips[k] = false; save('pd-tip-' + k, ''); });
+    Object.keys(INFO).forEach(function (k) { hiddenTips[k] = false; save(TIP_KEY + k, ''); });
     resetTips.textContent = 'Listo: las explicaciones volverán a aparecer.';
   });
 
