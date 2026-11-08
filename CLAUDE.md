@@ -75,7 +75,10 @@ comments just to translate them — only translate what you are already touching
 │       ├── demo/            Playable web demo (you vs 3 bots). Unlisted + noindex while it's being tested.
 │       │   ├── index.html   Page shell (board markup, help text); CSS: styles.css + pinto.css + pinto-demo.css
 │       │   ├── pinto-engine.js  Pure rules engine (no DOM, also runs in Node for simulations). Rules changes go here
-│       │   └── demo.js      Rendering, selection, bot pacing, result panel (uses window.PintoEngine)
+│       │   ├── demo.js      Rendering, selection, bot pacing, result panel (uses window.PintoEngine)
+│       │   └── multijugador/ Online 1-vs-1 with a friend (unlisted + noindex). index.html (lobby + board) and
+│       │                    multi.js: PeerJS rooms (4-char code, ?sala=CODE link); the room creator's browser runs
+│       │                    the engine and sends each player only their view. ?transporte=local = two-tab test mode
 │       └── img/             caja-*.webp (6 box faces), cartas/*.webp (card art, 660×922, cream border baked in,
 │                            rendered from the Figma SVG export; special cards include their description),
 │                            logo-pinto.webp, og-pinto.jpg (share preview)
@@ -144,7 +147,7 @@ the size/page count shown next to the download button.
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
   Current: `styles.css?v=2`, `home.css?v=9` (index and privacidad),
-  `pinto.css?v=12`, card images `?v=4`, `pinto-demo.css?v=14`, `pinto-engine.js?v=9`, `demo.js?v=15`, `legal.css?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
+  `pinto.css?v=12`, card images `?v=4`, `pinto-demo.css?v=16`, `pinto-engine.js?v=10`, `demo.js?v=15`, `multi.js?v=1`, `legal.css?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
 - **Sender (newsletter):** universal script in the `<head>` of `index.html`; form is
@@ -161,6 +164,7 @@ the size/page count shown next to the download button.
   pestaña nueva)".
 - **Assets:** prefer `.webp` for images; keep files small (no build step will optimize them).
 - No dependencies to install. Don't add a framework, bundler or package.json without being asked.
+  Only exception (approved by the owner): `demo/multijugador/` loads PeerJS 1.5.4 from jsDelivr for online rooms.
 
 ## Before opening a PR
 
