@@ -72,7 +72,7 @@ comments just to translate them — only translate what you are already touching
 │       ├── box3d.js         Auto-rotating, draggable CSS-3D box with per-face shading (no deps, respects reduced motion)
 │       ├── instrucciones/index.html  Rules summary + "Ver reglamento" button (opens the PDF in a new tab, no `download` attr so phones open it). TARGET OF THE PRINTED QR — never move
 │       ├── reglamento.pdf   Official rules PDF (v1.3, source of truth). Linked from instrucciones/ only
-│       ├── demo/            Playable web demo (2 players: you vs 1 bot). Unlisted + noindex while it's being tested.
+│       ├── demo/            Playable web demo (you vs 3 bots). Unlisted + noindex while it's being tested.
 │       │   ├── index.html   Page shell (board markup, help text); CSS: styles.css + pinto.css + pinto-demo.css
 │       │   ├── pinto-engine.js  Pure rules engine (no DOM, also runs in Node for simulations). Rules changes go here
 │       │   └── demo.js      Rendering, selection, bot pacing, result panel (uses window.PintoEngine)
@@ -144,7 +144,7 @@ the size/page count shown next to the download button.
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
   Current: `styles.css?v=2`, `home.css?v=9` (index and privacidad),
-  `pinto.css?v=12`, card images `?v=4`, `pinto-demo.css?v=6`, `pinto-engine.js?v=6`, `demo.js?v=6`, `legal.css?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
+  `pinto.css?v=12`, card images `?v=4`, `pinto-demo.css?v=7`, `pinto-engine.js?v=7`, `demo.js?v=7`, `legal.css?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
 - **Sender (newsletter):** universal script in the `<head>` of `index.html`; form is

@@ -1,7 +1,7 @@
 /* PINTO web demo: renders the table and drives the turns.
    Rules live in pinto-engine.js (window.PintoEngine).
-   Two players: you (bottom) and one bot sitting across the table (top). The bot's
-   cards are drawn on a "mat" turned to face it, like a real table. */
+   Seats: 0 = you (bottom), 1 = left, 2 = top, 3 = right. Each bot's cards are
+   drawn on a "mat" rotated to face that player, like a real table. */
 (function () {
   'use strict';
   var E = window.PintoEngine;
@@ -14,8 +14,8 @@
   var SPEEDS = { lenta: 2600, normal: 1600, rapida: 900 };
   var FAST_DELAY = 200;  // only after you finished and chose to skip ahead
   var FLY_MS = 750;      // a played card travelling from a seat to the pile
-  var ORIENT = [0, 180];
-  var SIDES = ['', 'top'];
+  var ORIENT = [0, 90, 180, -90];
+  var SIDES = ['', 'left', 'top', 'right'];
 
   var speed = load('pd-speed', 'lenta');
   var stepMode = load('pd-step', '') === '1';
@@ -26,7 +26,7 @@
   var movesSeen = 0, arriving = {}, origins = {}, pileNote = '';
 
   var $ = function (sel) { return board.querySelector(sel); };
-  var seats = [$('[data-seat="0"]'), $('[data-seat="1"]')];
+  var seats = [$('[data-seat="0"]'), $('[data-seat="1"]'), $('[data-seat="2"]'), $('[data-seat="3"]')];
   var logList = document.getElementById('log');
   var resultBox = $('.pd-result');
 
@@ -378,16 +378,15 @@
     logList.innerHTML = '<li>' + (dealing ? 'Repartiendo cartas…' : 'Toca “Nueva carrera” para empezar.') + '</li>';
   }
 
-  // Cards fly from the deck to each seat in the real dealing order (hidden cards,
-  // then visible cards, then the rest), shrinking to the size they have at that seat.
+  // Cards fly from the deck to each seat in the real dealing order (3 hidden each,
+  // 3 visible each, then the rest), shrinking to the size they have at that seat.
   function dealAnimation(game, done) {
     var deckEl = $('.pd-deck');
     if (!deckEl || !canAnimate()) { setTimeout(done, 1200); return; }
     var from = { c: center(deckEl.getBoundingClientRect()), w: deckEl.offsetWidth, rot: 0 };
-    var spots = seats.map(function (el, pid) { return seatSpot(pid); });
-    var seq = [1, 0], order = [], r, i; // you deal, so the rival gets the first card
-    var tableRounds = game.players[0].hidden.length * 2;
-    for (r = 0; r < tableRounds; r++) seq.forEach(function (pid) { order.push(pid); });
+    var spots = [0, 1, 2, 3].map(seatSpot);
+    var seq = [1, 2, 3, 0], order = [], r, i;
+    for (r = 0; r < 6; r++) seq.forEach(function (pid) { order.push(pid); });
     var inHands = game.players.reduce(function (a, p) { return a + p.hand.length; }, 0);
     for (i = 0; i < inHands; i++) order.push(seq[i % seq.length]);
     var STAGGER = 55;
@@ -403,7 +402,7 @@
     dealing = true;
     s = null;
     renderIdle();
-    var game = E.newGame({ players: seats.length });
+    var game = E.newGame();
     dealAnimation(game, function () {
       dealing = false;
       s = game;
