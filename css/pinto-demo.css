@@ -299,8 +299,8 @@ button.pd-hidden-btn:focus-visible { outline: 3px solid var(--cream); outline-of
 }
 .pd-tip__btn:hover { background: #2b2c31; }
 .pd-tip__actions { align-items: center; }
-.pd-tip__check { display: inline-flex; align-items: center; gap: 0.4rem; color: #3b3127; font-size: 0.82rem; cursor: pointer; }
-.pd-tip__check input { width: 1rem; height: 1rem; margin: 0; accent-color: var(--asphalt); cursor: pointer; }
+.pd-tip__check { display: inline-flex; align-items: center; gap: 0.4rem; color: #6b6158; font-size: 0.82rem; cursor: pointer; }
+.pd-tip__check input { width: 1rem; height: 1rem; margin: 0; accent-color: #8c8c8c; cursor: pointer; }
 .pd-tip__check input:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
 .pd-tip__btn:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
 
@@ -319,6 +319,9 @@ button.pd-hidden-btn:focus-visible { outline: 3px solid var(--cream); outline-of
 .pd-help ul { margin: 0; padding-left: 1.1rem; color: var(--cream-dim); font-size: 0.9rem; line-height: 1.55; }
 .pd-help li + li { margin-top: 0.35rem; }
 .pd-help strong { color: var(--cream); }
+.pd-help__reset { margin-top: 0.9rem; padding: 0; border: 0; background: none; color: var(--cream-dim); font: inherit; font-size: 0.85rem; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.pd-help__reset:hover { color: var(--cream); }
+.pd-help__reset:focus-visible { outline: 2px solid var(--cream); outline-offset: 3px; }
 
 /* ---------- Result ---------- */
 .pd-result {

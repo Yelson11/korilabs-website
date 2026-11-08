@@ -417,11 +417,13 @@
   function playIds(ids) {
     if (!myTurn() || !ids.length) return;
     rememberOrigins(ids);
+    var played = ids.map(findInHand);
     var before = s.log.length;
     var r = E.play(s, ids.slice());
     if (r.error) { origins = {}; say(r.error, true); render(); return; }
     selected = [];
-    infoCard = null;
+    // Explain a special card the first times it's played, however it was played (tap, double tap or drag)
+    infoCard = played.filter(function (c) { return c && c.k !== 'r' && !tipHidden(c.k); }).pop() || null;
     say('');
     if (r.canChain && s.current === 0) startChainWindow();
     else clearTimeout(chainTimer);
@@ -616,6 +618,13 @@
   });
 
   document.querySelectorAll('[data-act="restart"]').forEach(function (b) { b.addEventListener('click', newGame); });
+
+  // Bring back every special-card explanation hidden with "No volver a mostrar"
+  var resetTips = document.querySelector('[data-act="reset-tips"]');
+  if (resetTips) resetTips.addEventListener('click', function () {
+    Object.keys(INFO).forEach(function (k) { hiddenTips[k] = false; save('pd-tip-' + k, ''); });
+    resetTips.textContent = 'Listo: las explicaciones volverán a aparecer.';
+  });
 
   renderIdle();
 })();
