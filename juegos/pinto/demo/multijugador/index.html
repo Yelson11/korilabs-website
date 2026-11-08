@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PINTO en línea · Kori Labs</title>
-  <meta name="description" content="Juega PINTO en línea con un amigo, cada uno desde su dispositivo.">
+  <meta name="description" content="Juega PINTO en línea con 1 a 3 amigos, cada uno desde su dispositivo.">
   <meta name="theme-color" content="#16171b">
   <meta name="color-scheme" content="dark">
   <!-- Unlisted while the demo is being tested: not linked from the menu and hidden from search engines -->
   <meta name="robots" content="noindex">
   <meta property="og:type" content="website">
   <meta property="og:title" content="PINTO en línea · Kori Labs">
-  <meta property="og:description" content="Una carrera de PINTO uno contra uno, en línea con un amigo.">
+  <meta property="og:description" content="Una carrera de PINTO en línea con amigos, de 2 a 4 jugadores.">
   <meta property="og:url" content="https://korilabscr.com/juegos/pinto/demo/multijugador/">
   <meta property="og:image" content="https://korilabscr.com/juegos/pinto/img/og-pinto.jpg">
   <meta property="og:locale" content="es_CR">
@@ -26,10 +26,10 @@
 
   <link rel="stylesheet" href="../../../../css/styles.css?v=2">
   <link rel="stylesheet" href="../../../../css/pinto.css?v=12">
-  <link rel="stylesheet" href="../../../../css/pinto-demo.css?v=16">
+  <link rel="stylesheet" href="../../../../css/pinto-demo.css?v=17">
   <script src="../pinto-engine.js?v=10" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js" defer></script>
-  <script src="multi.js?v=1" defer></script>
+  <script src="multi.js?v=2" defer></script>
 </head>
 <body class="pinto pinto-demo">
 
@@ -60,8 +60,8 @@
 
     <main id="mp">
       <section class="pd-intro" aria-labelledby="demo-title">
-        <p class="p-eyebrow">En línea · 2 jugadores</p>
-        <h1 class="p-h2 p-h1" id="demo-title">PINTO <span class="p-red">con un amigo</span></h1>
+        <p class="p-eyebrow">En línea · 2 a 4 jugadores</p>
+        <h1 class="p-h2 p-h1" id="demo-title">PINTO <span class="p-red">con amigos</span></h1>
       </section>
 
       <section class="mp-lobby" id="mp-lobby" aria-label="Crear o unirse a una partida">
@@ -71,7 +71,7 @@
         <div class="mp-options">
           <div class="mp-card">
             <h2>Crear una partida</h2>
-            <p>Te damos un código para que se lo pases a tu amigo.</p>
+            <p>Te damos un código para que se lo pases a tus amigos (hasta 3).</p>
             <button type="button" class="p-button" id="mp-create">Crear partida</button>
             <div class="mp-room" id="mp-room" hidden>
               <p>Código de la sala</p>
@@ -82,19 +82,27 @@
           </div>
           <div class="mp-card">
             <h2>Unirme a una partida</h2>
-            <p>Escribe el código que te pasó tu amigo.</p>
+            <p>Escribe el código que te pasaron.</p>
             <div class="mp-join">
               <input id="mp-code" type="text" maxlength="4" autocomplete="off" autocapitalize="characters" placeholder="K7QM" aria-label="Código de la sala">
               <button type="button" class="p-button" id="mp-join">Unirme</button>
             </div>
           </div>
         </div>
+        <div class="mp-wait" id="mp-wait" hidden>
+          <h2>En la sala</h2>
+          <ol class="mp-wait__list"></ol>
+          <p class="mp-wait__hint"></p>
+          <button type="button" class="p-button" id="mp-start" hidden>Empezar carrera</button>
+        </div>
         <p class="mp-status" id="mp-status" role="status" aria-live="polite"></p>
       </section>
 
       <div id="mp-game" hidden>
-        <section class="pd-board pd-board--duo" id="board" aria-label="Mesa de juego" data-cards="../../img/cartas/">
-          <div class="pd-seat pd-seat--top" data-seat="1"></div>
+        <section class="pd-board" id="board" aria-label="Mesa de juego" data-cards="../../img/cartas/">
+          <div class="pd-seat pd-seat--left" data-seat="1" hidden></div>
+          <div class="pd-seat pd-seat--top" data-seat="2" hidden></div>
+          <div class="pd-seat pd-seat--right" data-seat="3" hidden></div>
           <div class="pd-center"></div>
           <div class="pd-me" data-seat="0"></div>
           <div class="pd-result" role="dialog" aria-label="Resultado de la carrera" hidden></div>
@@ -108,10 +116,10 @@
           <section class="pd-help" aria-labelledby="help-title">
             <h2 id="help-title">Cómo se juega aquí</h2>
             <ul>
-              <li>Reglas para <strong>2 jugadores</strong>: 5 cartas ocultas, 5 visibles y el resto en la mano. Arranca quien tenga el ritmo más bajo.</li>
+              <li>Reglas oficiales según cuántos sean: con <strong>2 jugadores</strong>, 5 ocultas y 5 visibles; con <strong>3 o 4</strong>, 3 y 3 (y entra la Bandera Azul). Arranca quien tenga el ritmo más bajo.</li>
               <li><strong>Toca una carta</strong> para elegirla. Para jugar, <strong>toca dos veces</strong> o <strong>arrástrala a la pila</strong>.</li>
               <li>Después de jugar tienes <strong>5 segundos</strong> para seguir con otra carta del mismo valor.</li>
-              <li>Cada quien ve solo sus cartas. La partida la arbitra el navegador de quien creó la sala, así que no la cierre hasta terminar.</li>
+              <li>Cada quien ve solo sus cartas. La partida la arbitra el navegador de quien creó la sala, así que no la cierre hasta terminar. Si alguien se desconecta, vuelve a entrar con el mismo código y su nombre.</li>
             </ul>
           </section>
         </div>
