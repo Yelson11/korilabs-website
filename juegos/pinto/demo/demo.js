@@ -12,7 +12,7 @@
   if (!E || !board) return;
 
   var BASE = board.getAttribute('data-cards') || '../img/cartas/';
-  var VER = '?v=4';
+  var VER = '?v=5'; // card images version (keep in sync with the HTML pages)
   var BOT_DELAY = 2600;      // each bot "thinks" this long, so new players can follow
   var AFTER_CHAIN = 700;     // first bot after your 5 s window (you already waited)
   var CHAIN_MS = 5000;       // time you have to add another card of the same value
