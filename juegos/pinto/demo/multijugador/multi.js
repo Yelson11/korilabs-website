@@ -12,7 +12,7 @@
   if (!E || !root || !board) return;
 
   var BASE = board.getAttribute('data-cards') || '../../img/cartas/';
-  var VER = '?v=4';
+  var VER = '?v=5'; // card images version (keep in sync with the HTML pages)
   var CHAIN_MS = 5000;
   var FLY_MS = 750;
   var DOUBLE_TAP_MS = 380;

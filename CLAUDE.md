@@ -80,7 +80,7 @@ comments just to translate them — only translate what you are already touching
 │       │                    multi.js: PeerJS rooms (4-char code, ?sala=CODE link); the room creator's browser runs
 │       │                    the engine and sends each player only their view. ?transporte=local = multi-tab test mode
 │       └── img/             caja-*.webp (6 box faces), cartas/*.webp (card art, 660×922, cream border baked in,
-│                            rendered from the Figma SVG export; special cards include their description),
+│                            rendered from the Figma SVG export; special cards WITHOUT their description — see rules),
 │                            logo-pinto.webp, og-pinto.jpg (share preview)
 ├── pinto/reglas/index.html  Meta-refresh → /juegos/pinto/instrucciones/ (short alias; keep working)
 ├── privacidad/index.html    Privacy policy (only email is collected, via Sender; contact info@korilabscr.com)
@@ -147,7 +147,7 @@ the size/page count shown next to the download button.
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
   Current: `styles.css?v=2`, `home.css?v=9` (index and privacidad),
-  `pinto.css?v=12`, card images `?v=4`, `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=15`, `multi.js?v=2`, `legal.css?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
+  `pinto.css?v=12`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
 - **Sender (newsletter):** universal script in the `<head>` of `index.html`; form is
@@ -163,6 +163,12 @@ the size/page count shown next to the download button.
   external links with `target="_blank" rel="noopener noreferrer"` plus a visually-hidden "(se abre en una
   pestaña nueva)".
 - **Assets:** prefer `.webp` for images; keep files small (no build step will optimize them).
+- **Digital card art never shows the special-card description.** The printed special cards (Rebufo, Banderas,
+  Vuelta Rápida) carry a description paragraph that is unreadable on screen, so every card image used on the
+  site and in the demos must be the version **without** it. The rules text lives elsewhere: the special-card
+  tips in the demos (`INFO` in `demo.js` / `multi.js`) and `juegos/pinto/instrucciones/`. When new card art
+  arrives from Figma, remove the description layer (in the SVG export it's the large text shape in the band
+  y≈708–800 of the 744×1039 card) before converting to WebP, and check the result visually.
 - No dependencies to install. Don't add a framework, bundler or package.json without being asked.
   Only exception (approved by the owner): `demo/multijugador/` loads PeerJS 1.5.4 from jsDelivr for online rooms.
 

@@ -39,7 +39,7 @@ assets/pinto-caja.webp     Caja de PINTO para la tarjeta de la portada
   a `juegos/pinto/`. Cuando haya más juegos, cambia `juegos/index.html` por un listado.
 - **Caja 3D:** son seis imágenes (`img/caja-*.webp`) montadas con CSS 3D. Si cambia el diseño de la caja,
   reemplaza esas imágenes manteniendo las proporciones (ancho 758 · alto 1057 · fondo 244).
-- **Cartas:** `img/cartas/*.webp`, exportadas de Figma (SVG convertido a WebP de 660 × 922). Al cambiarlas, sube su `?v=N` en todas las páginas que las usan.
+- **Cartas:** `img/cartas/*.webp`, exportadas de Figma (SVG convertido a WebP de 660 × 922). Al cambiarlas, sube su `?v=N` en todas las páginas que las usan. Las cartas especiales se usan **sin** el párrafo de descripción (en pantalla no se lee; la explicación está en los avisos del demo y en la página de instrucciones).
 - **Caché:** los enlaces a CSS y JS llevan `?v=N`. Al cambiar esos archivos, sube el número para que los
   navegadores descarguen la versión nueva en vez de usar la guardada.
 
