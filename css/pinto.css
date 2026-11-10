@@ -640,7 +640,9 @@
 }
 
 /* "Cómo jugar": a Ritmo-card speedometer moves through the five steps (10 s loop, 2 s per step) */
-.p-how { display: grid; grid-template-columns: minmax(14rem, 26rem) 1fr; gap: clamp(2rem, 6vw, 4.5rem); align-items: center; }
+/* Text on the left, speedometer on the right (mobile reorders below) */
+.p-how { display: grid; grid-template-columns: 1fr minmax(14rem, 26rem); gap: clamp(2rem, 6vw, 4.5rem); align-items: center; }
+.p-how__gauge { order: 2; }
 .p-how__gauge svg { display: block; width: 100%; height: auto; }
 .p-gauge__arc { stroke-dasharray: 628.3; stroke-dashoffset: 502.7; }
 .p-gauge__needle { transform-origin: 200px 200px; transform: rotate(-72deg); }
@@ -923,6 +925,7 @@
   .p-specials { grid-template-columns: repeat(2, 1fr); }
   .p-specials--compact { grid-template-columns: repeat(3, 1fr); }
   .p-modes { grid-template-columns: repeat(2, 1fr); align-items: start; }
+  .p-modes--stacked { grid-template-columns: 1fr; }
 }
 
 /* --- Escritorio --------------------------------------------------------- */
