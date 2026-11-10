@@ -64,7 +64,13 @@
   .site-nav { gap: 0.85rem; }
   .site-nav__link { letter-spacing: 0.1em; }
 }
+/* Same as the home page: with three links (main PINTO page), Suscríbete is hidden on phones */
+@media (max-width: 30rem) {
+  .site-nav:has(.site-nav__link[href$="#taller"]) .site-nav__link[href$="#suscribete"] { display: none; }
+}
 @media (max-width: 22.4rem) {
+  .site-nav { gap: 0.6rem; }
+  .site-nav__link { letter-spacing: 0.06em; }
   .site-nav__link[href$="#suscribete"] { display: none; }
 }
 
@@ -403,6 +409,7 @@
 .p-steps li:nth-child(3) { --c: #f2c230; }
 .p-steps li:nth-child(4) { --c: #3dba6a; }
 .p-steps li:nth-child(5) { --c: #22b3c4; }
+.p-steps li:nth-child(6) { --c: #2f86de; }
 
 .p-steps h3 {
   margin: 0 0 0.3rem;
@@ -715,9 +722,127 @@
 
 /* --- Instructions page (juegos/pinto/instrucciones/) -------------------- */
 
-.p-intro {
-  padding-block: clamp(2rem, 6vw, 4rem) clamp(2.5rem, 6vw, 3.5rem);
+/* Welcome (top of the page, first screen after the QR): centered title + fan of five cards */
+.p-welcome {
+  display: grid;
+  justify-items: center;
+  padding-block: clamp(2rem, 6vw, 3.5rem) clamp(1rem, 3vw, 2rem);
+  text-align: center;
 }
+.p-welcome__logo { display: block; width: min(13rem, 55%); height: auto; margin-top: 0.7rem; }
+.p-welcome .p-h1 { margin: 0; }
+.p-welcome .p-intro__lead { margin-inline: auto; }
+.p-welcome__art {
+  position: relative;
+  width: 100%;
+  max-width: 36rem;
+  height: clamp(11rem, 46vw, 18rem);
+  margin-top: clamp(1.5rem, 4vw, 2.5rem);
+}
+.p-welcome__art img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 27%;
+  height: auto;
+  border-radius: 0.6rem;
+  box-shadow: 0 16px 34px rgb(0 0 0 / 0.55);
+  transform: translate(-50%, -50%) translateX(var(--x, 0)) translateY(var(--y, 0)) rotate(var(--r, 0deg));
+}
+.p-welcome__art img:nth-child(1) { --x: -118%; --y: 14%; --r: -22deg; }
+.p-welcome__art img:nth-child(2) { --x: -60%;  --y: 3%;  --r: -11deg; z-index: 1; }
+.p-welcome__art img:nth-child(3) { --y: -2%; z-index: 2; }
+.p-welcome__art img:nth-child(4) { --x: 60%;   --y: 3%;  --r: 11deg; z-index: 1; }
+.p-welcome__art img:nth-child(5) { --x: 118%;  --y: 14%; --r: 22deg; }
+
+/* Three entry points: Guía rápida / Tutoriales / Reglamento oficial */
+.p-paths-wrap { border-top: 0; padding-top: clamp(1.5rem, 4vw, 2.5rem); }
+.p-paths {
+  position: relative;
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.p-paths li:nth-child(1) { --c: var(--red); }
+.p-paths li:nth-child(2) { --c: #f2c230; }
+.p-paths li:nth-child(3) { --c: #22b3c4; }
+.p-path {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 0.45rem;
+  height: 100%;
+  padding: 2rem 1.4rem 1.8rem;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--c);
+  border-radius: 1rem;
+  background: rgb(22 23 27 / 0.8);
+  color: var(--cream);
+  text-align: center;
+  text-decoration: none;
+  transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+.p-path:hover { transform: translateY(-3px); background: rgb(30 31 36 / 0.9); }
+.p-path:focus-visible { outline: 3px solid var(--c); outline-offset: 3px; }
+.p-path__n {
+  position: absolute;
+  top: 0.9rem;
+  right: 1rem;
+  color: rgb(245 240 232 / 0.35);
+  font: 700 0.75rem/1 var(--display);
+  letter-spacing: 0.05em;
+}
+.p-path__icon {
+  display: grid;
+  place-items: center;
+  width: 4rem;
+  height: 4rem;
+  margin-bottom: 0.6rem;
+  border-radius: 50%;
+  background: rgb(245 240 232 / 0.06);
+  color: var(--c);
+}
+.p-path__icon svg { width: 1.7rem; height: 1.7rem; }
+.p-path__title { font: italic 800 1.3rem/1.15 var(--display); text-transform: uppercase; }
+.p-path__text { max-width: 17rem; color: var(--cream-dim); font-size: 0.95rem; line-height: 1.4; }
+
+@media (min-width: 48rem) {
+  .p-paths { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; padding-bottom: 2.5rem; }
+  /* track line with one dot under each card, like a race timeline */
+  .p-paths::after {
+    content: "";
+    position: absolute;
+    left: calc(100% / 6);
+    right: calc(100% / 6);
+    bottom: 0.45rem;
+    height: 1px;
+    background: var(--line);
+  }
+  .p-paths li { position: relative; }
+  .p-paths li::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -2.5rem;
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 50%;
+    background: var(--c);
+    transform: translate(-50%, -0.15rem);
+    z-index: 1;
+  }
+}
+
+.p-guide .p-toc { margin-top: 1.4rem; }
+
+/* Minimal closing */
+.p-cta.p-finish { grid-template-columns: 1fr; gap: 0.9rem; text-align: center; }
+.p-finish__logo { width: min(10rem, 50%); height: auto; }
+.p-finish .p-h2 { margin: 0.4rem 0 0; }
+.p-finish__by { margin: 0; color: var(--cream-dim); font-size: 0.95rem; letter-spacing: 0.04em; }
+.p-finish .p-button { margin-top: 0.6rem; }
 
 .p-h1 { font-size: clamp(2.3rem, 1.4rem + 4vw, 3.8rem); }
 
@@ -829,6 +954,10 @@
 .p-tut:hover { background: rgb(229 70 59 / 0.15); border-color: var(--red); }
 .p-tut:focus-visible { outline: 3px solid var(--cream); outline-offset: 2px; }
 .p-card .p-tut { margin: 0.7rem 0 0; }
+/* Special cards use the same "Ver tutorial" link as the rule cards, pinned to the bottom */
+.p-specials:not(.p-specials--compact) .p-card > div { display: flex; flex-direction: column; align-self: stretch; }
+.p-card .p-rcard__tut { margin: auto 0 0; padding-top: 0.9rem; }
+@media (min-width: 56rem) { .p-specials:not(.p-specials--compact) .p-card { grid-template-rows: auto 1fr; } }
 
 /* "Qué carta puedo jugar": card images in the table (a cell holds images or text, never both) */
 .p-table-wrap--ref { max-width: 46rem; }
@@ -880,6 +1009,66 @@
 }
 .p-rules strong { color: var(--cream); }
 
+/* Rule cards (instructions page): mini cards on the tutorial's wooden table + title, text and tutorial link */
+.p-rcards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr));
+  gap: 1rem;
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.p-rcard {
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: rgb(22 23 27 / 0.8);
+  overflow: hidden;
+}
+.p-rcard__art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 8.5rem;
+  background: radial-gradient(120% 90% at 50% 40%, #623e2b 0%, #4f3122 100%);
+  box-shadow: inset 0 -10px 24px rgb(0 0 0 / 0.25);
+}
+.p-rcard__art img,
+.p-rcard__empty {
+  flex: none;
+  width: 3.3rem;
+  height: auto;
+  border-radius: 0.3rem;
+  box-shadow: 0 6px 14px rgb(0 0 0 / 0.45);
+}
+.p-rcard__empty { aspect-ratio: 660 / 922; border: 2px dashed rgb(245 240 232 / 0.45); box-shadow: none; box-sizing: border-box; }
+.p-rcard__art--gap { gap: 0.6rem; }
+.p-rcard__art--row img + img { margin-left: -2.2rem; }
+.p-rcard__art--fan img + img { margin-left: -1.1rem; }
+.p-rcard__art--fan img:nth-child(1) { transform: rotate(-12deg) translateY(0.35rem); }
+.p-rcard__art--fan img:nth-child(2) { position: relative; z-index: 1; transform: translateY(-0.25rem); }
+.p-rcard__art--fan img:nth-child(3) { position: relative; z-index: 2; transform: rotate(12deg) translateY(0.35rem); }
+.p-rcard__arrow { color: var(--cream); font: 700 1.3rem/1 var(--display); opacity: 0.8; }
+.p-rcard h3 { margin: 0; padding: 1rem 1.15rem 0; font: italic 800 1.1rem/1.15 var(--display); text-transform: uppercase; }
+.p-rcard p { margin: 0; padding: 0.45rem 1.15rem 0; color: var(--cream-dim); font-size: 0.93rem; line-height: 1.45; }
+.p-rcard__tut {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  justify-self: start;
+  margin: 0.9rem 1.15rem 1.1rem;
+  color: var(--cream);
+  font: 600 0.88rem/1 var(--display);
+  text-decoration: none;
+  border-radius: 999px;
+}
+.p-rcard__play { display: grid; place-items: center; width: 1.7rem; height: 1.7rem; border-radius: 50%; background: var(--red); color: #fff; transition: transform 0.2s ease; }
+.p-rcard__play svg { width: 0.72rem; height: 0.72rem; margin-left: 1px; }
+.p-rcard__tut:hover { color: #fff; }
+.p-rcard__tut:hover .p-rcard__play { transform: scale(1.1); }
+.p-rcard__tut:focus-visible { outline: 3px solid var(--cream); outline-offset: 4px; }
+
 .p-table-wrap { max-width: 46rem; margin-top: 2rem; overflow-x: auto; }
 
 .p-table {
@@ -926,7 +1115,6 @@
   .p-fan li:nth-child(odd)  { transform: translateY(0.75rem); }
   .p-fan li:hover { transform: translateY(-0.5rem); }
   .p-steps { grid-template-columns: repeat(2, 1fr); }
-  .p-steps li:last-child { grid-column: 1 / -1; }
   .p-specials { grid-template-columns: repeat(2, 1fr); }
   .p-specials--compact { grid-template-columns: repeat(3, 1fr); }
   .p-modes { grid-template-columns: repeat(2, 1fr); align-items: start; }
@@ -953,9 +1141,8 @@
   .p-seal { margin-inline: 0; }
   .p-hero__art { justify-self: center; }
 
-  .p-steps { grid-template-columns: repeat(5, 1fr); }
+  .p-steps { grid-template-columns: repeat(3, 1fr); }
   .p-steps li { padding: 4.2rem 1.15rem 1.3rem; }
-  .p-steps li:last-child { grid-column: auto; }
   .p-steps li::before { top: 1.1rem; left: 1.1rem; text-align: left; }
 
   .p-specials { grid-template-columns: repeat(3, 1fr); }
@@ -976,9 +1163,11 @@
   .no-js .box3d { animation: none; }
   .p-fan li:hover { transform: none; }
   .p-card:hover, .p-mode:hover, .p-card:hover img, .p-start__card:hover { transform: none; }
+  .p-path, .p-path:hover { transition: none; transform: none; }
+  .p-rcard__play, .p-rcard__tut:hover .p-rcard__play { transition: none; transform: none; }
   .p-tut { transition: none; }
 }
 
 @media (forced-colors: active) {
-  .p-steps li, .p-card, .p-facts li, .p-mode, .p-rules li, .p-toc a, .p-start__card { border-color: CanvasText; }
+  .p-steps li, .p-card, .p-facts li, .p-mode, .p-rules li, .p-rcard, .p-toc a, .p-start__card { border-color: CanvasText; }
 }
