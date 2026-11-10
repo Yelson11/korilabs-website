@@ -728,7 +728,7 @@
   padding-block: clamp(2rem, 6vw, 3.5rem) clamp(1rem, 3vw, 2rem);
   text-align: center;
 }
-.p-welcome__logo { display: block; width: min(11rem, 50%); height: auto; margin-bottom: 0.9rem; }
+.p-welcome__logo { display: block; width: min(13rem, 55%); height: auto; margin-top: 0.7rem; }
 .p-welcome .p-h1 { margin: 0; }
 .p-welcome .p-intro__lead { margin-inline: auto; }
 .p-welcome__art {
