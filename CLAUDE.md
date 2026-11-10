@@ -118,11 +118,11 @@ comments just to translate them — only translate what you are already touching
 9. Inline `<script>`s at the end: workshop carousel arrows, and the Sender form fallback ("Cargando…" → after 8 s shows a link to the hosted form).
 
 ### PINTO — `juegos/pinto/index.html` (`<html class="no-js">` → `js`, CSS: `styles.css` + `pinto.css`)
-Fonts: **Poppins** (display/headings) + **Saira** for body text on every PINTO page (`--font` is overridden in `.pinto`); Istok Web only for the small spaced labels (`.p-eyebrow`, `.p-soon`, `--label-font`). Nav: Juegos / Taller / Suscríbete, same as home (Suscríbete hidden under 30rem). Sections: `p-hero` (title + `#box-stage`/`#box3d` 3D box),
+Fonts: **Poppins** (display/headings) + **Saira** for body text on every PINTO page (`--font` is overridden in `.pinto`); Istok Web only for the small spaced labels (`.p-eyebrow`, `.p-soon`, `--label-font`). Nav on every PINTO page: Juegos / Taller / Suscríbete, same as home (Suscríbete hidden under 30rem). Sections: `p-hero` (title + `#box-stage`/`#box3d` 3D box),
 "Cómo se juega", "Cartas de ritmo" (ritmo-1…8), "Cartas especiales" (banderas, rebufo, vuelta rápida),
 `p-cta` "Muy pronto en la parrilla de salida". Script: `box3d.js` (deferred).
 After the hero: "Acerca de PINTO" (short text), "Cómo jugar" (`.p-how`: a Ritmo-card style speedometer SVG whose needle and
-colored arc move through the 5 step titles in a 10 s CSS loop, plus a cream "Ver instrucciones completas" button), "Cartas de ritmo", "Cartas especiales" (image + name only,
+colored arc move through the 5 step titles in a 10 s CSS loop, plus a cream "Ver instrucciones" button), "Cartas de ritmo", "Cartas especiales" (image + name only,
 `.p-specials--compact`), then a "Modos de juego" section
 (Modo Carrera Única / Modo Temporada, icons `img/icono-bandera-cuadros.svg` / `img/icono-trofeo.svg`) sits before the CTA.
 Game facts (players, 5–15 min, 10+, card names, rules wording) must stay consistent between the home
