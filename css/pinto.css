@@ -64,7 +64,13 @@
   .site-nav { gap: 0.85rem; }
   .site-nav__link { letter-spacing: 0.1em; }
 }
+/* Same as the home page: with three links (main PINTO page), Suscríbete is hidden on phones */
+@media (max-width: 30rem) {
+  .site-nav:has(.site-nav__link[href$="#taller"]) .site-nav__link[href$="#suscribete"] { display: none; }
+}
 @media (max-width: 22.4rem) {
+  .site-nav { gap: 0.6rem; }
+  .site-nav__link { letter-spacing: 0.06em; }
   .site-nav__link[href$="#suscribete"] { display: none; }
 }
 
