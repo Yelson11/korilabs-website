@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Istok+Web:wght@400;700&amp;family=Poppins:ital,wght@0,500;0,600;1,700;1,800&amp;display=swap">
 
   <link rel="stylesheet" href="../../../css/styles.css?v=2">
-  <link rel="stylesheet" href="../../../css/pinto.css?v=13">
+  <link rel="stylesheet" href="../../../css/pinto.css?v=14">
 </head>
 <body class="pinto">
 
@@ -33,6 +33,11 @@
       <rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/>
       <circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/>
       <circle cx="17.3" cy="6.7" r="1.2" fill="currentColor"/>
+    </symbol>
+    <symbol id="icon-video" viewBox="0 0 24 24">
+      <rect x="2.5" y="5.5" width="13.5" height="13" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="m16 10.2 5.5-3.2v10l-5.5-3.2Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M7.6 9.6v4.8l4-2.4Z" fill="currentColor"/>
     </symbol>
     <symbol id="icon-doc" viewBox="0 0 24 24">
       <path d="M14 3.5H7.5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V8Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
@@ -66,7 +71,7 @@
 
         <div class="p-start">
           <a class="p-start__card p-start__card--tutorial" href="../tutorial/">
-            <span class="p-start__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5Z" fill="currentColor"/></svg></span>
+            <span class="p-start__icon" aria-hidden="true"><svg><use href="#icon-video"/></svg></span>
             <span class="p-start__title">Ver tutoriales</span>
             <span class="p-start__text">Animaciones cortas de cada jugada y de cada carta especial.</span>
           </a>
@@ -84,7 +89,7 @@
           <a href="#desarrollo">Desarrollo de la partida</a>
           <a href="#reglas">Reglas de carrera</a>
           <a href="#especiales">Cartas especiales</a>
-          <a href="#referencia">Referencia rápida</a>
+          <a href="#referencia">Qué carta puedo jugar</a>
           <a href="#modos">Modos de juego</a>
         </nav>
       </section>
@@ -136,25 +141,23 @@
       <section class="p-section" id="desarrollo" aria-labelledby="desarrollo-title">
         <h2 class="p-h2" id="desarrollo-title">Desarrollo de la partida</h2>
         <ul class="p-rules">
-          <li><strong>Mantener el ritmo.</strong> Juega una carta de Ritmo de valor igual o mayor al de la carta de arriba de la pila. Las cartas especiales permiten excepciones.</li>
-          <li><strong>Ceder el paso.</strong> Si al comenzar tu turno no tienes una jugada válida, recoges toda la pila central. Tu turno termina y el siguiente jugador tiene vía libre.</li>
-          <li><strong>Vía libre.</strong> Con la pila vacía, o cuando una carta concede vía libre, el siguiente jugador puede empezar con cualquier carta o combinación válida.</li>
-          <li><strong>Fases de la carrera.</strong> Primero juegas las cartas de tu mano, luego tomas tus cartas visibles y al final tus cartas ocultas, una a la vez. Si recoges la pila, debes deshacerte de esas cartas para continuar.</li>
+          <li><strong>Mantener el ritmo.</strong> Juega una carta de Ritmo de valor igual o mayor al de la carta de arriba de la pila. Las cartas especiales permiten excepciones. <a class="p-tut" href="../tutorial/#ritmo"><svg aria-hidden="true"><use href="#icon-video"/></svg>Ver tutorial</a></li>
+          <li><strong>Ceder el paso.</strong> Si al comenzar tu turno no tienes una jugada válida, recoges toda la pila central. Tu turno termina y el siguiente jugador tiene vía libre. <a class="p-tut" href="../tutorial/#ceder"><svg aria-hidden="true"><use href="#icon-video"/></svg>Ver tutorial</a></li>
+          <li><strong>Vía libre.</strong> Con la pila vacía, o cuando una carta concede vía libre, el siguiente jugador puede empezar con cualquier carta o combinación válida. <a class="p-tut" href="../tutorial/#via-libre"><svg aria-hidden="true"><use href="#icon-video"/></svg>Ver tutorial</a></li>
+          <li><strong>Fases de la carrera.</strong> Primero juegas las cartas de tu mano, luego tomas tus cartas visibles y al final tus cartas ocultas, una a la vez. Si recoges la pila, debes deshacerte de esas cartas para continuar. <a class="p-tut" href="../tutorial/#fases"><svg aria-hidden="true"><use href="#icon-video"/></svg>Ver tutorial</a></li>
         </ul>
-        <a class="p-button p-button--cream p-button--small" href="../tutorial/#desarrollo">Verlo en el tutorial <span aria-hidden="true">→</span></a>
       </section>
 
       <!-- Reglas de carrera -->
       <section class="p-section" id="reglas" aria-labelledby="reglas-title">
         <h2 class="p-h2" id="reglas-title">Reglas de carrera</h2>
         <ul class="p-rules">
-          <li><strong>Tu turno.</strong> Comienza cuando colocas tu primera carta. Puedes jugar tantas cartas como las reglas permitan, juntas o una después de otra. Después de tu primera carta, el siguiente jugador puede interrumpirte con una carta o combinación válida.</li>
-          <li><strong>Encadenar cartas.</strong> Puedes jugar juntas varias cartas iguales: del mismo valor o del mismo tipo de carta especial. Las especiales encadenadas aplican su efecto una sola vez. La Bandera a Cuadros no se encadena.</li>
-          <li><strong>Avanzar entre fases.</strong> Si terminas una fase en tu turno y puedes seguir jugando, continúas con la siguiente sin esperar.</li>
-          <li><strong>Carril Lleno.</strong> Cuatro cartas iguales seguidas en la pila, de uno o varios jugadores, retiran la pila de la partida. Tu turno termina y el siguiente jugador tiene vía libre. Una Bandera Azul corta la secuencia.</li>
-          <li><strong>Fin de turno.</strong> La Bandera Roja, la Bandera a Cuadros y el Carril Lleno terminan el turno de inmediato.</li>
+          <li><strong>Tu turno.</strong> Comienza cuando colocas tu primera carta. Puedes jugar tantas cartas como las reglas permitan, juntas o una después de otra. Después de tu primera carta, el siguiente jugador puede interrumpirte con una carta o combinación válida. <a class="p-tut" href="../tutorial/#turno"><svg aria-hidden="true"><use href="#icon-video"/></svg>Ver tutorial</a></li>
+          <li><strong>Encadenar cartas.</strong> Puedes jugar juntas varias cartas iguales: del mismo valor o del mismo tipo de carta especial. Las especiales encadenadas aplican su efecto una sola vez. La Bandera a Cuadros no se encadena. <a class="p-tut" href="../tutorial/#encadenar"><svg aria-hidden="true"><use href="#icon-video"/></svg>Ver tutorial</a></li>
+          <li><strong>Avanzar entre fases.</strong> Si terminas una fase en tu turno y puedes seguir jugando, continúas con la siguiente sin esperar. <a class="p-tut" href="../tutorial/#fases"><svg aria-hidden="true"><use href="#icon-video"/></svg>Ver tutorial</a></li>
+          <li><strong>Carril Lleno.</strong> Cuatro cartas iguales seguidas en la pila, de uno o varios jugadores, retiran la pila de la partida. Tu turno termina y el siguiente jugador tiene vía libre. Una Bandera Azul corta la secuencia. <a class="p-tut" href="../tutorial/#carril"><svg aria-hidden="true"><use href="#icon-video"/></svg>Ver tutorial</a></li>
+          <li><strong>Fin de turno.</strong> La Bandera Roja, la Bandera a Cuadros y el Carril Lleno terminan el turno de inmediato. <a class="p-tut" href="../tutorial/#turno"><svg aria-hidden="true"><use href="#icon-video"/></svg>Ver tutorial</a></li>
         </ul>
-        <a class="p-button p-button--cream p-button--small" href="../tutorial/#reglas">Verlo en el tutorial <span aria-hidden="true">→</span></a>
       </section>
 
       <!-- Special cards (rules order) -->
@@ -163,49 +166,69 @@
         <ul class="p-specials">
           <li class="p-card" style="--c: #e8e2d6">
             <img src="../img/cartas/bandera-a-cuadros.webp?v=5" width="660" height="922" alt="" loading="lazy">
-            <div><h3>Bandera a Cuadros</h3><p>Sobre cualquier carta o con vía libre. Retira toda la pila de la partida y el siguiente tiene vía libre. Solo una por turno y tu turno termina.</p></div>
+            <div><h3>Bandera a Cuadros</h3><p>Sobre cualquier carta o con vía libre. Retira toda la pila de la partida y el siguiente tiene vía libre. Solo una por turno y tu turno termina.</p><a class="p-tut" href="../tutorial/#cuad"><svg aria-hidden="true"><use href="#icon-video"/></svg>Ver tutorial</a></div>
           </li>
           <li class="p-card" style="--c: #e5463b">
             <img src="../img/cartas/bandera-roja.webp?v=5" width="660" height="922" alt="" loading="lazy">
-            <div><h3>Bandera Roja</h3><p>Sobre cualquier carta o con vía libre. Reinicia el ritmo sin descartar la pila. El siguiente tiene vía libre.</p></div>
+            <div><h3>Bandera Roja</h3><p>Sobre cualquier carta o con vía libre. Reinicia el ritmo sin descartar la pila. El siguiente tiene vía libre.</p><a class="p-tut" href="../tutorial/#roja"><svg aria-hidden="true"><use href="#icon-video"/></svg>Ver tutorial</a></div>
           </li>
           <li class="p-card" style="--c: #f2bd23">
             <img src="../img/cartas/bandera-amarilla.webp?v=5" width="660" height="922" alt="" loading="lazy">
-            <div><h3>Bandera Amarilla</h3><p>Sobre un Ritmo Bajo (1–4), otra Amarilla o con vía libre. El siguiente debe responder con Ritmo Bajo, Amarilla, Roja o a Cuadros.</p></div>
+            <div><h3>Bandera Amarilla</h3><p>Sobre un Ritmo Bajo (1–4), otra Amarilla o con vía libre. El siguiente debe responder con Ritmo Bajo, Amarilla, Roja o a Cuadros.</p><a class="p-tut" href="../tutorial/#ama"><svg aria-hidden="true"><use href="#icon-video"/></svg>Ver tutorial</a></div>
           </li>
           <li class="p-card" style="--c: #2f86de">
             <img src="../img/cartas/bandera-azul.webp?v=5" width="660" height="922" alt="" loading="lazy">
-            <div><h3>Bandera Azul</h3><p>Sobre una carta de Ritmo, otra Azul o con vía libre. El siguiente jugador en carrera pierde su turno; quien sigue responde a la carta de abajo.</p></div>
+            <div><h3>Bandera Azul</h3><p>Sobre una carta de Ritmo, otra Azul o con vía libre. El siguiente jugador en carrera pierde su turno; quien sigue responde a la carta de abajo.</p><a class="p-tut" href="../tutorial/#azul"><svg aria-hidden="true"><use href="#icon-video"/></svg>Ver tutorial</a></div>
           </li>
           <li class="p-card" style="--c: #9b4fd8">
             <img src="../img/cartas/vuelta-rapida.webp?v=5" width="660" height="922" alt="" loading="lazy">
-            <div><h3>Vuelta Rápida</h3><p>Sobre cualquier carta menos una Bandera Amarilla. Es el ritmo más alto: solo se responde con Vuelta Rápida, Roja o a Cuadros.</p></div>
+            <div><h3>Vuelta Rápida</h3><p>Sobre cualquier carta menos una Bandera Amarilla. Es el ritmo más alto: solo se responde con Vuelta Rápida, Roja o a Cuadros.</p><a class="p-tut" href="../tutorial/#vr"><svg aria-hidden="true"><use href="#icon-video"/></svg>Ver tutorial</a></div>
           </li>
           <li class="p-card" style="--c: #22b3c4">
             <img src="../img/cartas/rebufo.webp?v=5" width="660" height="922" alt="" loading="lazy">
-            <div><h3>Rebufo</h3><p>Sobre Ritmos Bajos, otro Rebufo o con vía libre. Puede ir solo o con Ritmos Altos (5–8) de dos valores consecutivos.</p></div>
+            <div><h3>Rebufo</h3><p>Sobre Ritmos Bajos, otro Rebufo o con vía libre. Puede ir solo o con Ritmos Altos (5–8) de dos valores consecutivos.</p><a class="p-tut" href="../tutorial/#reb"><svg aria-hidden="true"><use href="#icon-video"/></svg>Ver tutorial</a></div>
           </li>
         </ul>
-        <a class="p-button p-button--cream p-button--small" href="../tutorial/#especiales">Verlas en el tutorial <span aria-hidden="true">→</span></a>
       </section>
 
-      <!-- Quick reference -->
+      <!-- What can I play: top card of the pile → cards you may play on it -->
       <section class="p-section" id="referencia" aria-labelledby="ref-title">
-        <h2 class="p-h2" id="ref-title">Referencia rápida</h2>
-        <div class="p-table-wrap">
+        <h2 class="p-h2" id="ref-title">Qué carta puedo jugar</h2>
+        <div class="p-table-wrap p-table-wrap--ref">
           <table class="p-table p-table--ref">
-            <caption>Qué puedes jugar según la carta de arriba de la pila</caption>
+            <caption>Según la carta de arriba de la pila</caption>
             <thead>
               <tr><th scope="col">Arriba de la pila</th><th scope="col">Puedes jugar</th></tr>
             </thead>
             <tbody>
-              <tr><th scope="row">Vía libre</th><td>Cualquier carta o combinación válida</td></tr>
-              <tr><th scope="row">Ritmo 1–4</th><td>Ritmo igual o mayor, a Cuadros, Roja, Amarilla, Azul, Vuelta Rápida, Rebufo</td></tr>
-              <tr><th scope="row">Ritmo 5–8</th><td>Ritmo igual o mayor, a Cuadros, Roja, Azul, Vuelta Rápida</td></tr>
-              <tr><th scope="row">Bandera Amarilla</th><td>Ritmo 1–4, Amarilla, Roja, a Cuadros</td></tr>
-              <tr><th scope="row">Bandera Azul</th><td>Lo que valga contra la carta que quedó debajo</td></tr>
-              <tr><th scope="row">Vuelta Rápida</th><td>Vuelta Rápida, Roja, a Cuadros</td></tr>
-              <tr><th scope="row">Rebufo solo</th><td>Ritmo 5–8, Rebufo, Roja, a Cuadros, Vuelta Rápida</td></tr>
+              <tr>
+                <th scope="row"><div class="p-ref__top"><span class="p-mini p-mini--free" aria-hidden="true">Vacía</span><span>Vía libre</span></div></th>
+                <td><div class="p-ref__cards"><p class="p-ref__text">Cualquier carta o combinación válida</p></div></td>
+              </tr>
+              <tr>
+                <th scope="row"><div class="p-ref__top"><figure class="p-mini"><img src="../img/cartas/ritmo-3.webp?v=5" width="660" height="922" alt="" loading="lazy"></figure><span>Ritmo 1–4</span></div></th>
+                <td><div class="p-ref__cards"><figure class="p-mini"><img src="../img/cartas/ritmo-4.webp?v=5" width="660" height="922" alt="Ritmo igual o mayor" loading="lazy"><figcaption>Ritmo ≥</figcaption></figure><figure class="p-mini"><img src="../img/cartas/bandera-a-cuadros.webp?v=5" width="660" height="922" alt="Bandera a Cuadros" loading="lazy"><figcaption>a Cuadros</figcaption></figure><figure class="p-mini"><img src="../img/cartas/bandera-roja.webp?v=5" width="660" height="922" alt="Bandera Roja" loading="lazy"><figcaption>Roja</figcaption></figure><figure class="p-mini"><img src="../img/cartas/bandera-amarilla.webp?v=5" width="660" height="922" alt="Bandera Amarilla" loading="lazy"><figcaption>Amarilla</figcaption></figure><figure class="p-mini"><img src="../img/cartas/bandera-azul.webp?v=5" width="660" height="922" alt="Bandera Azul" loading="lazy"><figcaption>Azul</figcaption></figure><figure class="p-mini"><img src="../img/cartas/vuelta-rapida.webp?v=5" width="660" height="922" alt="Vuelta Rápida" loading="lazy"><figcaption>Vuelta Rápida</figcaption></figure><figure class="p-mini"><img src="../img/cartas/rebufo.webp?v=5" width="660" height="922" alt="Rebufo" loading="lazy"><figcaption>Rebufo</figcaption></figure></div></td>
+              </tr>
+              <tr>
+                <th scope="row"><div class="p-ref__top"><figure class="p-mini"><img src="../img/cartas/ritmo-6.webp?v=5" width="660" height="922" alt="" loading="lazy"></figure><span>Ritmo 5–8</span></div></th>
+                <td><div class="p-ref__cards"><figure class="p-mini"><img src="../img/cartas/ritmo-7.webp?v=5" width="660" height="922" alt="Ritmo igual o mayor" loading="lazy"><figcaption>Ritmo ≥</figcaption></figure><figure class="p-mini"><img src="../img/cartas/bandera-a-cuadros.webp?v=5" width="660" height="922" alt="Bandera a Cuadros" loading="lazy"><figcaption>a Cuadros</figcaption></figure><figure class="p-mini"><img src="../img/cartas/bandera-roja.webp?v=5" width="660" height="922" alt="Bandera Roja" loading="lazy"><figcaption>Roja</figcaption></figure><figure class="p-mini"><img src="../img/cartas/bandera-azul.webp?v=5" width="660" height="922" alt="Bandera Azul" loading="lazy"><figcaption>Azul</figcaption></figure><figure class="p-mini"><img src="../img/cartas/vuelta-rapida.webp?v=5" width="660" height="922" alt="Vuelta Rápida" loading="lazy"><figcaption>Vuelta Rápida</figcaption></figure></div></td>
+              </tr>
+              <tr>
+                <th scope="row"><div class="p-ref__top"><figure class="p-mini"><img src="../img/cartas/bandera-amarilla.webp?v=5" width="660" height="922" alt="" loading="lazy"></figure><span>Bandera Amarilla</span></div></th>
+                <td><div class="p-ref__cards"><figure class="p-mini"><img src="../img/cartas/ritmo-2.webp?v=5" width="660" height="922" alt="Ritmo 1 a 4" loading="lazy"><figcaption>Ritmo 1–4</figcaption></figure><figure class="p-mini"><img src="../img/cartas/bandera-amarilla.webp?v=5" width="660" height="922" alt="Bandera Amarilla" loading="lazy"><figcaption>Amarilla</figcaption></figure><figure class="p-mini"><img src="../img/cartas/bandera-roja.webp?v=5" width="660" height="922" alt="Bandera Roja" loading="lazy"><figcaption>Roja</figcaption></figure><figure class="p-mini"><img src="../img/cartas/bandera-a-cuadros.webp?v=5" width="660" height="922" alt="Bandera a Cuadros" loading="lazy"><figcaption>a Cuadros</figcaption></figure></div></td>
+              </tr>
+              <tr>
+                <th scope="row"><div class="p-ref__top"><figure class="p-mini"><img src="../img/cartas/bandera-azul.webp?v=5" width="660" height="922" alt="" loading="lazy"></figure><span>Bandera Azul</span></div></th>
+                <td><div class="p-ref__cards"><p class="p-ref__text">Lo que valga contra la carta que quedó debajo</p></div></td>
+              </tr>
+              <tr>
+                <th scope="row"><div class="p-ref__top"><figure class="p-mini"><img src="../img/cartas/vuelta-rapida.webp?v=5" width="660" height="922" alt="" loading="lazy"></figure><span>Vuelta Rápida</span></div></th>
+                <td><div class="p-ref__cards"><figure class="p-mini"><img src="../img/cartas/vuelta-rapida.webp?v=5" width="660" height="922" alt="Vuelta Rápida" loading="lazy"><figcaption>Vuelta Rápida</figcaption></figure><figure class="p-mini"><img src="../img/cartas/bandera-roja.webp?v=5" width="660" height="922" alt="Bandera Roja" loading="lazy"><figcaption>Roja</figcaption></figure><figure class="p-mini"><img src="../img/cartas/bandera-a-cuadros.webp?v=5" width="660" height="922" alt="Bandera a Cuadros" loading="lazy"><figcaption>a Cuadros</figcaption></figure></div></td>
+              </tr>
+              <tr>
+                <th scope="row"><div class="p-ref__top"><figure class="p-mini"><img src="../img/cartas/rebufo.webp?v=5" width="660" height="922" alt="" loading="lazy"></figure><span>Rebufo solo</span></div></th>
+                <td><div class="p-ref__cards"><figure class="p-mini"><img src="../img/cartas/ritmo-6.webp?v=5" width="660" height="922" alt="Ritmo 5 a 8" loading="lazy"><figcaption>Ritmo 5–8</figcaption></figure><figure class="p-mini"><img src="../img/cartas/rebufo.webp?v=5" width="660" height="922" alt="Rebufo" loading="lazy"><figcaption>Rebufo</figcaption></figure><figure class="p-mini"><img src="../img/cartas/bandera-roja.webp?v=5" width="660" height="922" alt="Bandera Roja" loading="lazy"><figcaption>Roja</figcaption></figure><figure class="p-mini"><img src="../img/cartas/bandera-a-cuadros.webp?v=5" width="660" height="922" alt="Bandera a Cuadros" loading="lazy"><figcaption>a Cuadros</figcaption></figure><figure class="p-mini"><img src="../img/cartas/vuelta-rapida.webp?v=5" width="660" height="922" alt="Vuelta Rápida" loading="lazy"><figcaption>Vuelta Rápida</figcaption></figure></div></td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -242,7 +265,7 @@
           <h2 class="p-h2" id="cierre-title">¿Una jugada en duda?</h2>
           <p>Mira la jugada en los tutoriales o consulta el reglamento completo, donde cada regla está explicada en detalle.</p>
           <div class="p-cta__btns">
-            <a class="p-button" href="../tutorial/">Ver tutoriales <span aria-hidden="true">→</span></a>
+            <a class="p-button" href="../tutorial/"><svg aria-hidden="true"><use href="#icon-video"/></svg><span>Ver tutoriales</span></a>
             <a class="p-button p-button--cream" href="../reglamento.pdf" target="_blank" rel="noopener noreferrer">
               <svg aria-hidden="true"><use href="#icon-doc"/></svg>
               <span>Ver reglamento completo</span>

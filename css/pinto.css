@@ -733,6 +733,59 @@
 .p-cta__btns .p-button { margin: 0; }
 .p-mode p + p { margin-top: 0.6rem; }
 
+/* Small "Ver tutorial" link next to each rule / special card */
+.p-tut {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: 0.35rem;
+  padding: 0.15rem 0.6rem 0.15rem 0.45rem;
+  border: 1px solid rgb(229 70 59 / 0.55);
+  border-radius: 999px;
+  color: var(--cream);
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.5;
+  text-decoration: none;
+  white-space: nowrap;
+  vertical-align: 0.05em;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.p-tut svg { width: 1rem; height: 1rem; color: var(--red); }
+.p-tut:hover { background: rgb(229 70 59 / 0.15); border-color: var(--red); }
+.p-tut:focus-visible { outline: 3px solid var(--cream); outline-offset: 2px; }
+.p-card .p-tut { margin: 0.7rem 0 0; }
+
+/* "Qué carta puedo jugar": card images in the table */
+.p-table-wrap--ref { max-width: 56rem; }
+.p-table.p-table--ref th[scope="row"] { width: 11.5rem; vertical-align: middle; }
+.p-table.p-table--ref td { vertical-align: middle; }
+.p-ref__top { display: flex; align-items: center; gap: 0.7rem; }
+.p-ref__top .p-mini { flex: none; width: 2.9rem; }
+.p-ref__top span { line-height: 1.2; }
+.p-ref__cards { display: flex; flex-wrap: wrap; gap: 0.6rem 0.55rem; }
+.p-ref__text { margin: 0; color: var(--cream); }
+.p-mini { margin: 0; width: 3.3rem; text-align: center; }
+.p-mini img { display: block; width: 100%; height: auto; border-radius: 0.25rem; box-shadow: 0 2px 6px rgb(0 0 0 / 0.35); }
+.p-mini figcaption { margin-top: 0.3rem; color: var(--cream-dim); font-size: 0.68rem; line-height: 1.15; }
+.p-mini--free {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 660 / 922;
+  border: 2px dashed rgb(245 240 232 / 0.35);
+  border-radius: 0.3rem;
+  color: var(--cream-dim);
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+@media (max-width: 34rem) {
+  .p-table--ref thead { display: none; }
+  .p-table--ref tr { display: block; padding: 0.8rem 0; border-bottom: 1px solid var(--line); }
+  .p-table.p-table--ref th[scope="row"], .p-table.p-table--ref td { display: block; width: auto; padding: 0; border: 0; }
+  .p-table--ref td { margin-top: 0.7rem; }
+  .p-mini { width: 3rem; }
+}
+
 /* In-page chips scroll smoothly to their section */
 @media (prefers-reduced-motion: no-preference) {
   html:has(.p-toc) { scroll-behavior: smooth; }
@@ -852,6 +905,7 @@
   .no-js .box3d { animation: none; }
   .p-fan li:hover { transform: none; }
   .p-card:hover, .p-mode:hover, .p-card:hover img, .p-start__card:hover { transform: none; }
+  .p-tut { transition: none; }
 }
 
 @media (forced-colors: active) {

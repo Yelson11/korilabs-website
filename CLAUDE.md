@@ -134,7 +134,7 @@ rules are the detailed source of truth. Never add rules that aren't in the offic
 two entry cards (`.p-start`): "Ver tutoriales" (`../tutorial/`) and "Ver reglamento completo" (currently
 `../reglamento.pdf`; the owner will point it to the new official rules). Then in-page chips (`p-toc`) and
 sections `#preparacion` (steps + deck table + who starts), `#desarrollo`, `#reglas`, `#especiales` (rules order),
-`#referencia` (quick-reference table), `#modos`; each rules section links to its tutorial section. Closing
+`#referencia` ("Qué carta puedo jugar": table with card images), `#modos`; every rule and special card has a small video-icon "Ver tutorial" link (`.p-tut`) to its tutorial subsection. Closing
 CTA with both buttons again. The score sheet gift is offered via "Suscribirme" (`/#suscribete`), never linked
 directly. If the PDF changes, update the size/page count shown on the rules card.
 
@@ -158,7 +158,7 @@ directly. If the PDF changes, update the size/page count shown on the rules card
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
   Current: `styles.css?v=2`, `home.css?v=9` (index and privacidad),
-  `pinto.css?v=13`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `pinto-tutorial.css?v=7`, `tutorial-data.js?v=8`, `tutorial.js?v=7`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
+  `pinto.css?v=14`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `pinto-tutorial.css?v=7`, `tutorial-data.js?v=8`, `tutorial.js?v=7`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
 - **Sender (newsletter):** universal script in the `<head>` of `index.html`; form is
