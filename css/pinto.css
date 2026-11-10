@@ -757,10 +757,10 @@
 .p-card .p-tut { margin: 0.7rem 0 0; }
 
 /* "Qué carta puedo jugar": card images in the table (a cell holds images or text, never both) */
-.p-table-wrap--ref { max-width: 60rem; }
-.p-table.p-table--ref th[scope="row"] { width: 15rem; vertical-align: middle; }
+.p-table-wrap--ref { max-width: 46rem; }
+.p-table.p-table--ref th[scope="row"] { width: 10rem; vertical-align: middle; }
 .p-table.p-table--ref td { vertical-align: middle; }
-.p-ref__top { display: flex; align-items: center; gap: 0.8rem; }
+.p-ref__top { display: flex; flex-direction: column; align-items: center; gap: 0.45rem; text-align: center; }
 .p-ref__top > .p-mini, .p-ref__top > .p-stack { flex: none; --w: 2.9rem; }
 .p-ref__top span:last-child { line-height: 1.2; }
 .p-ref__cards { display: flex; flex-wrap: wrap; align-items: center; gap: 0.55rem; }
@@ -778,10 +778,8 @@
   box-sizing: border-box;
 }
 @media (max-width: 34rem) {
-  .p-table--ref thead { display: none; }
-  .p-table--ref tr { display: block; padding: 0.8rem 0; border-bottom: 1px solid var(--line); }
-  .p-table.p-table--ref th[scope="row"], .p-table.p-table--ref td { display: block; width: auto; padding: 0; border: 0; }
-  .p-table--ref td { margin-top: 0.7rem; }
+  .p-table.p-table--ref th[scope="row"] { width: 6.5rem; padding-left: 0; }
+  .p-ref__top { font-size: 0.85rem; }
 }
 
 /* In-page chips scroll smoothly to their section */
