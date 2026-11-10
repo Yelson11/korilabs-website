@@ -80,7 +80,7 @@ comments just to translate them — only translate what you are already touching
 │       │   └── multijugador/ Online with friends, 2–4 players (unlisted + noindex). index.html (lobby + board) and
 │       │                    multi.js: PeerJS rooms (4-char code, ?sala=CODE link); the room creator's browser runs
 │       │                    the engine and sends each player only their view. ?transporte=local = multi-tab test mode
-│       ├── tutorial/        Interactive tutorial (unlisted + noindex): 9 short hands-on lessons on a mini table, very
+│       ├── tutorial/        Interactive tutorial (unlisted + noindex): 7 short hands-on lessons on a mini table, very
 │       │                    little text. tutorial-data.js (lessons/steps + one demo per special card, content strictly
 │       │                    from reglamento v1.3), tutorial.js (hash router #lesson-id / #especiales-<card>, tap/select
 │       │                    cards, fly animations, bot moves). CSS: styles.css + pinto.css + pinto-tutorial.css
@@ -152,7 +152,7 @@ the size/page count shown next to the download button.
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
   Current: `styles.css?v=2`, `home.css?v=9` (index and privacidad),
-  `pinto.css?v=12`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `pinto-tutorial.css?v=2`, `tutorial-data.js?v=2`, `tutorial.js?v=2`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
+  `pinto.css?v=12`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `pinto-tutorial.css?v=2`, `tutorial-data.js?v=3`, `tutorial.js?v=2`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
 - **Sender (newsletter):** universal script in the `<head>` of `index.html`; form is

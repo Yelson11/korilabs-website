@@ -20,21 +20,6 @@
 
   var LESSONS = [
     {
-      id: 'meta', title: 'Tu meta',
-      steps: [
-        { text: 'Gana quien se quede <strong>sin cartas</strong> primero.', hand: ['r2', 'r5', 'r7'], vis: ['r3', 'r6', 'r8'], hid: 3, task: 'next' },
-        { text: 'Primero juegas las de tu <strong>mano</strong>…', hand: ['r2', 'r5', 'r7'], vis: ['r3', 'r6', 'r8'], hid: 3, focus: 'hand', task: 'next' },
-        { text: '…después tus cartas <strong>visibles</strong>…', hand: [], vis: ['r3', 'r6', 'r8'], hid: 3, focus: 'vis', task: 'next' },
-        { text: '…y al final las <strong>ocultas</strong>.', hand: [], vis: [], hid: 3, focus: 'hid', task: 'next' }
-      ]
-    },
-    {
-      id: 'empezar', title: '¿Quién empieza?',
-      steps: [
-        { text: 'Empieza quien juegue un <strong>Ritmo 1</strong>. ¡Juégalo!', pile: [], hand: ['r4', 'r1', 'r6', 'r7'], vis: ['r3', 'r5', 'r8'], hid: 3, task: 'play', valid: ['r1'], hint: 'Busca el 1.', ok: 'Si nadie tiene un 1, empieza quien tenga un 2, y así.' }
-      ]
-    },
-    {
       id: 'ritmo', title: 'Mantén el ritmo',
       steps: [
         { text: 'Juega una carta <strong>igual o mayor</strong> que la de arriba.', pile: ['r3'], hand: ['r2', 'r5', 'r1', 'r3'], vis: ['r4', 'r6', 'r8'], hid: 3, task: 'play', valid: ['r3', 'r5'], hint: 'Esa es menor que el 3.', then: [{ bot: 1, card: 'r6' }], ok: 'El Jugador 1 subió a 6.' },
