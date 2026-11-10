@@ -686,6 +686,53 @@
 
 .pinto [id] { scroll-margin-top: 1rem; }
 
+/* First choice for visitors coming from the QR: tutorials or the full rules */
+.p-start {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0.9rem;
+  max-width: 44rem;
+  margin-top: 1.8rem;
+}
+.p-start__card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 0.9rem;
+  align-items: center;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: 1.1rem;
+  background: rgb(245 240 232 / 0.04);
+  color: var(--cream);
+  text-decoration: none;
+  transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+}
+.p-start__card:hover { border-color: var(--cream-dim); background: rgb(245 240 232 / 0.07); transform: translateY(-2px); }
+.p-start__card:focus-visible { outline: 3px solid var(--cream); outline-offset: 3px; }
+.p-start__card--tutorial { border-color: var(--red); background: rgb(229 70 59 / 0.12); }
+.p-start__card--tutorial:hover { border-color: #f05a4f; background: rgb(229 70 59 / 0.18); }
+.p-start__icon {
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: var(--cream);
+  color: var(--asphalt, #16171b);
+}
+.p-start__card--tutorial .p-start__icon { background: var(--red); color: #fff; }
+.p-start__icon svg { width: 1.45rem; height: 1.45rem; }
+.p-start__title { font: italic 800 1.15rem/1.15 var(--display); text-transform: uppercase; }
+.p-start__text { margin-top: 0.2rem; color: var(--cream-dim); font-size: 0.9rem; line-height: 1.35; }
+.p-start__more { margin: 1.6rem 0 0; color: var(--cream-dim); font-size: 0.92rem; }
+.p-start__more + .p-toc { margin-top: 0.8rem; }
+
+.p-cta__btns { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 1.4rem; }
+.p-cta__btns .p-button { margin: 0; }
+.p-mode p + p { margin-top: 0.6rem; }
+
 /* In-page chips scroll smoothly to their section */
 @media (prefers-reduced-motion: no-preference) {
   html:has(.p-toc) { scroll-behavior: smooth; }
@@ -804,9 +851,9 @@
 @media (prefers-reduced-motion: reduce) {
   .no-js .box3d { animation: none; }
   .p-fan li:hover { transform: none; }
-  .p-card:hover, .p-mode:hover, .p-card:hover img { transform: none; }
+  .p-card:hover, .p-mode:hover, .p-card:hover img, .p-start__card:hover { transform: none; }
 }
 
 @media (forced-colors: active) {
-  .p-steps li, .p-card, .p-facts li, .p-mode, .p-rules li, .p-toc a { border-color: CanvasText; }
+  .p-steps li, .p-card, .p-facts li, .p-mode, .p-rules li, .p-toc a, .p-start__card { border-color: CanvasText; }
 }

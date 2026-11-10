@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Instrucciones de PINTO · Kori Labs</title>
-  <meta name="description" content="Cómo jugar PINTO: preparación, turnos, cartas especiales y modos de juego. Descarga el reglamento oficial en PDF.">
+  <meta name="description" content="Cómo jugar PINTO: preparación, desarrollo de la partida, reglas de carrera, cartas especiales y modos de juego. Tutoriales animados y reglamento completo.">
   <meta name="theme-color" content="#16171b">
   <meta name="color-scheme" content="dark">
   <meta property="og:type" content="article">
   <meta property="og:title" content="Instrucciones de PINTO · Kori Labs">
-  <meta property="og:description" content="Lo esencial para jugar PINTO y el reglamento oficial para descargar.">
+  <meta property="og:description" content="Lo esencial para jugar PINTO, tutoriales animados y el reglamento completo.">
   <meta property="og:url" content="https://korilabscr.com/juegos/pinto/instrucciones/">
   <meta property="og:image" content="https://korilabscr.com/juegos/pinto/img/og-pinto.jpg">
   <meta property="og:locale" content="es_CR">
@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Istok+Web:wght@400;700&amp;family=Poppins:ital,wght@0,500;0,600;1,700;1,800&amp;display=swap">
 
   <link rel="stylesheet" href="../../../css/styles.css?v=2">
-  <link rel="stylesheet" href="../../../css/pinto.css?v=12">
+  <link rel="stylesheet" href="../../../css/pinto.css?v=13">
 </head>
 <body class="pinto">
 
@@ -58,24 +58,31 @@
     </header>
 
     <main>
-      <!-- Intro + official rules download -->
+      <!-- Intro: this page is the target of the printed QR. First choice: tutorials or the full rules -->
       <section class="p-intro" aria-labelledby="instr-title">
-        <p class="p-eyebrow">Instrucciones · Reglamento v1.3</p>
+        <p class="p-eyebrow">Instrucciones</p>
         <h1 class="p-h2 p-h1" id="instr-title">Cómo jugar <span class="p-red">PINTO</span></h1>
-        <p class="p-intro__lead">Deshazte de todas tus cartas antes que los demás. El último que se quede con cartas pierde la carrera.</p>
-        <p class="p-intro__lead">Aquí tienes lo esencial para arrancar. Los casos específicos y las preguntas frecuentes están en el reglamento oficial.</p>
-        <div class="p-download">
-          <a class="p-button" href="../reglamento.pdf" target="_blank" rel="noopener noreferrer">
-            <svg aria-hidden="true"><use href="#icon-doc"/></svg>
-            <span>Ver reglamento</span>
-            <span class="visually-hidden">(PDF, se abre en una pestaña nueva)</span>
+        <p class="p-intro__lead">Deshazte de todas tus cartas, las de tu mano y las de la mesa, para cruzar la meta. Los demás siguen compitiendo por sus posiciones y quien se quede con cartas al final ocupa el último lugar.</p>
+
+        <div class="p-start">
+          <a class="p-start__card p-start__card--tutorial" href="../tutorial/">
+            <span class="p-start__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5Z" fill="currentColor"/></svg></span>
+            <span class="p-start__title">Ver tutoriales</span>
+            <span class="p-start__text">Animaciones cortas de cada jugada y de cada carta especial.</span>
           </a>
-          <span class="p-download__meta">PDF · 16 páginas · 2,3 MB</span>
+          <a class="p-start__card" href="../reglamento.pdf" target="_blank" rel="noopener noreferrer">
+            <span class="p-start__icon" aria-hidden="true"><svg><use href="#icon-doc"/></svg></span>
+            <span class="p-start__title">Ver reglamento completo</span>
+            <span class="p-start__text">Todas las reglas en detalle. PDF · 16 páginas · 2,3 MB</span>
+            <span class="visually-hidden">(se abre en una pestaña nueva)</span>
+          </a>
         </div>
 
+        <p class="p-start__more">O sigue bajando para ver el resumen de las reglas.</p>
         <nav class="p-toc" aria-label="En esta página">
           <a href="#preparacion">Preparación</a>
-          <a href="#turno">Tu turno</a>
+          <a href="#desarrollo">Desarrollo de la partida</a>
+          <a href="#reglas">Reglas de carrera</a>
           <a href="#especiales">Cartas especiales</a>
           <a href="#referencia">Referencia rápida</a>
           <a href="#modos">Modos de juego</a>
@@ -84,28 +91,27 @@
 
       <!-- Setup -->
       <section class="p-section" id="preparacion" aria-labelledby="prep-title">
-        <p class="p-eyebrow">Antes de arrancar</p>
-        <h2 class="p-h2" id="prep-title">Arma la parrilla</h2>
+        <h2 class="p-h2" id="prep-title">Preparación</h2>
         <ol class="p-steps">
           <li>
-            <h3>Prepara el mazo</h3>
-            <p>Según cuántos jueguen, deja en la caja las Banderas Azules y a Cuadros que sobren (ver tabla). Baraja el resto.</p>
+            <h3>Ajusta el mazo</h3>
+            <p>Según la cantidad de jugadores, retira las Banderas Azules y a Cuadros que no se usan (ver tabla) y baraja el resto.</p>
+          </li>
+          <li>
+            <h3>Define el sentido</h3>
+            <p>Acuerden si los turnos avanzan en sentido horario o antihorario. Se mantiene toda la partida.</p>
           </li>
           <li>
             <h3>Cartas ocultas</h3>
-            <p>Cada jugador pone 3 cartas boca abajo. Nadie las mira, ni siquiera quien las tiene.</p>
+            <p>Cada jugador recibe 3 cartas boca abajo en fila (5 si juegan dos). Nadie puede mirarlas, ni siquiera su dueño.</p>
           </li>
           <li>
             <h3>Cartas visibles</h3>
-            <p>Encima de cada oculta va una carta boca arriba, a la vista de todos.</p>
+            <p>Sobre cada carta oculta se coloca una carta boca arriba.</p>
           </li>
           <li>
             <h3>Reparte la mano</h3>
-            <p>Reparte todas las cartas restantes y acuerden si los turnos van hacia la izquierda o la derecha.</p>
-          </li>
-          <li>
-            <h3>Den la salida</h3>
-            <p>Arranca quien tenga un 1. Si nadie lo tiene, se busca el 2, luego el 3, y así.</p>
+            <p>Reparte todas las cartas restantes. Nadie mira su mano hasta que el repartidor dé la señal.</p>
           </li>
         </ol>
 
@@ -123,57 +129,68 @@
           </table>
         </div>
 
-        <p class="p-note p-note--stacked"><strong>¿Juegan dos?</strong> Cada uno recibe 7 cartas en la mano y el resto forma un mazo de reserva. Después de jugar, roba hasta volver a tener 7. Las cartas de la mesa se usan cuando la reserva se acaba y te quedas sin mano.</p>
+        <p class="p-note p-note--stacked"><strong>¿Quién comienza?</strong> Comienza el primer jugador que juegue un Ritmo 1 de su mano. Si nadie tiene uno, se busca el Ritmo 2, y así sucesivamente. Al inicio solo se juegan cartas de la mano.</p>
       </section>
 
-      <!-- Turn -->
-      <section class="p-section" id="turno" aria-labelledby="turno-title">
-        <p class="p-eyebrow">En carrera</p>
-        <h2 class="p-h2" id="turno-title">Tu turno</h2>
+      <!-- Desarrollo de la partida -->
+      <section class="p-section" id="desarrollo" aria-labelledby="desarrollo-title">
+        <h2 class="p-h2" id="desarrollo-title">Desarrollo de la partida</h2>
         <ul class="p-rules">
-          <li><strong>Marca el ritmo.</strong> Juega una o más cartas iguales con valor igual o mayor al de la pila.</li>
-          <li><strong>Sin mezclar.</strong> Puedes colocar varias cartas seguidas, pero solo si son del mismo valor.</li>
-          <li><strong>Si no puedes, recoges.</strong> Sin jugada válida, te llevas toda la pila a la mano y tu turno termina.</li>
-          <li><strong>Vía libre.</strong> Si no hay nada en la pila, el siguiente jugador puede jugar la carta que desee.</li>
-          <li><strong>Carril Lleno.</strong> Si quedan cuatro cartas iguales seguidas arriba de la pila, toda la pila sale del juego y el siguiente tiene vía libre.</li>
+          <li><strong>Mantener el ritmo.</strong> Juega una carta de Ritmo de valor igual o mayor al de la carta de arriba de la pila. Las cartas especiales permiten excepciones.</li>
+          <li><strong>Ceder el paso.</strong> Si al comenzar tu turno no tienes una jugada válida, recoges toda la pila central. Tu turno termina y el siguiente jugador tiene vía libre.</li>
+          <li><strong>Vía libre.</strong> Con la pila vacía, o cuando una carta concede vía libre, el siguiente jugador puede empezar con cualquier carta o combinación válida.</li>
+          <li><strong>Fases de la carrera.</strong> Primero juegas las cartas de tu mano, luego tomas tus cartas visibles y al final tus cartas ocultas, una a la vez. Si recoges la pila, debes deshacerte de esas cartas para continuar.</li>
         </ul>
+        <a class="p-button p-button--cream p-button--small" href="../tutorial/#desarrollo">Verlo en el tutorial <span aria-hidden="true">→</span></a>
       </section>
 
-      <!-- Special cards -->
+      <!-- Reglas de carrera -->
+      <section class="p-section" id="reglas" aria-labelledby="reglas-title">
+        <h2 class="p-h2" id="reglas-title">Reglas de carrera</h2>
+        <ul class="p-rules">
+          <li><strong>Tu turno.</strong> Comienza cuando colocas tu primera carta. Puedes jugar tantas cartas como las reglas permitan, juntas o una después de otra. Después de tu primera carta, el siguiente jugador puede interrumpirte con una carta o combinación válida.</li>
+          <li><strong>Encadenar cartas.</strong> Puedes jugar juntas varias cartas iguales: del mismo valor o del mismo tipo de carta especial. Las especiales encadenadas aplican su efecto una sola vez. La Bandera a Cuadros no se encadena.</li>
+          <li><strong>Avanzar entre fases.</strong> Si terminas una fase en tu turno y puedes seguir jugando, continúas con la siguiente sin esperar.</li>
+          <li><strong>Carril Lleno.</strong> Cuatro cartas iguales seguidas en la pila, de uno o varios jugadores, retiran la pila de la partida. Tu turno termina y el siguiente jugador tiene vía libre. Una Bandera Azul corta la secuencia.</li>
+          <li><strong>Fin de turno.</strong> La Bandera Roja, la Bandera a Cuadros y el Carril Lleno terminan el turno de inmediato.</li>
+        </ul>
+        <a class="p-button p-button--cream p-button--small" href="../tutorial/#reglas">Verlo en el tutorial <span aria-hidden="true">→</span></a>
+      </section>
+
+      <!-- Special cards (rules order) -->
       <section class="p-section" id="especiales" aria-labelledby="especiales-title">
-        <p class="p-eyebrow">Cambian la carrera</p>
         <h2 class="p-h2" id="especiales-title">Cartas especiales</h2>
         <ul class="p-specials">
+          <li class="p-card" style="--c: #e8e2d6">
+            <img src="../img/cartas/bandera-a-cuadros.webp?v=5" width="660" height="922" alt="" loading="lazy">
+            <div><h3>Bandera a Cuadros</h3><p>Sobre cualquier carta o con vía libre. Retira toda la pila de la partida y el siguiente tiene vía libre. Solo una por turno y tu turno termina.</p></div>
+          </li>
           <li class="p-card" style="--c: #e5463b">
             <img src="../img/cartas/bandera-roja.webp?v=5" width="660" height="922" alt="" loading="lazy">
-            <div><h3>Bandera Roja</h3><p>Cierra la pista sin descartar la pila. El siguiente jugador tiene vía libre. Esta carta puede jugarse siempre.</p></div>
+            <div><h3>Bandera Roja</h3><p>Sobre cualquier carta o con vía libre. Reinicia el ritmo sin descartar la pila. El siguiente tiene vía libre.</p></div>
           </li>
           <li class="p-card" style="--c: #f2bd23">
             <img src="../img/cartas/bandera-amarilla.webp?v=5" width="660" height="922" alt="" loading="lazy">
-            <div><h3>Bandera Amarilla</h3><p>Obliga al siguiente jugador a jugar ritmos bajos. Esta carta <strong>NO</strong> puede jugarse sobre ritmos altos, Vuelta Rápida o Rebufo.</p></div>
-          </li>
-          <li class="p-card" style="--c: #22b3c4">
-            <img src="../img/cartas/rebufo.webp?v=5" width="660" height="922" alt="" loading="lazy">
-            <div><h3>Rebufo</h3><p>Permite colocar hasta dos valores consecutivos de ritmos altos. Puedes jugarla sobre ritmos bajos u otro Rebufo.</p></div>
-          </li>
-          <li class="p-card" style="--c: #e8e2d6">
-            <img src="../img/cartas/bandera-a-cuadros.webp?v=5" width="660" height="922" alt="" loading="lazy">
-            <div><h3>Bandera a Cuadros</h3><p>Termina la etapa y descarta la pila. El siguiente jugador tiene vía libre. Esta carta puede jugarse siempre.</p></div>
-          </li>
-          <li class="p-card" style="--c: #9b4fd8">
-            <img src="../img/cartas/vuelta-rapida.webp?v=5" width="660" height="922" alt="" loading="lazy">
-            <div><h3>Vuelta Rápida</h3><p>Carta de ritmo más alto del juego. Esta carta <strong>NO</strong> puede jugarse justo después de una Bandera Amarilla.</p></div>
+            <div><h3>Bandera Amarilla</h3><p>Sobre un Ritmo Bajo (1–4), otra Amarilla o con vía libre. El siguiente debe responder con Ritmo Bajo, Amarilla, Roja o a Cuadros.</p></div>
           </li>
           <li class="p-card" style="--c: #2f86de">
             <img src="../img/cartas/bandera-azul.webp?v=5" width="660" height="922" alt="" loading="lazy">
-            <div><h3>Bandera Azul</h3><p>Salta el turno del siguiente jugador. Esta carta <strong>NO</strong> puede jugarse sobre una Bandera Amarilla, Rebufo o Vuelta Rápida.</p></div>
+            <div><h3>Bandera Azul</h3><p>Sobre una carta de Ritmo, otra Azul o con vía libre. El siguiente jugador en carrera pierde su turno; quien sigue responde a la carta de abajo.</p></div>
+          </li>
+          <li class="p-card" style="--c: #9b4fd8">
+            <img src="../img/cartas/vuelta-rapida.webp?v=5" width="660" height="922" alt="" loading="lazy">
+            <div><h3>Vuelta Rápida</h3><p>Sobre cualquier carta menos una Bandera Amarilla. Es el ritmo más alto: solo se responde con Vuelta Rápida, Roja o a Cuadros.</p></div>
+          </li>
+          <li class="p-card" style="--c: #22b3c4">
+            <img src="../img/cartas/rebufo.webp?v=5" width="660" height="922" alt="" loading="lazy">
+            <div><h3>Rebufo</h3><p>Sobre Ritmos Bajos, otro Rebufo o con vía libre. Puede ir solo o con Ritmos Altos (5–8) de dos valores consecutivos.</p></div>
           </li>
         </ul>
+        <a class="p-button p-button--cream p-button--small" href="../tutorial/#especiales">Verlas en el tutorial <span aria-hidden="true">→</span></a>
       </section>
 
       <!-- Quick reference -->
       <section class="p-section" id="referencia" aria-labelledby="ref-title">
-        <p class="p-eyebrow">Para tener a mano</p>
         <h2 class="p-h2" id="ref-title">Referencia rápida</h2>
         <div class="p-table-wrap">
           <table class="p-table p-table--ref">
@@ -182,13 +199,13 @@
               <tr><th scope="col">Arriba de la pila</th><th scope="col">Puedes jugar</th></tr>
             </thead>
             <tbody>
-              <tr><th scope="row">Vía libre</th><td>Cualquier carta</td></tr>
-              <tr><th scope="row">Ritmo 1–4</th><td>Ritmo igual o mayor, Roja, Amarilla, Rebufo, a Cuadros, Vuelta Rápida, Azul</td></tr>
-              <tr><th scope="row">Ritmo 5–8</th><td>Ritmo igual o mayor, Roja, a Cuadros, Vuelta Rápida, Azul</td></tr>
-              <tr><th scope="row">Bandera Amarilla</th><td>Ritmo 1–4, Roja, Amarilla, a Cuadros</td></tr>
-              <tr><th scope="row">Rebufo solo</th><td>Rebufo, ritmo 5 o más, Roja, a Cuadros, Vuelta Rápida</td></tr>
+              <tr><th scope="row">Vía libre</th><td>Cualquier carta o combinación válida</td></tr>
+              <tr><th scope="row">Ritmo 1–4</th><td>Ritmo igual o mayor, a Cuadros, Roja, Amarilla, Azul, Vuelta Rápida, Rebufo</td></tr>
+              <tr><th scope="row">Ritmo 5–8</th><td>Ritmo igual o mayor, a Cuadros, Roja, Azul, Vuelta Rápida</td></tr>
+              <tr><th scope="row">Bandera Amarilla</th><td>Ritmo 1–4, Amarilla, Roja, a Cuadros</td></tr>
+              <tr><th scope="row">Bandera Azul</th><td>Lo que valga contra la carta que quedó debajo</td></tr>
               <tr><th scope="row">Vuelta Rápida</th><td>Vuelta Rápida, Roja, a Cuadros</td></tr>
-              <tr><th scope="row">Bandera Azul</th><td>Lo que valga contra el ritmo de abajo, menos otra Azul</td></tr>
+              <tr><th scope="row">Rebufo solo</th><td>Ritmo 5–8, Rebufo, Roja, a Cuadros, Vuelta Rápida</td></tr>
             </tbody>
           </table>
         </div>
@@ -196,22 +213,22 @@
 
       <!-- Game modes -->
       <section class="p-section" id="modos" aria-labelledby="modos-title">
-        <p class="p-eyebrow">Una carrera o toda una temporada</p>
         <h2 class="p-h2" id="modos-title">Modos de juego</h2>
         <ul class="p-modes">
           <li class="p-mode">
             <div class="p-mode__head">
               <img class="p-mode__icon" src="../img/icono-bandera-cuadros.svg" width="512" height="512" alt="" loading="lazy">
-              <h3>Modo Rápido</h3>
+              <h3>Modo Carrera Única</h3>
             </div>
-            <p>Una sola carrera de 5 a 15 minutos. Quien se quede con cartas al final pierde.</p>
+            <p>Una emocionante partida de aproximadamente 5 a 15 minutos. Juega tus cartas, cruza la meta y evita ser el último en llegar.</p>
           </li>
           <li class="p-mode">
             <div class="p-mode__head">
               <img class="p-mode__icon" src="../img/icono-trofeo.svg" width="512" height="512" alt="" loading="lazy">
               <h3>Modo Temporada</h3>
             </div>
-            <p>Un Campeonato de Grandes Premios: jueguen varias carreras y sumen puntos según el orden de llegada. Temporadas de 5, 10 o 15 Grandes Premios; gana quien acumule más puntos.</p>
+            <p>Compite en un campeonato de varias carreras para demostrar quién es el piloto más completo. Al finalizar cada carrera, los jugadores reciben puntos según su posición de llegada. Acumula puntos a lo largo de la temporada y conviértete en el campeón.</p>
+            <p>Puedes elegir jugar temporadas de 5, 10 o 15 carreras. ¡Gana quien acumule más puntos al finalizar el campeonato!</p>
             <p class="p-mode__extra"><strong>Hoja de puntuación:</strong> suscríbete al boletín de Kori Labs y te la enviamos gratis.</p>
             <a class="p-button p-button--cream p-button--small" href="../../../#suscribete">Suscribirme <span aria-hidden="true">→</span></a>
           </li>
@@ -223,12 +240,15 @@
         <img class="p-cta__card" src="../img/cartas/reverso.webp?v=5" width="660" height="922" alt="" loading="lazy">
         <div class="p-cta__copy">
           <h2 class="p-h2" id="cierre-title">¿Una jugada en duda?</h2>
-          <p>El reglamento oficial tiene todos los casos especiales, las preguntas frecuentes y la puntuación completa del campeonato.</p>
-          <a class="p-button" href="../reglamento.pdf" target="_blank" rel="noopener noreferrer">
-            <svg aria-hidden="true"><use href="#icon-doc"/></svg>
-            <span>Ver reglamento</span>
-            <span class="visually-hidden">(PDF, se abre en una pestaña nueva)</span>
-          </a>
+          <p>Mira la jugada en los tutoriales o consulta el reglamento completo, donde cada regla está explicada en detalle.</p>
+          <div class="p-cta__btns">
+            <a class="p-button" href="../tutorial/">Ver tutoriales <span aria-hidden="true">→</span></a>
+            <a class="p-button p-button--cream" href="../reglamento.pdf" target="_blank" rel="noopener noreferrer">
+              <svg aria-hidden="true"><use href="#icon-doc"/></svg>
+              <span>Ver reglamento completo</span>
+              <span class="visually-hidden">(PDF, se abre en una pestaña nueva)</span>
+            </a>
+          </div>
           <a class="p-button p-button--cream p-button--small p-back" href="../">Conoce más de PINTO <span aria-hidden="true">→</span></a>
         </div>
       </section>
