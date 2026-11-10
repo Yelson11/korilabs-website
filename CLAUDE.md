@@ -71,7 +71,7 @@ comments just to translate them — only translate what you are already touching
 │   └── pinto/
 │       ├── index.html       PINTO page: hero with 3D box, "Cómo se juega", rhythm cards, special cards, CTA
 │       ├── box3d.js         Auto-rotating, draggable CSS-3D box with per-face shading (no deps, respects reduced motion)
-│       ├── instrucciones/index.html  Rules summary (v1.5) + entry cards to the tutorial and the full rules (PDF opens in a new tab, no `download` attr). TARGET OF THE PRINTED QR — never move
+│       ├── instrucciones/index.html  Welcome page for QR visitors (tutorial, resources) + quick rules guide (v1.5). Full rules PDF opens in a new tab, no `download` attr. TARGET OF THE PRINTED QR — never move
 │       ├── reglamento.pdf   Official rules PDF (v1.3, source of truth). Linked from instrucciones/ only
 │       ├── demo/            Playable web demo (you vs 3 bots). Unlisted + noindex while it's being tested.
 │       │   ├── index.html   Page shell (board markup, help text); CSS: styles.css + pinto.css + pinto-demo.css
@@ -129,14 +129,19 @@ Game facts (players, 5–15 min, 10+, card names, rules wording) must stay consi
 card, this page, `instrucciones/` and `reglamento.pdf` v1.3.
 
 ### PINTO instructions — `juegos/pinto/instrucciones/index.html` (CSS: `styles.css` + `pinto.css`)
-Target of the QR printed in the rules leaflet. A **summary** of the official rules (v1.5), not a copy: the full
-rules are the detailed source of truth. Never add rules that aren't in the official text. First screen: title +
-two entry cards (`.p-start`): "Ver tutoriales" (`../tutorial/`) and "Ver reglamento completo" (currently
-`../reglamento.pdf`; the owner will point it to the new official rules). Then in-page chips (`p-toc`) and
-sections `#preparacion` (steps + deck table + who starts), `#desarrollo`, `#reglas`, `#especiales` (rules order),
-`#referencia` ("Qué carta puedo jugar": table with card images), `#modos`; every rule and special card has a small video-icon "Ver tutorial" link (`.p-tut`) to its tutorial subsection. Closing
-CTA with both buttons again. The score sheet gift is offered via "Suscribirme" (`/#suscribete`), never linked
-directly. If the PDF changes, update the size/page count shown on the rules card.
+Target of the QR printed in the rules leaflet, so it's the first page a player sees after buying the game: it opens as a
+light **welcome page** and the rules summary sits below it. Keep the top short (no rules dump, no sign-ups or pop-ups).
+Order: `.p-welcome` (PINTO logo, "¡Bienvenido a PINTO!", short text, "Aprende a jugar" → `../tutorial/`, fan of 3 cards),
+`#aprende` (`.p-learn`: wooden-table thumbnail with a play button + "Ver tutorial" → `../tutorial/#desarrollo`),
+`#recursos` "Recursos para tu carrera" (three `.p-start__card`s: Videos explicativos → `../tutorial/#especiales`,
+Guía rápida → `#guia`, Reglamento oficial → `../reglamento.pdf`, new tab; the owner will point it to the new official
+rules PDF), then `#guia` "Guía rápida" (intro + `p-toc` chips) followed by the summary of the official rules (v1.5),
+not a copy — never add rules that aren't in the official text: `#preparacion` (steps + deck table + who starts),
+`#desarrollo`, `#reglas`, `#especiales` (rules order), `#referencia` ("Qué carta puedo jugar": table with card images),
+`#modos`; every rule and special card has a small video-icon "Ver tutorial" link (`.p-tut`) to its tutorial subsection.
+Minimal closing `.p-finish` ("¡Que comience la carrera!" · "PINTO · Un juego de Kori Labs" · "Conoce más de PINTO").
+The score sheet gift is offered via "Suscribirme" (`/#suscribete`), never linked directly. There are no real videos yet
+(the "videos" are the tutorial animations); don't invent video links.
 
 ### Privacy — `privacidad/index.html` (CSS: `styles.css` + `home.css` + `legal.css`)
 
@@ -158,7 +163,7 @@ directly. If the PDF changes, update the size/page count shown on the rules card
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
   Current: `styles.css?v=2`, `home.css?v=9` (index and privacidad),
-  `pinto.css?v=20`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `pinto-tutorial.css?v=7`, `tutorial-data.js?v=8`, `tutorial.js?v=7`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
+  `pinto.css?v=21`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `pinto-tutorial.css?v=7`, `tutorial-data.js?v=8`, `tutorial.js?v=7`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
 - **Sender (newsletter):** universal script in the `<head>` of `index.html`; form is
