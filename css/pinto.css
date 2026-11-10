@@ -409,6 +409,7 @@
 .p-steps li:nth-child(3) { --c: #f2c230; }
 .p-steps li:nth-child(4) { --c: #3dba6a; }
 .p-steps li:nth-child(5) { --c: #22b3c4; }
+.p-steps li:nth-child(6) { --c: #2f86de; }
 
 .p-steps h3 {
   margin: 0 0 0.3rem;
@@ -1110,7 +1111,6 @@
   .p-fan li:nth-child(odd)  { transform: translateY(0.75rem); }
   .p-fan li:hover { transform: translateY(-0.5rem); }
   .p-steps { grid-template-columns: repeat(2, 1fr); }
-  .p-steps li:last-child { grid-column: 1 / -1; }
   .p-specials { grid-template-columns: repeat(2, 1fr); }
   .p-specials--compact { grid-template-columns: repeat(3, 1fr); }
   .p-modes { grid-template-columns: repeat(2, 1fr); align-items: start; }
@@ -1137,9 +1137,8 @@
   .p-seal { margin-inline: 0; }
   .p-hero__art { justify-self: center; }
 
-  .p-steps { grid-template-columns: repeat(5, 1fr); }
+  .p-steps { grid-template-columns: repeat(3, 1fr); }
   .p-steps li { padding: 4.2rem 1.15rem 1.3rem; }
-  .p-steps li:last-child { grid-column: auto; }
   .p-steps li::before { top: 1.1rem; left: 1.1rem; text-align: left; }
 
   .p-specials { grid-template-columns: repeat(3, 1fr); }
