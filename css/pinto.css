@@ -12,7 +12,10 @@
   --cream-dim: #b9b4ab;
   --red: #e5463b;
   --line: rgb(245 240 232 / 0.14);
-  --display: "Poppins", var(--font);
+  --display: "Poppins", system-ui, sans-serif;
+  /* Body text in Saira (racing feel, pairs with the Poppins headings); small spaced labels keep Istok Web */
+  --font: "Saira", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --label-font: "Istok Web", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 
   /* proporciones reales de la caja (troquel): ancho 758 · alto 1057 · fondo 244 */
   --bw: clamp(11.5rem, 46vw, 17rem);
@@ -66,6 +69,8 @@
 }
 
 /* --- Textos comunes ----------------------------------------------------- */
+
+.p-eyebrow, .p-soon { font-family: var(--label-font); }
 
 .p-eyebrow {
   margin: 0 0 0.6rem;
