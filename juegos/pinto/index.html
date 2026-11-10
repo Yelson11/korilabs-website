@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Istok+Web:wght@400;700&amp;family=Poppins:ital,wght@0,500;0,600;1,700;1,800&amp;display=swap">
 
   <link rel="stylesheet" href="../../css/styles.css?v=2">
-  <link rel="stylesheet" href="../../css/pinto.css?v=16">
+  <link rel="stylesheet" href="../../css/pinto.css?v=17">
   <script>document.documentElement.classList.replace('no-js', 'js');</script>
 </head>
 <body class="pinto">
@@ -112,28 +112,38 @@
 
       <!-- About -->
       <section class="p-section p-about" aria-labelledby="acerca-title">
-        <p class="p-eyebrow">El juego</p>
         <h2 class="p-h2" id="acerca-title">Acerca de PINTO</h2>
-        <p class="p-about__text">PINTO es un juego de cartas en el que todo se trata de <strong>deshacerte de tus cartas</strong>. Cada jugador intenta jugar todas las suyas antes que sus rivales. Si no tienes una carta válida para jugar, te llevas toda la pila.</p>
-        <p class="p-about__text">Si te quedas sin cartas de primero, <strong class="p-red">eres el ganador.</strong></p>
+        <p class="p-about__text">PINTO es un juego de cartas inspirado en las <strong>carreras de automovilismo</strong>, donde cada jugador compite por cruzar la meta antes que los demás.</p>
+        <p class="p-about__text">Tu objetivo es deshacerte de todas tus cartas lo antes posible y <strong class="p-red">no ser el último en llegar.</strong></p>
       </section>
 
-      <!-- How to play: titles only; the detail lives on instrucciones/ -->
-      <section class="p-section" aria-labelledby="como-title">
-        <h2 class="p-h2" id="como-title">Cómo jugar</h2>
-        <ol class="p-steps p-steps--titles">
-          <li><h3>Prepara el mazo</h3></li>
-          <li><h3>Cartas ocultas</h3></li>
-          <li><h3>Cartas visibles</h3></li>
-          <li><h3>Reparte la mano</h3></li>
-          <li><h3>Den la salida</h3></li>
-        </ol>
-        <a class="p-button p-button--cream" href="instrucciones/">Ver instrucciones completas <span aria-hidden="true">→</span></a>
+      <!-- How to play: a Ritmo-card speedometer moves through the five steps; the detail lives on instrucciones/ -->
+      <section class="p-section p-how" aria-labelledby="como-title">
+        <div class="p-how__gauge" aria-hidden="true">
+          <svg viewBox="0 0 400 330" focusable="false">
+            <path d="M70.1 275 A150 150 0 1 1 329.9 275" fill="none" stroke="#3a3c42" stroke-width="22"/>
+            <path class="p-gauge__arc" d="M70.1 275 A150 150 0 1 1 329.9 275" fill="none" stroke="#e63c3c" stroke-width="22"/>
+            <g stroke="#f5f0e8" stroke-width="7" stroke-linecap="round"><line x1="113.4" y1="250" x2="97.8" y2="259"/><line x1="100" y1="200" x2="82" y2="200"/><line x1="113.4" y1="150" x2="97.8" y2="141"/><line x1="150" y1="113.4" x2="141" y2="97.8"/><line x1="200" y1="100" x2="200" y2="82"/><line x1="250" y1="113.4" x2="259" y2="97.8"/><line x1="286.6" y1="150" x2="302.2" y2="141"/><line x1="300" y1="200" x2="318" y2="200"/><line x1="286.6" y1="250" x2="302.2" y2="259"/></g>
+            <g class="p-gauge__needle"><path d="M200 200 L200 92" stroke="#f5f0e8" stroke-width="9" stroke-linecap="round"/></g>
+            <circle cx="200" cy="200" r="20" fill="#f5f0e8"/>
+            <text x="200" y="312" text-anchor="middle" font-family="Poppins, sans-serif" font-style="italic" font-weight="700" font-size="34" letter-spacing="4" fill="#f5f0e8">RITMO</text>
+          </svg>
+        </div>
+        <div class="p-how__body">
+          <h2 class="p-h2" id="como-title">Cómo jugar</h2>
+          <ol class="p-how__steps">
+            <li><span class="p-how__n">1</span><h3>Prepara el mazo</h3></li>
+            <li><span class="p-how__n">2</span><h3>Reparte las cartas</h3></li>
+            <li><span class="p-how__n">3</span><h3>Da inicio a la carrera</h3></li>
+            <li><span class="p-how__n">4</span><h3>Deshazte de tus cartas</h3></li>
+            <li><span class="p-how__n">5</span><h3>Cruza la meta</h3></li>
+          </ol>
+          <a class="p-button p-button--cream" href="instrucciones/">Ver instrucciones completas <span aria-hidden="true">→</span></a>
+        </div>
       </section>
 
       <!-- Cartas de ritmo -->
       <section class="p-section" aria-labelledby="ritmo-title">
-        <p class="p-eyebrow">32 cartas · del 1 al 8</p>
         <h2 class="p-h2" id="ritmo-title">Cartas de ritmo</h2>
         <ul class="p-fan" aria-label="Cartas de ritmo del 1 al 8">
           <li><img src="img/cartas/ritmo-1.webp?v=5" width="660" height="922" alt="Carta de ritmo 1" loading="lazy"></li>
@@ -149,9 +159,12 @@
 
       <!-- Cartas especiales -->
       <section class="p-section" aria-labelledby="especiales-title">
-        <p class="p-eyebrow">Cambian la carrera</p>
         <h2 class="p-h2" id="especiales-title">Cartas especiales</h2>
         <ul class="p-specials p-specials--compact">
+          <li class="p-card" style="--c: #e8e2d6">
+            <img src="img/cartas/bandera-a-cuadros.webp?v=5" width="660" height="922" alt="" loading="lazy">
+            <h3>Bandera a Cuadros</h3>
+          </li>
           <li class="p-card" style="--c: #e5463b">
             <img src="img/cartas/bandera-roja.webp?v=5" width="660" height="922" alt="" loading="lazy">
             <h3>Bandera Roja</h3>
@@ -160,43 +173,39 @@
             <img src="img/cartas/bandera-amarilla.webp?v=5" width="660" height="922" alt="" loading="lazy">
             <h3>Bandera Amarilla</h3>
           </li>
-          <li class="p-card" style="--c: #22b3c4">
-            <img src="img/cartas/rebufo.webp?v=5" width="660" height="922" alt="" loading="lazy">
-            <h3>Rebufo</h3>
-          </li>
-          <li class="p-card" style="--c: #e8e2d6">
-            <img src="img/cartas/bandera-a-cuadros.webp?v=5" width="660" height="922" alt="" loading="lazy">
-            <h3>Bandera a Cuadros</h3>
+          <li class="p-card" style="--c: #2f86de">
+            <img src="img/cartas/bandera-azul.webp?v=5" width="660" height="922" alt="" loading="lazy">
+            <h3>Bandera Azul</h3>
           </li>
           <li class="p-card" style="--c: #9b4fd8">
             <img src="img/cartas/vuelta-rapida.webp?v=5" width="660" height="922" alt="" loading="lazy">
             <h3>Vuelta Rápida</h3>
           </li>
-          <li class="p-card" style="--c: #2f86de">
-            <img src="img/cartas/bandera-azul.webp?v=5" width="660" height="922" alt="" loading="lazy">
-            <h3>Bandera Azul</h3>
+          <li class="p-card" style="--c: #22b3c4">
+            <img src="img/cartas/rebufo.webp?v=5" width="660" height="922" alt="" loading="lazy">
+            <h3>Rebufo</h3>
           </li>
         </ul>
       </section>
 
       <!-- Modos de juego -->
       <section class="p-section" aria-labelledby="modos-title">
-        <p class="p-eyebrow">Una carrera o toda una temporada</p>
         <h2 class="p-h2" id="modos-title">Modos de juego</h2>
         <ul class="p-modes">
           <li class="p-mode">
             <div class="p-mode__head">
               <img class="p-mode__icon" src="img/icono-bandera-cuadros.svg" width="512" height="512" alt="" loading="lazy">
-              <h3>Modo Rápido</h3>
+              <h3>Modo Carrera Única</h3>
             </div>
-            <p>Una sola carrera de 5 a 15 minutos. Juega tus cartas, cruza la meta y no seas el último en llegar.</p>
+            <p>Una emocionante partida de aproximadamente 5 a 15 minutos. Juega tus cartas, cruza la meta y evita ser el último en llegar.</p>
           </li>
           <li class="p-mode">
             <div class="p-mode__head">
               <img class="p-mode__icon" src="img/icono-trofeo.svg" width="512" height="512" alt="" loading="lazy">
               <h3>Modo Temporada</h3>
             </div>
-            <p>Un Campeonato de Grandes Premios: jueguen varias carreras y sumen puntos según el orden de llegada. Temporadas de 5, 10 o 15 Grandes Premios; gana quien acumule más puntos.</p>
+            <p>Compite en un campeonato de varias carreras para demostrar quién es el piloto más completo. Al finalizar cada carrera, los jugadores reciben puntos según su posición de llegada. Acumula puntos a lo largo de la temporada y conviértete en el campeón.</p>
+            <p>Puedes elegir jugar temporadas de 5, 10 o 15 carreras. ¡Gana quien acumule más puntos al finalizar el campeonato!</p>
             <p class="p-mode__extra"><strong>Hoja de puntuación:</strong> suscríbete al boletín y te la enviamos gratis.</p>
             <a class="p-button p-button--cream p-button--small" href="../../#suscribete">Suscribirme <span aria-hidden="true">→</span></a>
           </li>
