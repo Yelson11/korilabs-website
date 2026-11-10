@@ -686,6 +686,102 @@
 
 .pinto [id] { scroll-margin-top: 1rem; }
 
+/* First choice for visitors coming from the QR: tutorials or the full rules */
+.p-start {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0.9rem;
+  max-width: 44rem;
+  margin-top: 1.8rem;
+}
+.p-start__card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 0.9rem;
+  align-items: center;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: 1.1rem;
+  background: rgb(245 240 232 / 0.04);
+  color: var(--cream);
+  text-decoration: none;
+  transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+}
+.p-start__card:hover { border-color: var(--cream-dim); background: rgb(245 240 232 / 0.07); transform: translateY(-2px); }
+.p-start__card:focus-visible { outline: 3px solid var(--cream); outline-offset: 3px; }
+.p-start__card--tutorial { border-color: var(--red); background: rgb(229 70 59 / 0.12); }
+.p-start__card--tutorial:hover { border-color: #f05a4f; background: rgb(229 70 59 / 0.18); }
+.p-start__icon {
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: var(--cream);
+  color: var(--asphalt, #16171b);
+}
+.p-start__card--tutorial .p-start__icon { background: var(--red); color: #fff; }
+.p-start__icon svg { width: 1.45rem; height: 1.45rem; }
+.p-start__title { font: italic 800 1.15rem/1.15 var(--display); text-transform: uppercase; }
+.p-start__text { margin-top: 0.2rem; color: var(--cream-dim); font-size: 0.9rem; line-height: 1.35; }
+.p-start__more { margin: 1.6rem 0 0; color: var(--cream-dim); font-size: 0.92rem; }
+.p-start__more + .p-toc { margin-top: 0.8rem; }
+
+.p-cta__btns { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 1.4rem; }
+.p-cta__btns .p-button { margin: 0; }
+.p-mode p + p { margin-top: 0.6rem; }
+
+/* Small "Ver tutorial" link next to each rule / special card */
+.p-tut {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: 0.35rem;
+  padding: 0.15rem 0.6rem 0.15rem 0.45rem;
+  border: 1px solid rgb(229 70 59 / 0.55);
+  border-radius: 999px;
+  color: var(--cream);
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.5;
+  text-decoration: none;
+  white-space: nowrap;
+  vertical-align: 0.05em;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.p-tut svg { width: 1rem; height: 1rem; color: var(--red); }
+.p-tut:hover { background: rgb(229 70 59 / 0.15); border-color: var(--red); }
+.p-tut:focus-visible { outline: 3px solid var(--cream); outline-offset: 2px; }
+.p-card .p-tut { margin: 0.7rem 0 0; }
+
+/* "Qué carta puedo jugar": card images in the table (a cell holds images or text, never both) */
+.p-table-wrap--ref { max-width: 46rem; }
+.p-table.p-table--ref th[scope="row"] { width: 10rem; vertical-align: middle; }
+.p-table.p-table--ref td { vertical-align: middle; }
+.p-ref__top { display: flex; flex-direction: column; align-items: center; gap: 0.45rem; text-align: center; }
+.p-ref__top > .p-mini, .p-ref__top > .p-stack { flex: none; --w: 2.9rem; }
+.p-ref__top span:last-child { line-height: 1.2; }
+.p-ref__cards { display: flex; flex-wrap: wrap; align-items: center; gap: 0.55rem; }
+.p-ref__text { margin: 0; color: var(--cream); }
+.p-mini { --w: 2.6rem; display: block; width: var(--w); }
+.p-mini img, .p-stack img { display: block; width: 100%; height: auto; border-radius: 0.22rem; box-shadow: 0 2px 6px rgb(0 0 0 / 0.4); }
+/* Several Ritmo cards overlapped so only their numbers show */
+.p-stack { --w: 2.6rem; display: inline-flex; }
+.p-stack img { flex: none; width: var(--w); }
+.p-stack img + img { margin-left: calc(var(--w) * -0.62); }
+.p-mini--free {
+  aspect-ratio: 660 / 922;
+  border: 2px dashed rgb(245 240 232 / 0.35);
+  border-radius: 0.3rem;
+  box-sizing: border-box;
+}
+@media (max-width: 34rem) {
+  .p-table.p-table--ref th[scope="row"] { width: 6.5rem; padding-left: 0; }
+  .p-ref__top { font-size: 0.85rem; }
+}
+
 /* In-page chips scroll smoothly to their section */
 @media (prefers-reduced-motion: no-preference) {
   html:has(.p-toc) { scroll-behavior: smooth; }
@@ -804,9 +900,10 @@
 @media (prefers-reduced-motion: reduce) {
   .no-js .box3d { animation: none; }
   .p-fan li:hover { transform: none; }
-  .p-card:hover, .p-mode:hover, .p-card:hover img { transform: none; }
+  .p-card:hover, .p-mode:hover, .p-card:hover img, .p-start__card:hover { transform: none; }
+  .p-tut { transition: none; }
 }
 
 @media (forced-colors: active) {
-  .p-steps li, .p-card, .p-facts li, .p-mode, .p-rules li, .p-toc a { border-color: CanvasText; }
+  .p-steps li, .p-card, .p-facts li, .p-mode, .p-rules li, .p-toc a, .p-start__card { border-color: CanvasText; }
 }
