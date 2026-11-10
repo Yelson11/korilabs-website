@@ -64,6 +64,7 @@ comments just to translate them — only translate what you are already touching
 │   ├── home.css             Home page (h-* classes); also reused by /privacidad/
 │   ├── pinto.css            PINTO page (p-* classes, box3d__*), its own dark "asphalt" palette
 │   ├── pinto-demo.css       PINTO demo board (pd-* classes), loaded after pinto.css
+│   ├── pinto-tutorial.css   PINTO rules tutorial (pt-* classes), loaded after pinto.css
 │   └── legal.css            Privacy page layout (legal__*)
 ├── juegos/
 │   ├── index.html           Meta-refresh redirect → /#juegos (home section). Replace with a listing when there are more games
@@ -79,6 +80,14 @@ comments just to translate them — only translate what you are already touching
 │       │   └── multijugador/ Online with friends, 2–4 players (unlisted + noindex). index.html (lobby + board) and
 │       │                    multi.js: PeerJS rooms (4-char code, ?sala=CODE link); the room creator's browser runs
 │       │                    the engine and sends each player only their view. ?transporte=local = multi-tab test mode
+│       ├── tutorial/        Tutorial / quick-reference guide (indexable; linked from instrucciones/). Header with the
+│       │                    PINTO logo + "Tutorial"; three sections that follow the rules (Desarrollo de la partida,
+│       │                    Reglas de Carrera, Cartas especiales) with subsections, reachable directly (desktop: side
+│       │                    index; phones: section bar + chips). Each subsection = fixed explanation + a looping,
+│       │                    GIF-like animation on a mini table (no interaction, no progress tracking).
+│       │                    tutorial-data.js (SECTIONS → subs with text + script, content strictly from the official
+│       │                    rules v1.5), tutorial.js (hash router #<sub id> / #<section id>, animation loop).
+│       │                    CSS: styles.css + pinto.css + pinto-tutorial.css
 │       └── img/             caja-*.webp (6 box faces), cartas/*.webp (card art, 660×922, cream border baked in,
 │                            rendered from the Figma SVG export; special cards WITHOUT their description — see rules),
 │                            logo-pinto.webp, og-pinto.jpg (share preview)
@@ -138,7 +147,7 @@ the size/page count shown next to the download button.
 - `css/pinto.css` redefines its own palette (`--asphalt*`, `--cream`, `--red`, `--display: Poppins`) and
   box dimensions `--bw/--bh/--bd` (box ratio 758 × 1057 × 244 — keep it if box images change).
 - Buttons are pills (`h-btn`, `p-button`, `p-button--cream`); don't use red-underlined text links as buttons.
-- Class prefixes: `h-` home, `p-` PINTO, `pd-` PINTO demo, `legal__` privacy, BEM-ish (`block__elem--mod`).
+- Class prefixes: `h-` home, `p-` PINTO, `pd-` PINTO demo, `pt-` PINTO tutorial, `legal__` privacy, BEM-ish (`block__elem--mod`).
   Utility: `.visually-hidden`, `.accent`.
 - Every CSS file has a `prefers-reduced-motion` block; keep animations behind it.
 
@@ -147,7 +156,7 @@ the size/page count shown next to the download button.
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
   Current: `styles.css?v=2`, `home.css?v=9` (index and privacidad),
-  `pinto.css?v=12`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
+  `pinto.css?v=12`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `pinto-tutorial.css?v=7`, `tutorial-data.js?v=8`, `tutorial.js?v=7`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
 - **Sender (newsletter):** universal script in the `<head>` of `index.html`; form is
