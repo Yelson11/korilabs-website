@@ -124,7 +124,7 @@ Fonts: Istok Web + **Poppins** (display). Sections: `p-hero` (title + `#box-stag
 After the hero: "Acerca de PINTO" (short text), "Cómo jugar" (5 step titles only, no descriptions, plus a cream
 "Ver instrucciones completas" button), "Cartas de ritmo", "Cartas especiales" (image + name only,
 `.p-specials--compact`), then a "Modos de juego" section
-(Modo Rápido / Modo Temporada, icons `img/icono-bandera-cuadros.svg` / `img/icono-trofeo.svg`) sits before the CTA.
+(Modo Carrera Única / Modo Temporada, icons `img/icono-bandera-cuadros.svg` / `img/icono-trofeo.svg`) sits before the CTA.
 Game facts (players, 5–15 min, 10+, card names, rules wording) must stay consistent between the home
 card, this page, `instrucciones/` and `reglamento.pdf` v1.3.
 
