@@ -1,7 +1,8 @@
 /* PINTO tutorial: each subsection is a fixed explanation plus a short animation on a
    mini table that loops like a GIF. Content lives in tutorial-data.js
    (window.PintoTutorial.sections: three sections, each with subsections).
-   Routing by hash: #<subsection id> (e.g. #ritmo, #azul), #<section id> or #fin. */
+   It works as a quick-reference guide: any subsection can be opened directly.
+   Routing by hash: #<subsection id> (e.g. #ritmo, #azul) or #<section id>. */
 (function () {
   'use strict';
   var T = window.PintoTutorial;
@@ -16,89 +17,83 @@
 
   var SEC = T.sections, SUBS = [];
   SEC.forEach(function (sec, si) { sec.subs.forEach(function (u) { u.sec = si; SUBS.push(u); }); });
-  var FINAL = { id: 'fin', title: 'Fin de la carrera', final: true,
-    text: 'El primero sin cartas <strong>cruza la meta</strong>. Los demás siguen hasta que solo quede uno.' };
 
   var sub = 0, sc = null;
   var turn = null, skipped = null, runId = 0;   // highlighted turn, skipped player, id of the running loop
-  var seen = {};
 
   function file(c) { return /^r\d$/.test(c) ? 'ritmo-' + c.slice(1) : FILES[c]; }
   function name(c) { return /^r\d$/.test(c) ? 'Ritmo ' + c.slice(1) : NAMES[c]; }
   function img(c) { return '<img src="' + BASE + file(c) + '.webp' + VER + '" alt="' + name(c) + '" width="660" height="922" draggable="false">'; }
+  function thumb(c) { return '<img src="' + BASE + file(c) + '.webp' + VER + '" alt="" width="660" height="922">'; }
   function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
   function $(sel) { return app.querySelector(sel); }
 
-  function page() { return sub >= SUBS.length ? FINAL : SUBS[sub]; }
+  function page() { return SUBS[sub]; }
   function firstOf(si) { for (var i = 0; i < SUBS.length; i++) if (SUBS[i].sec === si) return i; return 0; }
 
   /* ---------- Routing ---------- */
   function fromHash() {
     var h = decodeURIComponent(location.hash.slice(1));
     sub = 0;
-    if (h === 'fin') sub = SUBS.length;
     SEC.forEach(function (sec, si) { if (h === sec.id) sub = firstOf(si); });
     SUBS.forEach(function (u, i) { if (h === u.id) sub = i; });
-    render(true);
+    render(!!h);
   }
   function go(i) {
-    var id = i >= SUBS.length ? 'fin' : SUBS[i].id;
-    if (location.hash.slice(1) === id) { sub = i; render(true); }
-    else location.hash = id;
+    if (i < 0 || i >= SUBS.length) return;
+    if (location.hash.slice(1) === SUBS[i].id) { sub = i; render(true); }
+    else location.hash = SUBS[i].id;
   }
 
   /* ---------- Rendering ---------- */
   function render(focusTitle) {
-    var pg = page();
+    var pg = page(), si = pg.sec;
     runId++;
-    if (!pg.final) seen[pg.id] = true;
-    var si = pg.final ? -1 : pg.sec;
 
-    var html = '<nav class="pt-secs" aria-label="Secciones del tutorial">' + SEC.map(function (sec, k) {
-      var all = sec.subs.every(function (u) { return seen[u.id]; });
-      return '<button type="button" class="pt-sec' + (k === si ? ' is-on' : '') + (all ? ' is-done' : '') + '" data-sec="' + k + '"' + (k === si ? ' aria-current="true"' : '') + '>' +
-        '<span class="pt-sec__n">' + (all ? '✓' : k + 1) + '</span><span class="pt-sec__t">' + sec.title + '</span></button>';
+    // Desktop: full index (three sections with all their subsections)
+    var html = '<div class="pt-layout"><nav class="pt-index" aria-label="Secciones del tutorial">' + SEC.map(function (sec, k) {
+      return '<div class="pt-index__sec' + (k === si ? ' is-on' : '') + '">' +
+        '<button type="button" class="pt-index__head" data-sec="' + k + '"><span class="pt-index__n">' + (k + 1) + '</span>' + sec.title + '</button><ul>' +
+        SUBS.map(function (u, i) {
+          if (u.sec !== k) return '';
+          return '<li><button type="button" class="pt-index__sub' + (i === sub ? ' is-on' : '') + '" data-go="' + i + '"' + (i === sub ? ' aria-current="page"' : '') + '>' +
+            (u.card ? thumb(u.card) : '') + '<span>' + u.title + '</span></button></li>';
+        }).join('') + '</ul></div>';
+    }).join('') + '</nav><div class="pt-main">';
+
+    // Phones: section bar + subsection chips
+    html += '<nav class="pt-secs" aria-label="Secciones del tutorial">' + SEC.map(function (sec, k) {
+      return '<button type="button" class="pt-sec' + (k === si ? ' is-on' : '') + '" data-sec="' + k + '"' + (k === si ? ' aria-current="true"' : '') + '>' +
+        '<span class="pt-sec__n">' + (k + 1) + '</span><span class="pt-sec__t">' + sec.title + '</span></button>';
     }).join('') + '</nav>';
 
-    html += '<div class="pt-stage">';
-    if (!pg.final) {
-      html += '<div class="pt-subs" role="list" aria-label="' + SEC[si].title + '">' + SUBS.map(function (u, i) {
-        if (u.sec !== si) return '';
-        return '<button type="button" role="listitem" class="pt-sub' + (u.card ? ' pt-sub--card' : '') + (i === sub ? ' is-on' : '') + (seen[u.id] ? ' is-seen' : '') + '" data-go="' + i + '"' + (i === sub ? ' aria-current="step"' : '') + '>' +
-          (u.card ? img(u.card) : '') + '<span>' + u.title + '</span></button>';
-      }).join('') + '</div>';
-    }
-    html += '<div class="pt-stage__head"><h1 class="pt-title" tabindex="-1">' + pg.title + '</h1>' +
+    html += '<div class="pt-stage"><div class="pt-subs" role="list" aria-label="' + SEC[si].title + '">' + SUBS.map(function (u, i) {
+      if (u.sec !== si) return '';
+      return '<button type="button" role="listitem" class="pt-sub' + (u.card ? ' pt-sub--card' : '') + (i === sub ? ' is-on' : '') + '" data-go="' + i + '"' + (i === sub ? ' aria-current="page"' : '') + '>' +
+        (u.card ? thumb(u.card) : '') + '<span>' + u.title + '</span></button>';
+    }).join('') + '</div>';
+
+    html += '<div class="pt-stage__head"><p class="pt-kicker">' + (si + 1) + '. ' + SEC[si].title + '</p>' +
+      '<h2 class="pt-title" tabindex="-1">' + pg.title + '</h2>' +
       (pg.on ? '<p class="pt-on"><strong>Se juega:</strong> ' + pg.on + '</p>' : '') + '</div>';
     html += '<p class="pt-say">' + pg.text + '</p>';
-    html += pg.final ? finalCard() : '<div class="pt-table" aria-hidden="true"></div>';
-    if (!pg.final) html += '<div class="pt-foot"><button type="button" class="p-button p-button--cream pt-next" data-act="next">' + nextLabel() + '</button></div>';
-    if (sub > 0) html += '<button type="button" class="pt-back" data-act="back">← Anterior</button>';
-    html += '</div>';
+    html += '<div class="pt-table" aria-hidden="true"></div>';
+
+    var prev = SUBS[sub - 1], next = SUBS[sub + 1];
+    html += '<div class="pt-pn">' +
+      (prev ? '<button type="button" class="pt-pn__btn" data-go="' + (sub - 1) + '"><span aria-hidden="true">←</span> ' + prev.title + '</button>' : '<span></span>') +
+      (next ? '<button type="button" class="pt-pn__btn pt-pn__btn--next" data-go="' + (sub + 1) + '">' + next.title + ' <span aria-hidden="true">→</span></button>' : '<a class="pt-pn__btn pt-pn__btn--next" href="../instrucciones/">Ver instrucciones <span aria-hidden="true">→</span></a>') +
+      '</div></div></div></div>';
 
     app.innerHTML = html;
-    if (!pg.final) loop(pg, runId);
+    loop(pg, runId);
     var row = $('.pt-subs'), on = $('.pt-sub.is-on');
     if (row && on && row.scrollWidth > row.clientWidth) row.scrollLeft = on.offsetLeft - row.offsetLeft - 16;
-    var top = app.getBoundingClientRect().top;
-    if (top < 0) window.scrollTo({ top: window.scrollY + top - 12, behavior: reduced ? 'auto' : 'smooth' });
-    if (focusTitle) { var t = $('.pt-title'); if (t && document.activeElement !== document.body) t.focus({ preventScroll: true }); }
-  }
-
-  function nextLabel() {
-    var nx = SUBS[sub + 1];
-    if (!nx) return 'Terminar';
-    if (nx.sec !== page().sec) return 'Ir a ' + SEC[nx.sec].title;
-    return 'Siguiente: ' + nx.title;
-  }
-
-  function finalCard() {
-    return '<div class="pt-final">' +
-      '<div class="pt-podium"><span class="pt-podium__p pt-podium__p--2">2</span><span class="pt-podium__p pt-podium__p--1">1</span><span class="pt-podium__p pt-podium__p--3">3</span></div>' +
-      '<p class="pt-final__lead">¡Ya sabes jugar PINTO!</p>' +
-      '<div class="pt-final__btns"><a class="p-button" href="../demo/">Jugar una partida</a>' +
-      '<a class="p-button p-button--cream" href="../instrucciones/">Ver instrucciones</a>' +
-      '<button type="button" class="pt-back pt-back--inline" data-go="0">Repetir tutorial</button></div></div>';
+    if (focusTitle) {
+      var top = $('.pt-main').getBoundingClientRect().top;
+      if (top < 0) window.scrollTo({ top: window.scrollY + top - 12, behavior: reduced ? 'auto' : 'smooth' });
+      var t = $('.pt-title'); if (t && document.activeElement !== document.body) t.focus({ preventScroll: true });
+    }
   }
 
   function drawTable(pg) {
@@ -152,7 +147,7 @@
   function pileTarget() { return $('.pt-pile .pt-pc:last-child') || $('.pt-pile'); }
 
   /* Plays the subsection script, then fades and starts again until the page changes.
-     Script actions: { turn, focus, no, play, from, bot, card, skip, pickup, flip, clear, wait } */
+     Script actions: { turn, focus, no, play, from, bot, card, skip, pickup, take, flip, clear, wait } */
   function Stop() {}
   async function loop(pg, id) {
     function alive() { if (id !== runId) throw new Stop(); }
@@ -202,6 +197,12 @@
             alive();
             sc.hand = sc.hand.concat(sc.pile); sc.pile = []; drawTable(pg);
           }
+          if (a.take) {
+            var vis = app.querySelectorAll('.pt-c--vis'), codesV = sc.vis.filter(Boolean), handEl = $('.pt-hand');
+            await Promise.all(Array.prototype.map.call(vis, function (el, n) { return wait(n * 110).then(function () { return fly(el, handEl, codesV[n]); }); }));
+            alive();
+            sc.hand = sc.hand.concat(codesV); sc.vis = []; drawTable(pg);
+          }
           if (a.flip) {
             var hid = app.querySelectorAll('.pt-c--hid'), el = hid[hid.length - 1];
             el.classList.add('is-flipping');
@@ -229,9 +230,6 @@
     var t = e.target.closest('button'); if (!t || !app.contains(t)) return;
     if (t.hasAttribute('data-go')) return go(+t.getAttribute('data-go'));
     if (t.hasAttribute('data-sec')) return go(firstOf(+t.getAttribute('data-sec')));
-    var act = t.getAttribute('data-act');
-    if (act === 'next') go(sub + 1);
-    else if (act === 'back') go(sub - 1);
   });
   window.addEventListener('hashchange', fromHash);
   fromHash();
