@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Istok+Web:wght@400;700&amp;family=Poppins:ital,wght@0,500;0,600;1,700;1,800&amp;family=Saira:ital,wght@0,400;0,600;0,700;0,800;1,400&amp;display=swap">
 
   <link rel="stylesheet" href="../../../css/styles.css?v=2">
-  <link rel="stylesheet" href="../../../css/pinto.css?v=21">
+  <link rel="stylesheet" href="../../../css/pinto.css?v=22">
 </head>
 <body class="pinto">
 
@@ -68,60 +68,52 @@
     </header>
 
     <main>
-      <!-- Welcome: this page is the target of the printed QR, so it opens light (welcome, tutorial,
-           resources) and the quick rules guide follows below. Don't turn the top into a rules dump. -->
+      <!-- Welcome: this page is the target of the printed QR, so it opens light (title, card fan, three
+           entry points) and the quick rules guide follows below. Don't turn the top into a rules dump. -->
       <section class="p-welcome" aria-labelledby="instr-title">
-        <div class="p-welcome__copy">
-          <img class="p-welcome__logo" src="../img/logo-pinto.webp" width="584" height="175" alt="PINTO">
-          <h1 class="p-h2 p-h1" id="instr-title">¡Bienvenido a <span class="p-red">PINTO</span>!</h1>
-          <p class="p-intro__lead">¿Es tu primera carrera? Esta página es una guía breve para aprender a jugar, conocer las cartas y resolver tus dudas. Encuentra tutoriales, videos explicativos y el reglamento oficial para que estés listo antes de llegar a la meta.</p>
-          <a class="p-button" href="../tutorial/"><svg aria-hidden="true"><use href="#icon-video"/></svg><span>Aprende a jugar</span></a>
-        </div>
+        <img class="p-welcome__logo" src="../img/logo-pinto.webp" width="584" height="175" alt="PINTO">
+        <h1 class="p-h2 p-h1" id="instr-title">Cómo jugar</h1>
+        <p class="p-intro__lead">¿Es tu primera carrera? Esta página es una guía breve para aprender a jugar, conocer las cartas y resolver tus dudas. Encuentra tutoriales, videos explicativos y el reglamento oficial para que estés listo antes de llegar a la meta.</p>
         <div class="p-welcome__art" aria-hidden="true">
-          <img src="../img/cartas/ritmo-2.webp?v=5" width="660" height="922" alt="">
+          <img src="../img/cartas/ritmo-3.webp?v=5" width="660" height="922" alt="">
+          <img src="../img/cartas/bandera-roja.webp?v=5" width="660" height="922" alt="">
           <img src="../img/cartas/bandera-a-cuadros.webp?v=5" width="660" height="922" alt="">
-          <img src="../img/cartas/ritmo-8.webp?v=5" width="660" height="922" alt="">
+          <img src="../img/cartas/vuelta-rapida.webp?v=5" width="660" height="922" alt="">
+          <img src="../img/cartas/ritmo-7.webp?v=5" width="660" height="922" alt="">
         </div>
       </section>
 
-      <!-- Main tutorial: the most prominent media after the welcome -->
-      <section class="p-section p-learn" id="aprende" aria-labelledby="aprende-title">
-        <a class="p-learn__thumb" href="../tutorial/#desarrollo" tabindex="-1" aria-hidden="true">
-          <span class="p-learn__table">
-            <img src="../img/cartas/ritmo-4.webp?v=5" width="660" height="922" alt="" loading="lazy">
-            <img src="../img/cartas/ritmo-6.webp?v=5" width="660" height="922" alt="" loading="lazy">
-          </span>
-          <span class="p-learn__play"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5Z" fill="currentColor"/></svg></span>
-        </a>
-        <div class="p-learn__copy">
-          <h2 class="p-h2" id="aprende-title">Aprende a jugar <span class="p-red">PINTO</span></h2>
-          <p class="p-section__lead">Empieza aquí. Animaciones cortas te muestran, paso a paso, cómo se desarrolla una carrera.</p>
-          <a class="p-button" href="../tutorial/#desarrollo"><svg aria-hidden="true"><use href="#icon-video"/></svg><span>Ver tutorial</span></a>
-        </div>
-      </section>
-
-      <!-- Resources -->
-      <section class="p-section" id="recursos" aria-labelledby="recursos-title">
-        <h2 class="p-h2" id="recursos-title">Recursos para tu carrera</h2>
-        <div class="p-start p-start--resources">
-          <a class="p-start__card" href="../tutorial/#especiales">
-            <span class="p-start__icon" aria-hidden="true"><svg><use href="#icon-video"/></svg></span>
-            <span class="p-start__title">Videos explicativos</span>
-            <span class="p-start__text">Aprende cómo funcionan las cartas especiales, las mecánicas y las situaciones particulares del juego.</span>
-          </a>
-          <a class="p-start__card" href="#guia">
-            <span class="p-start__icon" aria-hidden="true"><svg><use href="#icon-flag"/></svg></span>
-            <span class="p-start__title">Guía rápida</span>
-            <span class="p-start__text">Consulta las reglas principales de PINTO y encuentra rápido lo que necesitas durante una partida.</span>
-          </a>
-          <!-- Official rules: replace the href (and the size/pages text) when the new PDF is ready -->
-          <a class="p-start__card" href="../reglamento.pdf" target="_blank" rel="noopener noreferrer">
-            <span class="p-start__icon" aria-hidden="true"><svg><use href="#icon-doc"/></svg></span>
-            <span class="p-start__title">Reglamento oficial</span>
-            <span class="p-start__text">Consulta o descarga el reglamento completo de PINTO en PDF.</span>
-            <span class="visually-hidden">(se abre en una pestaña nueva)</span>
-          </a>
-        </div>
+      <!-- Three entry points -->
+      <section class="p-section p-paths-wrap" id="recursos" aria-labelledby="recursos-title">
+        <h2 class="visually-hidden" id="recursos-title">Recursos para tu carrera</h2>
+        <ol class="p-paths">
+          <li>
+            <a class="p-path" href="#guia">
+              <span class="p-path__n" aria-hidden="true">01</span>
+              <span class="p-path__icon" aria-hidden="true"><svg><use href="#icon-flag"/></svg></span>
+              <span class="p-path__title">Guía rápida</span>
+              <span class="p-path__text">Las reglas principales, para resolver dudas durante la partida.</span>
+            </a>
+          </li>
+          <li>
+            <a class="p-path" href="../tutorial/">
+              <span class="p-path__n" aria-hidden="true">02</span>
+              <span class="p-path__icon" aria-hidden="true"><svg><use href="#icon-video"/></svg></span>
+              <span class="p-path__title">Tutoriales</span>
+              <span class="p-path__text">Animaciones cortas de cada jugada y de cada carta especial.</span>
+            </a>
+          </li>
+          <li>
+            <!-- Official rules: replace the href when the new PDF is ready -->
+            <a class="p-path" href="../reglamento.pdf" target="_blank" rel="noopener noreferrer">
+              <span class="p-path__n" aria-hidden="true">03</span>
+              <span class="p-path__icon" aria-hidden="true"><svg><use href="#icon-doc"/></svg></span>
+              <span class="p-path__title">Reglamento oficial</span>
+              <span class="p-path__text">Consulta o descarga el reglamento completo de PINTO en PDF.</span>
+              <span class="visually-hidden">(se abre en una pestaña nueva)</span>
+            </a>
+          </li>
+        </ol>
       </section>
 
       <!-- Quick guide: summary of the official rules -->
