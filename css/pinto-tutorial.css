@@ -25,7 +25,7 @@
 .pt-sec.is-done .pt-sec__n { background: rgb(79 191 122 / .18); border-color: rgb(79 191 122 / .45); color: var(--ok); }
 .pt-sec.is-on { background: var(--red); color: #fff; }
 .pt-sec.is-on .pt-sec__n { background: #fff; border-color: #fff; color: var(--red); }
-.pt-sec:focus-visible, .pt-sub:focus-visible, .pt-c:focus-visible, .pt-back:focus-visible { outline: 3px solid var(--cream); outline-offset: 3px; }
+.pt-sec:focus-visible, .pt-sub:focus-visible, .pt-back:focus-visible { outline: 3px solid var(--cream); outline-offset: 3px; }
 
 /* Subsections (chips inside the stage) */
 .pt-subs { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1.1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--line); }
@@ -75,7 +75,8 @@
 .pt-opp__name { font-size: .72rem; color: rgb(245 240 232 / .8); padding: .1rem .5rem; border-radius: 99px; }
 .pt-opp.is-turn { opacity: 1; transform: translateY(2px); }
 .pt-opp.is-turn .pt-opp__name { background: var(--cream); color: var(--wood-2); font-weight: 700; }
-.pt-opp.is-skipped { opacity: .45; }
+.pt-opp.is-skipped { opacity: 1; }
+.pt-opp.is-skipped .pt-opp__fan, .pt-opp.is-skipped .pt-opp__name { opacity: .4; }
 .pt-opp__tag {
   position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%) rotate(-6deg);
   background: #2f6fd6; color: #fff; font: 700 .68rem var(--font); padding: .2rem .45rem; border-radius: .35rem; white-space: nowrap;
@@ -106,13 +107,10 @@
 .pt-c--ghost { display: block; width: var(--cw); height: calc(var(--cw) * 1.4); }
 
 .pt-c {
-  position: relative; width: var(--cw); padding: 0; border: 0; background: none; border-radius: .35rem; cursor: pointer;
+  position: relative; width: var(--cw); padding: 0; border: 0; background: none; border-radius: .35rem;
   transition: transform .15s, box-shadow .15s, filter .2s;
   filter: drop-shadow(0 3px 5px rgb(0 0 0 / .35));
 }
-.pt-c:disabled { cursor: default; }
-.pt-table.is-active .pt-c:not(:disabled):hover { transform: translateY(-6px); }
-.pt-c.is-picked { transform: translateY(-10px); box-shadow: 0 0 0 3px var(--warn); }
 .pt-c.is-shake { animation: pt-shake .35s; }
 .pt-c.is-flipping { animation: pt-flip .35s ease-in forwards; }
 
@@ -144,14 +142,7 @@
 .pt-fly img { display: block; width: 100%; height: auto; border-radius: .3rem; }
 
 /* Footer: feedback + buttons */
-.pt-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .8rem 1rem; margin-top: 1rem; min-height: 3rem; }
-.pt-fb { flex: 1 1 16rem; margin: 0; font-size: .98rem; line-height: 1.4; color: var(--cream-dim); }
-.pt-fb.is-ok { color: var(--cream); }
-.pt-fb.is-bad { color: var(--warn); }
-.pt-fb__ok { display: inline-grid; place-items: center; width: 1.3rem; height: 1.3rem; margin-right: .2rem; border-radius: 50%; background: var(--ok); color: #10331f; font-size: .75rem; font-weight: 700; }
-.pt-foot__btns { display: flex; gap: .6rem; margin-left: auto; }
-.pt-foot .p-button[disabled] { opacity: .45; pointer-events: none; }
-.pt-pulse { animation: pt-pulse 1.6s ease-in-out infinite; }
+.pt-foot { display: flex; justify-content: flex-end; margin-top: 1rem; }
 .pt-back {
   margin-top: 1rem; padding: .3rem 0; border: 0; background: none; color: var(--cream-dim);
   font: inherit; font-size: .9rem; cursor: pointer; text-decoration: underline; text-underline-offset: 3px;
@@ -172,7 +163,6 @@
 @keyframes pt-land { from { transform: translateY(-6px) scale(1.04); } }
 @keyframes pt-shake { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
 @keyframes pt-flip { to { transform: rotateY(90deg); } }
-@keyframes pt-pulse { 50% { box-shadow: 0 0 0 6px rgb(229 70 59 / .25); } }
 
 @media (max-width: 34rem) {
   .pt { --cw: 2.75rem; --pw: 3.1rem; }
@@ -190,11 +180,10 @@
   .pt-subs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-inline: -.25rem; padding-inline: .25rem; }
   .pt-subs::-webkit-scrollbar { display: none; }
   .pt-sub { flex: none; padding: .35rem .65rem; font-size: .75rem; }
-  .pt-foot__btns { width: 100%; }
-  .pt-foot__btns .p-button { flex: 1; justify-content: center; }
+  .pt-foot .p-button { width: 100%; justify-content: center; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pt-pc:last-child, .pt-c.is-shake, .pt-c.is-flipping, .pt-pulse { animation: none; }
+  .pt-pc:last-child, .pt-c.is-shake, .pt-c.is-flipping { animation: none; }
   .pt-c, .pt-fly, .pt-sec, .pt-sub, .pt-you, .pt-opp, .pt-zone, .pt-pile.is-leaving .pt-pc { transition: none; }
 }
