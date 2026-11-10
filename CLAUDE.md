@@ -172,7 +172,7 @@ The score sheet gift is offered via "Suscribirme" (`/#suscribete`), never linked
   Sender, not here. Only touch code if the form ID changes.
 - **Never break public URLs:** `/juegos/pinto/instrucciones/` (printed QR), `/pinto/reglas/`,
   `/regalos/pinto-modo-temporada.pdf` (sent in emails), `/privacidad/`. `reglamento.pdf` is only reached
-  through the instructions page, so it may move — just update both download buttons there.
+  through the instructions page, so it may move — just update the "Reglamento oficial" card there.
 - **Share previews:** `og-korilabs.jpg` / `og-pinto.jpg` are 1200×630; regenerate if headlines change.
   Absolute `og:url` / `og:image` / canonical use `https://korilabscr.com/…`.
 - **Accessibility:** keep `aria-labelledby` on sections, `alt` text (Spanish), visible focus styles,
