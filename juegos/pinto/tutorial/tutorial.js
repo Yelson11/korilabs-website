@@ -53,7 +53,7 @@
   function render(focusTitle) {
     var pg = page(), st = current();
     sc = { pile: (st.pile || []).slice(), hand: (st.hand || []).slice(), vis: (st.vis || []).slice(), hid: st.hid || 0 };
-    solved = st.task === 'next'; picked = []; busy = false; turn = null; runId++;
+    solved = st.task === 'next' || st.task === 'watch'; picked = []; busy = false; turn = null; runId++;
     var si = pg.final ? -1 : pg.sec;
 
     var html = '<nav class="pt-secs" aria-label="Secciones del tutorial">' + SEC.map(function (sec, k) {
@@ -81,15 +81,14 @@
     html += '<div class="pt-foot"><p class="pt-fb" aria-live="polite"></p><div class="pt-foot__btns">' +
       (st.task === 'combo' ? '<button type="button" class="p-button pt-act" data-act="combo" disabled>Jugar</button>' : '') +
       (st.task === 'pickup' ? '<button type="button" class="p-button pt-act pt-pulse" data-act="pickup">Recoger la pila</button>' : '') +
-      (st.task === 'watch' ? '<button type="button" class="pt-replay" data-act="replay" hidden>↻ Ver otra vez</button>' : '') +
-      (pg.final ? '' : '<button type="button" class="p-button p-button--cream pt-next" data-act="next"' + (solved || (st.task === 'watch' && seen[pg.id]) ? '' : ' hidden') + '>' + nextLabel() + '</button>') +
+      (pg.final ? '' : '<button type="button" class="p-button p-button--cream pt-next" data-act="next"' + (solved ? '' : ' hidden') + '>' + nextLabel() + '</button>') +
       '</div></div>';
     if (sub > 0 || step > 0) html += '<button type="button" class="pt-back" data-act="back">← Anterior</button>';
     html += '</div>';
 
     app.innerHTML = html;
     if (!pg.final) drawTable();
-    if (st.task === 'watch') watch(st.script, runId);
+    if (st.task === 'watch') { markSeen(); watch(st, runId); }
     var row = $('.pt-subs'), on = $('.pt-sub.is-on');
     if (row && on && row.scrollWidth > row.clientWidth) row.scrollLeft = on.offsetLeft - row.offsetLeft - 16;
     var top = app.getBoundingClientRect().top;
@@ -151,7 +150,7 @@
     tbl.innerHTML = opps + pile +
       '<div class="pt-you">' +
       (current().vis || current().hid ? '<div class="pt-zone pt-zone--mesa' + (slots ? '' : ' is-empty') + '"><span class="pt-zone__label">Tu mesa</span><div class="pt-mesa">' + (mesa || '<span class="pt-none">Sin cartas</span>') + '</div></div>' : '') +
-      '<div class="pt-zone pt-zone--hand"><span class="pt-zone__label">Tu mano</span><div class="pt-hand">' + (hand || '<span class="pt-none">Sin cartas</span>') + '</div></div>' +
+      '<div class="pt-zone pt-zone--hand"><span class="pt-zone__label">Tu mano</span><div class="pt-hand' + (sc.hand.length > 4 ? ' is-tight' : '') + '">' + (hand || '<span class="pt-none">Sin cartas</span>') + '</div></div>' +
       '</div>';
     tbl.classList.toggle('is-active', !!zone);
     if (turn === 'you') { var you = $('.pt-you'); if (you) you.classList.add('is-turn'); }
@@ -236,6 +235,11 @@
     }
   }
 
+  function markSeen() {
+    var pg = page(); if (step !== pg.steps.length - 1) return;
+    seen[pg.id] = true;
+    var chip = $('.pt-sub.is-on'); if (chip) chip.classList.add('is-seen');
+  }
   function done() {
     busy = false; solved = true;
     var st = current();
@@ -313,9 +317,10 @@
     done();
   }
 
-  /* ---------- Watch mode: the step plays itself as a short animation ---------- */
+  /* ---------- Watch mode: the step loops as a short animation (like a GIF); the text stays fixed ---------- */
   function Stop() {}
-  async function watch(script, id) {
+  async function watch(st, id) {
+    var script = st.script;
     function alive() { if (id !== runId) throw new Stop(); }
     function setTurn(t) { turn = t; app.querySelectorAll('.pt-opp, .pt-you').forEach(function (e) { e.classList.remove('is-turn'); }); drawTable(); }
     function findCard(code, from, used) {
@@ -324,10 +329,13 @@
       return null;
     }
     try {
-      await wait(900); alive();
+     for (;;) {
+      sc = { pile: (st.pile || []).slice(), hand: (st.hand || []).slice(), vis: (st.vis || []).slice(), hid: st.hid || 0 };
+      turn = null; drawTable();
+      $('.pt-table').setAttribute('data-focus', st.focus || '');
+      await wait(1000); alive();
       for (var k = 0; k < script.length; k++) {
         var a = script[k];
-        if (a.say) { var say = $('.pt-say'); say.innerHTML = a.say; say.classList.remove('is-new'); void say.offsetWidth; say.classList.add('is-new'); }
         if ('focus' in a) { $('.pt-table').setAttribute('data-focus', a.focus); }
         if (a.turn) setTurn(a.turn);
         if (a.no) {
@@ -367,11 +375,13 @@
           alive();
           sc.hid -= 1; sc.hand.push(a.flip); drawTable();
         }
-        await wait(a.wait || 1500); alive();
+        await wait(a.wait || 1100); alive();
       }
-      setTurn(null);
-      done();
-      var r = $('.pt-replay'); if (r) r.hidden = false;
+      await wait(1600); alive();
+      var tbl = $('.pt-table'); tbl.classList.add('is-resetting');
+      await wait(400); alive();
+      tbl.classList.remove('is-resetting');
+     }
     } catch (e) { if (!(e instanceof Stop)) throw e; }
   }
 
@@ -394,7 +404,6 @@
     else if (act === 'back') back();
     else if (act === 'combo') onCombo();
     else if (act === 'pickup') onPickup();
-    else if (act === 'replay') render();
   });
   window.addEventListener('hashchange', fromHash);
   fromHash();

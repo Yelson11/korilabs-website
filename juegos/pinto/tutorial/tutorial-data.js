@@ -9,7 +9,7 @@
    Step fields:
      text   one short instruction (HTML allowed)
      pile   cards in the central pile (last = top); hand / vis: your cards; hid: number of hidden cards
-     task   'watch' (plays itself: script of { say, turn, focus, no, play, from, bot, card, pickup, flip, wait })
+     task   'watch' (loops like a GIF under a fixed text: script of { turn, focus, no, play, from, bot, card, pickup, flip, wait })
             | 'next' (just continue) | 'play' (tap a card) | 'combo' (select several, then "Jugar")
             | 'pickup' (pick up the pile) | 'flip' (take a hidden card)
      valid  for 'play': card codes that are accepted; combo: the exact set to select
@@ -26,48 +26,43 @@
       id: 'desarrollo', title: 'Desarrollo de la Partida',
       subs: [
         { id: 'ritmo', title: 'Mantener el ritmo', steps: [
-          { task: 'watch', text: 'Cada jugador juega una carta <strong>igual o mayor</strong> que la de arriba.',
+          { task: 'watch', text: 'Cada jugador debe jugar una carta de <strong>igual o mayor</strong> valor que la carta de arriba de la pila. Una carta menor no se puede jugar.',
             pile: ['r3'], hand: ['r5', 'r2', 'r6'], vis: ['r4', 'r7', 'r8'], hid: 3,
             script: [
-              { turn: 1, say: 'El Jugador 1 juega un 4 sobre el 3.' }, { bot: 1, card: 'r4' },
-              { turn: 2, say: 'El Jugador 2 juega otro 4: una carta igual también vale.' }, { bot: 2, card: 'r4' },
-              { turn: 3, say: 'El Jugador 3 sube a 6.' }, { bot: 3, card: 'r6' },
-              { turn: 'you', say: 'Tu turno: el 5 y el 2 son menores que el 6.', no: ['r5', 'r2'] },
-              { say: 'El 6 sí se puede jugar.' }, { play: 'r6' }
-            ],
-            ok: 'Siempre igual o mayor que la carta de arriba.' }
+              { turn: 1, wait: 500 }, { bot: 1, card: 'r4' },
+              { turn: 2, wait: 500 }, { bot: 2, card: 'r4' },
+              { turn: 3, wait: 500 }, { bot: 3, card: 'r6' },
+              { turn: 'you', wait: 700 }, { no: ['r5', 'r2'], wait: 1500 },
+              { play: 'r6' }
+            ] }
         ] },
         { id: 'ceder', title: 'Ceder el paso', steps: [
-          { task: 'watch', text: 'Arriba hay un 7.',
+          { task: 'watch', text: 'Si no tienes ninguna carta que puedas jugar, <strong>cedes el paso</strong>: recoges toda la pila central y el turno sigue con el siguiente jugador.',
             pile: ['r2', 'r5', 'r7'], hand: ['r3', 'r4', 'r2'], vis: ['r1', 'r6', 'r8'], hid: 3,
             script: [
-              { turn: 'you', say: 'Es tu turno y ninguna de tus cartas es 7 o más.', no: 'hand' },
-              { say: 'Cedes el paso y <strong>recoges toda la pila</strong>.' }, { pickup: true },
-              { turn: 1, say: 'Las cartas pasan a tu mano y el turno sigue con el siguiente jugador.' }
-            ],
-            ok: 'Si no puedes jugar ninguna carta, recoges toda la pila central.' }
+              { turn: 'you', wait: 700 }, { no: 'hand', wait: 1600 },
+              { pickup: true },
+              { turn: 1 }
+            ] }
         ] },
         { id: 'via-libre', title: 'Vía libre', steps: [
-          { task: 'watch', text: 'La pila está vacía: tienes <strong>vía libre</strong>.',
+          { task: 'watch', text: 'Cuando la pila está vacía tienes <strong>vía libre</strong>: puedes empezar con cualquier carta o combinación válida.',
             pile: [], hand: ['r2', 'r6', 'r6'], vis: ['r3', 'r5', 'r7'], hid: 3,
             script: [
-              { turn: 'you', say: 'No hay ninguna carta que superar: puedes empezar con cualquier carta o combinación válida.' },
-              { say: 'Por ejemplo, los dos 6 juntos.' }, { play: ['r6', 'r6'] },
-              { turn: 1, say: 'El siguiente jugador tendrá que jugar un 6 o más.' }
-            ],
-            ok: 'Con vía libre empiezas con lo que quieras.' }
+              { turn: 'you', wait: 1200 },
+              { play: ['r6', 'r6'] },
+              { turn: 1 }
+            ] }
         ] },
         { id: 'fases', title: 'Fases de la carrera', steps: [
-          { task: 'watch', text: 'Te deshaces de tus cartas en tres fases.',
+          { task: 'watch', text: 'Te deshaces de tus cartas en tres fases: primero tu <strong>mano</strong>, luego tus cartas <strong>visibles</strong> y al final tus <strong>ocultas</strong>, una a la vez. Si terminas una fase y puedes seguir jugando, avanzas en el mismo turno.',
             pile: ['r3'], hand: ['r4'], vis: ['r5', 'r6', 'r6'], hid: 3, focus: 'hand',
             script: [
-              { turn: 'you', focus: 'hand', say: '<strong>Fase 1:</strong> juegas las cartas de tu mano.' }, { play: 'r4' },
-              { focus: 'vis', say: '<strong>Fase 2:</strong> sin cartas en la mano, sigues con tus cartas visibles en el mismo turno.' }, { play: 'r5', from: 'vis' },
-              { play: ['r6', 'r6'], from: 'vis' },
-              { focus: 'hid', say: '<strong>Fase 3:</strong> tomas tus cartas ocultas, una a la vez.' }, { flip: 'r7' },
-              { focus: '', say: 'La carta pasa a tu mano. Como se puede jugar, la juegas.' }, { play: 'r7' }
-            ],
-            ok: 'Mano, visibles y ocultas: siempre en ese orden.' }
+              { turn: 'you', focus: 'hand' }, { play: 'r4' },
+              { focus: 'vis' }, { play: 'r5', from: 'vis' }, { play: ['r6', 'r6'], from: 'vis' },
+              { focus: 'hid' }, { flip: 'r7' },
+              { focus: 'hand', wait: 700 }, { play: 'r7' }
+            ] }
         ] }
       ]
     },
