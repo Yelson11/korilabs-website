@@ -954,6 +954,10 @@
 .p-tut:hover { background: rgb(229 70 59 / 0.15); border-color: var(--red); }
 .p-tut:focus-visible { outline: 3px solid var(--cream); outline-offset: 2px; }
 .p-card .p-tut { margin: 0.7rem 0 0; }
+/* Special cards use the same "Ver tutorial" link as the rule cards, pinned to the bottom */
+.p-specials:not(.p-specials--compact) .p-card > div { display: flex; flex-direction: column; align-self: stretch; }
+.p-card .p-rcard__tut { margin: auto 0 0; padding-top: 0.9rem; }
+@media (min-width: 56rem) { .p-specials:not(.p-specials--compact) .p-card { grid-template-rows: auto 1fr; } }
 
 /* "Qué carta puedo jugar": card images in the table (a cell holds images or text, never both) */
 .p-table-wrap--ref { max-width: 46rem; }
