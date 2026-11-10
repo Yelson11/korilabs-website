@@ -1004,6 +1004,66 @@
 }
 .p-rules strong { color: var(--cream); }
 
+/* Rule cards (instructions page): mini cards on the tutorial's wooden table + title, text and tutorial link */
+.p-rcards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr));
+  gap: 1rem;
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.p-rcard {
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: rgb(22 23 27 / 0.8);
+  overflow: hidden;
+}
+.p-rcard__art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 8.5rem;
+  background: radial-gradient(120% 90% at 50% 40%, #623e2b 0%, #4f3122 100%);
+  box-shadow: inset 0 -10px 24px rgb(0 0 0 / 0.25);
+}
+.p-rcard__art img,
+.p-rcard__empty {
+  flex: none;
+  width: 3.3rem;
+  height: auto;
+  border-radius: 0.3rem;
+  box-shadow: 0 6px 14px rgb(0 0 0 / 0.45);
+}
+.p-rcard__empty { aspect-ratio: 660 / 922; border: 2px dashed rgb(245 240 232 / 0.45); box-shadow: none; box-sizing: border-box; }
+.p-rcard__art--gap { gap: 0.6rem; }
+.p-rcard__art--row img + img { margin-left: -2.2rem; }
+.p-rcard__art--fan img + img { margin-left: -1.1rem; }
+.p-rcard__art--fan img:nth-child(1) { transform: rotate(-12deg) translateY(0.35rem); }
+.p-rcard__art--fan img:nth-child(2) { position: relative; z-index: 1; transform: translateY(-0.25rem); }
+.p-rcard__art--fan img:nth-child(3) { position: relative; z-index: 2; transform: rotate(12deg) translateY(0.35rem); }
+.p-rcard__arrow { color: var(--cream); font: 700 1.3rem/1 var(--display); opacity: 0.8; }
+.p-rcard h3 { margin: 0; padding: 1rem 1.15rem 0; font: italic 800 1.1rem/1.15 var(--display); text-transform: uppercase; }
+.p-rcard p { margin: 0; padding: 0.45rem 1.15rem 0; color: var(--cream-dim); font-size: 0.93rem; line-height: 1.45; }
+.p-rcard__tut {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  justify-self: start;
+  margin: 0.9rem 1.15rem 1.1rem;
+  color: var(--cream);
+  font: 600 0.88rem/1 var(--display);
+  text-decoration: none;
+  border-radius: 999px;
+}
+.p-rcard__play { display: grid; place-items: center; width: 1.7rem; height: 1.7rem; border-radius: 50%; background: var(--red); color: #fff; transition: transform 0.2s ease; }
+.p-rcard__play svg { width: 0.72rem; height: 0.72rem; margin-left: 1px; }
+.p-rcard__tut:hover { color: #fff; }
+.p-rcard__tut:hover .p-rcard__play { transform: scale(1.1); }
+.p-rcard__tut:focus-visible { outline: 3px solid var(--cream); outline-offset: 4px; }
+
 .p-table-wrap { max-width: 46rem; margin-top: 2rem; overflow-x: auto; }
 
 .p-table {
@@ -1101,9 +1161,10 @@
   .p-fan li:hover { transform: none; }
   .p-card:hover, .p-mode:hover, .p-card:hover img, .p-start__card:hover { transform: none; }
   .p-path, .p-path:hover { transition: none; transform: none; }
+  .p-rcard__play, .p-rcard__tut:hover .p-rcard__play { transition: none; transform: none; }
   .p-tut { transition: none; }
 }
 
 @media (forced-colors: active) {
-  .p-steps li, .p-card, .p-facts li, .p-mode, .p-rules li, .p-toc a, .p-start__card { border-color: CanvasText; }
+  .p-steps li, .p-card, .p-facts li, .p-mode, .p-rules li, .p-rcard, .p-toc a, .p-start__card { border-color: CanvasText; }
 }

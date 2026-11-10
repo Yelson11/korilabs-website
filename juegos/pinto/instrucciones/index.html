@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Istok+Web:wght@400;700&amp;family=Poppins:ital,wght@0,500;0,600;1,700;1,800&amp;family=Saira:ital,wght@0,400;0,600;0,700;0,800;1,400&amp;display=swap">
 
   <link rel="stylesheet" href="../../../css/styles.css?v=2">
-  <link rel="stylesheet" href="../../../css/pinto.css?v=22">
+  <link rel="stylesheet" href="../../../css/pinto.css?v=23">
 </head>
 <body class="pinto">
 
@@ -176,23 +176,68 @@
       <!-- Desarrollo de la partida -->
       <section class="p-section" id="desarrollo" aria-labelledby="desarrollo-title">
         <h2 class="p-h2" id="desarrollo-title">Desarrollo de la partida</h2>
-        <ul class="p-rules">
-          <li><strong>Mantener el ritmo.</strong> Juega una carta de Ritmo de valor igual o mayor al de la carta de arriba de la pila. Las cartas especiales permiten excepciones. <a class="p-tut" href="../tutorial/#ritmo"><svg aria-hidden="true"><use href="#icon-video"/></svg>Ver tutorial</a></li>
-          <li><strong>Ceder el paso.</strong> Si al comenzar tu turno no tienes una jugada válida, recoges toda la pila central. Tu turno termina y el siguiente jugador tiene vía libre. <a class="p-tut" href="../tutorial/#ceder"><svg aria-hidden="true"><use href="#icon-video"/></svg>Ver tutorial</a></li>
-          <li><strong>Vía libre.</strong> Con la pila vacía, o cuando una carta concede vía libre, el siguiente jugador puede empezar con cualquier carta o combinación válida. <a class="p-tut" href="../tutorial/#via-libre"><svg aria-hidden="true"><use href="#icon-video"/></svg>Ver tutorial</a></li>
-          <li><strong>Fases de la carrera.</strong> Primero juegas las cartas de tu mano, luego tomas tus cartas visibles y al final tus cartas ocultas, una a la vez. Si recoges la pila, debes deshacerte de esas cartas para continuar. <a class="p-tut" href="../tutorial/#fases"><svg aria-hidden="true"><use href="#icon-video"/></svg>Ver tutorial</a></li>
+        <ul class="p-rcards">
+          <li class="p-rcard">
+            <div class="p-rcard__art p-rcard__art--gap" aria-hidden="true"><img src="../img/cartas/ritmo-4.webp?v=5" width="660" height="922" alt="" loading="lazy"><b class="p-rcard__arrow">→</b><img src="../img/cartas/ritmo-6.webp?v=5" width="660" height="922" alt="" loading="lazy"></div>
+            <h3>Mantener el ritmo</h3>
+            <p>Juega una carta de Ritmo de valor igual o mayor al de la carta de arriba de la pila. Las cartas especiales permiten excepciones.</p>
+            <a class="p-rcard__tut" href="../tutorial/#ritmo"><span class="p-rcard__play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5Z" fill="currentColor"/></svg></span>Ver tutorial<span class="visually-hidden">: Mantener el ritmo</span></a>
+          </li>
+          <li class="p-rcard">
+            <div class="p-rcard__art p-rcard__art--fan" aria-hidden="true"><img src="../img/cartas/ritmo-6.webp?v=5" width="660" height="922" alt="" loading="lazy"><img src="../img/cartas/ritmo-3.webp?v=5" width="660" height="922" alt="" loading="lazy"><img src="../img/cartas/ritmo-8.webp?v=5" width="660" height="922" alt="" loading="lazy"></div>
+            <h3>Ceder el paso</h3>
+            <p>Si al comenzar tu turno no tienes una jugada válida, recoges toda la pila central. Tu turno termina y el siguiente jugador tiene vía libre.</p>
+            <a class="p-rcard__tut" href="../tutorial/#ceder"><span class="p-rcard__play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5Z" fill="currentColor"/></svg></span>Ver tutorial<span class="visually-hidden">: Ceder el paso</span></a>
+          </li>
+          <li class="p-rcard">
+            <div class="p-rcard__art p-rcard__art--gap" aria-hidden="true"><i class="p-rcard__empty"></i><b class="p-rcard__arrow">→</b><img src="../img/cartas/ritmo-2.webp?v=5" width="660" height="922" alt="" loading="lazy"></div>
+            <h3>Vía libre</h3>
+            <p>Con la pila vacía, o cuando una carta concede vía libre, el siguiente jugador puede empezar con cualquier carta o combinación válida.</p>
+            <a class="p-rcard__tut" href="../tutorial/#via-libre"><span class="p-rcard__play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5Z" fill="currentColor"/></svg></span>Ver tutorial<span class="visually-hidden">: Vía libre</span></a>
+          </li>
+          <li class="p-rcard">
+            <div class="p-rcard__art p-rcard__art--gap" aria-hidden="true"><img src="../img/cartas/ritmo-5.webp?v=5" width="660" height="922" alt="" loading="lazy"><img src="../img/cartas/ritmo-1.webp?v=5" width="660" height="922" alt="" loading="lazy"><img src="../img/cartas/reverso.webp?v=5" width="660" height="922" alt="" loading="lazy"></div>
+            <h3>Fases de la carrera</h3>
+            <p>Primero juegas las cartas de tu mano, luego tomas tus cartas visibles y al final tus cartas ocultas, una a la vez. Si recoges la pila, debes deshacerte de esas cartas para continuar.</p>
+            <a class="p-rcard__tut" href="../tutorial/#fases"><span class="p-rcard__play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5Z" fill="currentColor"/></svg></span>Ver tutorial<span class="visually-hidden">: Fases de la carrera</span></a>
+          </li>
         </ul>
       </section>
 
       <!-- Reglas de carrera -->
       <section class="p-section" id="reglas" aria-labelledby="reglas-title">
         <h2 class="p-h2" id="reglas-title">Reglas de carrera</h2>
-        <ul class="p-rules">
-          <li><strong>Tu turno.</strong> Comienza cuando colocas tu primera carta. Puedes jugar tantas cartas como las reglas permitan, juntas o una después de otra. Después de tu primera carta, el siguiente jugador puede interrumpirte con una carta o combinación válida. <a class="p-tut" href="../tutorial/#turno"><svg aria-hidden="true"><use href="#icon-video"/></svg>Ver tutorial</a></li>
-          <li><strong>Encadenar cartas.</strong> Puedes jugar juntas varias cartas iguales: del mismo valor o del mismo tipo de carta especial. Las especiales encadenadas aplican su efecto una sola vez. La Bandera a Cuadros no se encadena. <a class="p-tut" href="../tutorial/#encadenar"><svg aria-hidden="true"><use href="#icon-video"/></svg>Ver tutorial</a></li>
-          <li><strong>Avanzar entre fases.</strong> Si terminas una fase en tu turno y puedes seguir jugando, continúas con la siguiente sin esperar. <a class="p-tut" href="../tutorial/#fases"><svg aria-hidden="true"><use href="#icon-video"/></svg>Ver tutorial</a></li>
-          <li><strong>Carril Lleno.</strong> Cuatro cartas iguales seguidas en la pila, de uno o varios jugadores, retiran la pila de la partida. Tu turno termina y el siguiente jugador tiene vía libre. Una Bandera Azul corta la secuencia. <a class="p-tut" href="../tutorial/#carril"><svg aria-hidden="true"><use href="#icon-video"/></svg>Ver tutorial</a></li>
-          <li><strong>Fin de turno.</strong> La Bandera Roja, la Bandera a Cuadros y el Carril Lleno terminan el turno de inmediato. <a class="p-tut" href="../tutorial/#turno"><svg aria-hidden="true"><use href="#icon-video"/></svg>Ver tutorial</a></li>
+        <ul class="p-rcards">
+          <li class="p-rcard">
+            <div class="p-rcard__art p-rcard__art--row" aria-hidden="true"><img src="../img/cartas/ritmo-3.webp?v=5" width="660" height="922" alt="" loading="lazy"><img src="../img/cartas/ritmo-5.webp?v=5" width="660" height="922" alt="" loading="lazy"><img src="../img/cartas/ritmo-7.webp?v=5" width="660" height="922" alt="" loading="lazy"></div>
+            <h3>Tu turno</h3>
+            <p>Comienza cuando colocas tu primera carta. Puedes jugar tantas cartas como las reglas permitan, juntas o una después de otra. Después de tu primera carta, el siguiente jugador puede interrumpirte con una carta o combinación válida.</p>
+            <a class="p-rcard__tut" href="../tutorial/#turno"><span class="p-rcard__play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5Z" fill="currentColor"/></svg></span>Ver tutorial<span class="visually-hidden">: Tu turno</span></a>
+          </li>
+          <li class="p-rcard">
+            <div class="p-rcard__art p-rcard__art--fan" aria-hidden="true"><img src="../img/cartas/ritmo-7.webp?v=5" width="660" height="922" alt="" loading="lazy"><img src="../img/cartas/ritmo-7.webp?v=5" width="660" height="922" alt="" loading="lazy"><img src="../img/cartas/ritmo-7.webp?v=5" width="660" height="922" alt="" loading="lazy"></div>
+            <h3>Encadenar cartas</h3>
+            <p>Puedes jugar juntas varias cartas iguales: del mismo valor o del mismo tipo de carta especial. Las especiales encadenadas aplican su efecto una sola vez. La Bandera a Cuadros no se encadena.</p>
+            <a class="p-rcard__tut" href="../tutorial/#encadenar"><span class="p-rcard__play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5Z" fill="currentColor"/></svg></span>Ver tutorial<span class="visually-hidden">: Encadenar cartas</span></a>
+          </li>
+          <li class="p-rcard">
+            <div class="p-rcard__art p-rcard__art--gap" aria-hidden="true"><img src="../img/cartas/ritmo-6.webp?v=5" width="660" height="922" alt="" loading="lazy"><b class="p-rcard__arrow">→</b><img src="../img/cartas/reverso.webp?v=5" width="660" height="922" alt="" loading="lazy"></div>
+            <h3>Avanzar entre fases</h3>
+            <p>Si terminas una fase en tu turno y puedes seguir jugando, continúas con la siguiente sin esperar.</p>
+            <a class="p-rcard__tut" href="../tutorial/#fases"><span class="p-rcard__play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5Z" fill="currentColor"/></svg></span>Ver tutorial<span class="visually-hidden">: Avanzar entre fases</span></a>
+          </li>
+          <li class="p-rcard">
+            <div class="p-rcard__art p-rcard__art--row" aria-hidden="true"><img src="../img/cartas/ritmo-2.webp?v=5" width="660" height="922" alt="" loading="lazy"><img src="../img/cartas/ritmo-2.webp?v=5" width="660" height="922" alt="" loading="lazy"><img src="../img/cartas/ritmo-2.webp?v=5" width="660" height="922" alt="" loading="lazy"><img src="../img/cartas/ritmo-2.webp?v=5" width="660" height="922" alt="" loading="lazy"></div>
+            <h3>Carril Lleno</h3>
+            <p>Cuatro cartas iguales seguidas en la pila, de uno o varios jugadores, retiran la pila de la partida. Tu turno termina y el siguiente jugador tiene vía libre. Una Bandera Azul corta la secuencia.</p>
+            <a class="p-rcard__tut" href="../tutorial/#carril"><span class="p-rcard__play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5Z" fill="currentColor"/></svg></span>Ver tutorial<span class="visually-hidden">: Carril Lleno</span></a>
+          </li>
+          <li class="p-rcard">
+            <div class="p-rcard__art p-rcard__art--gap" aria-hidden="true"><img src="../img/cartas/bandera-roja.webp?v=5" width="660" height="922" alt="" loading="lazy"><img src="../img/cartas/bandera-a-cuadros.webp?v=5" width="660" height="922" alt="" loading="lazy"></div>
+            <h3>Fin de turno</h3>
+            <p>La Bandera Roja, la Bandera a Cuadros y el Carril Lleno terminan el turno de inmediato.</p>
+            <a class="p-rcard__tut" href="../tutorial/#turno"><span class="p-rcard__play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5Z" fill="currentColor"/></svg></span>Ver tutorial<span class="visually-hidden">: Fin de turno</span></a>
+          </li>
         </ul>
       </section>
 

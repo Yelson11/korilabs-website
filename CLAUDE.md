@@ -136,8 +136,9 @@ numbered cards with a colored top bar and a dotted "track" line under them on de
 Tutoriales → `../tutorial/`, Reglamento oficial → `../reglamento.pdf`, new tab; the owner will point it to the new
 official rules PDF), then `#guia` "Guía rápida" (intro + `p-toc` chips) followed by the summary of the official rules (v1.5),
 not a copy — never add rules that aren't in the official text: `#preparacion` (steps + deck table + who starts),
-`#desarrollo`, `#reglas`, `#especiales` (rules order), `#referencia` ("Qué carta puedo jugar": table with card images),
-`#modos`; every rule and special card has a small video-icon "Ver tutorial" link (`.p-tut`) to its tutorial subsection.
+`#desarrollo`, `#reglas` (rule cards `.p-rcard`: mini card illustration on the tutorial's wooden table + title + short
+text + "Ver tutorial" link; the art per rule is hand-picked in the HTML), `#especiales` (rules order), `#referencia` ("Qué carta puedo jugar": table with card images),
+`#modos`; every rule and special card links to its tutorial subsection ("Ver tutorial").
 Minimal closing `.p-finish` ("¡Que comience la carrera!" · "PINTO · Un juego de Kori Labs" · "Conoce más de PINTO").
 The score sheet gift is offered via "Suscribirme" (`/#suscribete`), never linked directly. There are no real videos yet
 (the "videos" are the tutorial animations); don't invent video links.
@@ -162,7 +163,7 @@ The score sheet gift is offered via "Suscribirme" (`/#suscribete`), never linked
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
   Current: `styles.css?v=2`, `home.css?v=9` (index and privacidad),
-  `pinto.css?v=22`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `pinto-tutorial.css?v=7`, `tutorial-data.js?v=8`, `tutorial.js?v=7`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
+  `pinto.css?v=23`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `pinto-tutorial.css?v=7`, `tutorial-data.js?v=8`, `tutorial.js?v=7`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
 - **Sender (newsletter):** universal script in the `<head>` of `index.html`; form is
