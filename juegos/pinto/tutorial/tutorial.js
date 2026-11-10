@@ -1,7 +1,8 @@
-/* PINTO interactive tutorial: short hands-on lessons on a mini table.
-   Lessons live in tutorial-data.js (window.PintoTutorial). Each step shows one
-   instruction; the player taps cards, the move animates and a short line explains
-   what happened. Routing by hash: #ritmo, #especiales-azul, … */
+/* PINTO interactive tutorial: short hands-on steps on a mini table.
+   Content lives in tutorial-data.js (window.PintoTutorial.sections): three sections,
+   each with subsections. Each step shows one instruction; the player taps cards,
+   the move animates and a short line explains what happened. Routing by hash:
+   #<subsection id> (e.g. #ritmo, #azul), #<section id> or #fin. */
 (function () {
   'use strict';
   var T = window.PintoTutorial;
@@ -13,10 +14,14 @@
   var FILES = { cuad: 'bandera-a-cuadros', roja: 'bandera-roja', ama: 'bandera-amarilla', azul: 'bandera-azul', vr: 'vuelta-rapida', reb: 'rebufo', back: 'reverso' };
   var NAMES = { cuad: 'Bandera a Cuadros', roja: 'Bandera Roja', ama: 'Bandera Amarilla', azul: 'Bandera Azul', vr: 'Vuelta Rápida', reb: 'Rebufo', back: 'Carta oculta' };
   var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var L = T.lessons, S = T.specials;
+  var SEC = T.sections, SUBS = [];
+  SEC.forEach(function (sec, si) { sec.subs.forEach(function (u) { u.sec = si; SUBS.push(u); }); });
+  var FINAL = { id: 'fin', title: 'Fin de la carrera', final: true, steps: [
+    { text: 'El primero sin cartas <strong>cruza la meta</strong>. Los demás siguen hasta que solo quede uno.', task: 'next' }
+  ] };
 
-  var lesson = 0, step = 0, special = 0, sc = null, busy = false, solved = false, picked = [];
-  var seenSpecials = {};
+  var sub = 0, step = 0, sc = null, busy = false, solved = false, picked = [];
+  var seen = {};
 
   function file(c) { return /^r\d$/.test(c) ? 'ritmo-' + c.slice(1) : FILES[c]; }
   function name(c) { return /^r\d$/.test(c) ? 'Ritmo ' + c.slice(1) : NAMES[c]; }
@@ -24,79 +29,78 @@
   function wait(ms) { return new Promise(function (r) { setTimeout(r, reduced ? Math.min(ms, 150) : ms); }); }
   function $(sel) { return app.querySelector(sel); }
 
-  function current() {
-    var les = L[lesson];
-    if (les.specials) return S[special].steps[0];
-    return les.steps[step];
-  }
+  function page() { return sub >= SUBS.length ? FINAL : SUBS[sub]; }
+  function current() { return page().steps[step]; }
+  function firstOf(si) { for (var i = 0; i < SUBS.length; i++) if (SUBS[i].sec === si) return i; return 0; }
 
-  /* ---------- Routing ---------- */
+  /* ---------- Routing (#ritmo, #carril, #azul, #reglas, #fin…) ---------- */
   function fromHash() {
     var h = decodeURIComponent(location.hash.slice(1));
-    lesson = 0; step = 0;
-    L.forEach(function (l, i) {
-      if (h === l.id) lesson = i;
-      if (l.specials && h.indexOf(l.id + '-') === 0) {
-        lesson = i;
-        S.forEach(function (s, k) { if (h === l.id + '-' + s.id) special = k; });
-      }
-    });
-    if (h === 'especiales') special = 0;
+    sub = 0; step = 0;
+    if (h === 'fin') sub = SUBS.length;
+    SEC.forEach(function (sec, si) { if (h === sec.id) sub = firstOf(si); });
+    SUBS.forEach(function (u, i) { if (h === u.id) sub = i; });
     render(true);
   }
-  function go(i, k) {
-    var id = L[i].id + (L[i].specials ? '-' + S[k || 0].id : '');
-    if (location.hash.slice(1) === id) { lesson = i; special = k || 0; step = 0; render(true); }
+  function go(i) {
+    var id = i >= SUBS.length ? 'fin' : SUBS[i].id;
+    if (location.hash.slice(1) === id) { sub = i; step = 0; render(true); }
     else location.hash = id;
   }
 
   /* ---------- Rendering ---------- */
   function render(focusTitle) {
-    var les = L[lesson];
-    var st = current();
+    var pg = page(), st = current();
     sc = { pile: (st.pile || []).slice(), hand: (st.hand || []).slice(), vis: (st.vis || []).slice(), hid: st.hid || 0 };
     solved = st.task === 'next'; picked = []; busy = false;
-    var total = les.specials ? S.length : les.steps.length;
-    var pos = les.specials ? special : step;
+    var si = pg.final ? -1 : pg.sec;
 
-    var html = '<nav class="pt-steps" aria-label="Lecciones">' + L.map(function (l, i) {
-      return '<button type="button" class="pt-steps__dot' + (i === lesson ? ' is-on' : '') + (i < lesson ? ' is-past' : '') + '" data-go="' + i + '" aria-label="Lección ' + (i + 1) + ': ' + l.title + '"' + (i === lesson ? ' aria-current="step"' : '') + '><span>' + (i + 1) + '</span></button>';
+    var html = '<nav class="pt-secs" aria-label="Secciones del tutorial">' + SEC.map(function (sec, k) {
+      var all = sec.subs.every(function (u) { return seen[u.id]; });
+      return '<button type="button" class="pt-sec' + (k === si ? ' is-on' : '') + (all ? ' is-done' : '') + '" data-sec="' + k + '"' + (k === si ? ' aria-current="true"' : '') + '>' +
+        '<span class="pt-sec__n">' + (all ? '✓' : k + 1) + '</span><span class="pt-sec__t">' + sec.title + '</span></button>';
     }).join('') + '</nav>';
 
-    html += '<div class="pt-stage"><div class="pt-stage__head"><p class="pt-kicker">Lección ' + (lesson + 1) + ' de ' + L.length +
-      (total > 1 ? ' · ' + (les.specials ? 'Carta ' : 'Paso ') + (pos + 1) + ' de ' + total : '') + '</p>' +
-      '<h1 class="pt-title" tabindex="-1">' + les.title + '</h1></div>';
-
-    if (les.specials) {
-      html += '<div class="pt-tabs" role="tablist" aria-label="Cartas especiales">' + S.map(function (s, k) {
-        return '<button type="button" role="tab" class="pt-tab' + (k === special ? ' is-on' : '') + (seenSpecials[s.id] ? ' is-seen' : '') + '" data-special="' + k + '" aria-selected="' + (k === special) + '">' + img(s.card) + '<span>' + s.title + '</span></button>';
-      }).join('') + '</div><p class="pt-on"><strong>' + S[special].title + ':</strong> ' + S[special].on + '</p>';
+    html += '<div class="pt-stage">';
+    if (!pg.final) {
+      html += '<div class="pt-subs" role="list" aria-label="' + SEC[si].title + '">' + SUBS.map(function (u, i) {
+        if (u.sec !== si) return '';
+        return '<button type="button" role="listitem" class="pt-sub' + (u.card ? ' pt-sub--card' : '') + (i === sub ? ' is-on' : '') + (seen[u.id] ? ' is-seen' : '') + '" data-go="' + i + '"' + (i === sub ? ' aria-current="step"' : '') + '>' +
+          (u.card ? img(u.card) : '') + '<span>' + u.title + '</span></button>';
+      }).join('') + '</div>';
     }
+    html += '<div class="pt-stage__head">' + (pg.steps.length > 1 ? '<p class="pt-kicker">Paso ' + (step + 1) + ' de ' + pg.steps.length + '</p>' : '') +
+      '<h1 class="pt-title" tabindex="-1">' + pg.title + '</h1>' +
+      (pg.on ? '<p class="pt-on"><strong>Se juega:</strong> ' + pg.on + '</p>' : '') + '</div>';
 
     html += '<p class="pt-say" aria-live="polite">' + st.text + '</p>';
-    if (!les.final) html += '<div class="pt-table" data-focus="' + (st.focus || '') + '"></div>';
+    if (!pg.final) html += '<div class="pt-table" data-focus="' + (st.focus || '') + '"></div>';
     else html += finalCard();
 
     html += '<div class="pt-foot"><p class="pt-fb" aria-live="polite"></p><div class="pt-foot__btns">' +
       (st.task === 'combo' ? '<button type="button" class="p-button pt-act" data-act="combo" disabled>Jugar</button>' : '') +
       (st.task === 'pickup' ? '<button type="button" class="p-button pt-act pt-pulse" data-act="pickup">Recoger la pila</button>' : '') +
-      (les.final ? '' : '<button type="button" class="p-button p-button--cream pt-next" data-act="next"' + (solved ? '' : ' hidden') + '>' + nextLabel() + '</button>') +
+      (pg.final ? '' : '<button type="button" class="p-button p-button--cream pt-next" data-act="next"' + (solved ? '' : ' hidden') + '>' + nextLabel() + '</button>') +
       '</div></div>';
-    if (lesson > 0 || pos > 0) html += '<button type="button" class="pt-back" data-act="back">← Anterior</button>';
+    if (sub > 0 || step > 0) html += '<button type="button" class="pt-back" data-act="back">← Anterior</button>';
     html += '</div>';
 
     app.innerHTML = html;
-    if (!les.final) drawTable();
+    if (!pg.final) drawTable();
+    var row = $('.pt-subs'), on = $('.pt-sub.is-on');
+    if (row && on && row.scrollWidth > row.clientWidth) row.scrollLeft = on.offsetLeft - row.offsetLeft - 16;
     var top = app.getBoundingClientRect().top;
     if (top < 0) window.scrollTo({ top: window.scrollY + top - 12, behavior: reduced ? 'auto' : 'smooth' });
     if (focusTitle) { var t = $('.pt-title'); if (t && document.activeElement !== document.body) t.focus({ preventScroll: true }); }
   }
 
   function nextLabel() {
-    var les = L[lesson];
-    if (les.specials && special < S.length - 1) return 'Siguiente carta';
-    if (!les.specials && step < les.steps.length - 1) return 'Siguiente';
-    return 'Siguiente lección';
+    var pg = page();
+    if (step < pg.steps.length - 1) return 'Siguiente';
+    var nx = SUBS[sub + 1];
+    if (!nx) return 'Terminar';
+    if (nx.sec !== pg.sec) return 'Ir a ' + SEC[nx.sec].title;
+    return 'Siguiente: ' + nx.title;
   }
 
   function finalCard() {
@@ -230,11 +234,12 @@
   function done() {
     busy = false; solved = true;
     var st = current();
-    if (L[lesson].specials) seenSpecials[S[special].id] = true;
+    var pg = page(), last = step === pg.steps.length - 1;
+    if (last) seen[pg.id] = true;
     feedback(st.ok ? '<span class="pt-fb__ok">✓</span> ' + st.ok : '', 'ok');
     var n = $('.pt-next'); if (n) { n.hidden = false; n.focus({ preventScroll: true }); }
     app.querySelectorAll('.pt-act').forEach(function (b) { b.hidden = true; });
-    if (L[lesson].specials) { var tab = $('.pt-tab.is-on'); if (tab) tab.classList.add('is-seen'); }
+    if (last) { var chip = $('.pt-sub.is-on'); if (chip) chip.classList.add('is-seen'); }
     drawTable();
   }
 
@@ -304,26 +309,18 @@
   }
 
   function next() {
-    var les = L[lesson];
-    if (les.specials && special < S.length - 1) return go(lesson, special + 1);
-    if (!les.specials && step < les.steps.length - 1) { step++; render(); return; }
-    if (lesson < L.length - 1) go(lesson + 1, 0);
+    if (step < page().steps.length - 1) { step++; render(); return; }
+    go(sub + 1);
   }
   function back() {
-    var les = L[lesson];
-    if (les.specials && special > 0) return go(lesson, special - 1);
-    if (!les.specials && step > 0) { step--; render(); return; }
-    if (lesson > 0) {
-      var prev = L[lesson - 1];
-      if (prev.specials) return go(lesson - 1, S.length - 1);
-      location.hash = prev.id;
-    }
+    if (step > 0) { step--; render(); return; }
+    if (sub > 0) go(sub - 1);
   }
 
   app.addEventListener('click', function (e) {
     var t = e.target.closest('button, a'); if (!t || !app.contains(t)) return;
-    if (t.hasAttribute('data-go')) return go(+t.getAttribute('data-go'), 0);
-    if (t.hasAttribute('data-special')) return go(lesson, +t.getAttribute('data-special'));
+    if (t.hasAttribute('data-go')) return go(+t.getAttribute('data-go'));
+    if (t.hasAttribute('data-sec')) return go(firstOf(+t.getAttribute('data-sec')));
     if (t.classList.contains('pt-c')) return onCard(t);
     var act = t.getAttribute('data-act');
     if (act === 'next') next();
