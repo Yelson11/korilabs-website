@@ -13,8 +13,8 @@
   --red: #e5463b;
   --line: rgb(245 240 232 / 0.14);
   --display: "Poppins", system-ui, sans-serif;
-  /* Body text in Poppins to match the headings; small spaced labels keep Istok Web */
-  --font: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* Body text in Saira (racing feel, pairs with the Poppins headings); small spaced labels keep Istok Web */
+  --font: "Saira", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --label-font: "Istok Web", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 
   /* proporciones reales de la caja (troquel): ancho 758 · alto 1057 · fondo 244 */
