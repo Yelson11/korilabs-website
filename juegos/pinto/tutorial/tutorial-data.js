@@ -9,7 +9,8 @@
    Step fields:
      text   one short instruction (HTML allowed)
      pile   cards in the central pile (last = top); hand / vis: your cards; hid: number of hidden cards
-     task   'next' (just continue) | 'play' (tap a card) | 'combo' (select several, then "Jugar")
+     task   'watch' (plays itself: script of { say, turn, focus, no, play, from, bot, card, pickup, flip, wait })
+            | 'next' (just continue) | 'play' (tap a card) | 'combo' (select several, then "Jugar")
             | 'pickup' (pick up the pile) | 'flip' (take a hidden card)
      valid  for 'play': card codes that are accepted; combo: the exact set to select
      reveal for 'flip': the card that comes out
@@ -25,19 +26,48 @@
       id: 'desarrollo', title: 'Desarrollo de la Partida',
       subs: [
         { id: 'ritmo', title: 'Mantener el ritmo', steps: [
-        { text: 'Juega una carta <strong>igual o mayor</strong> que la de arriba.', pile: ['r3'], hand: ['r2', 'r5', 'r1', 'r3'], vis: ['r4', 'r6', 'r8'], hid: 3, task: 'play', valid: ['r3', 'r5'], hint: 'Esa es menor que el 3.', then: [{ bot: 1, card: 'r6' }], ok: 'El Jugador 1 subió a 6.' },
-        { text: 'Ahora hay un 6. ¿Cuál puedes jugar?', pile: ['r3', 'r5', 'r6'], hand: ['r2', 'r1', 'r7'], vis: ['r4', 'r6', 'r8'], hid: 3, task: 'play', valid: ['r7'], hint: 'Necesitas un 6 o más.', ok: '¡Eso es! Siempre igual o mayor.' }
+          { task: 'watch', text: 'Cada jugador juega una carta <strong>igual o mayor</strong> que la de arriba.',
+            pile: ['r3'], hand: ['r5', 'r2', 'r6'], vis: ['r4', 'r7', 'r8'], hid: 3,
+            script: [
+              { turn: 1, say: 'El Jugador 1 juega un 4 sobre el 3.' }, { bot: 1, card: 'r4' },
+              { turn: 2, say: 'El Jugador 2 juega otro 4: una carta igual también vale.' }, { bot: 2, card: 'r4' },
+              { turn: 3, say: 'El Jugador 3 sube a 6.' }, { bot: 3, card: 'r6' },
+              { turn: 'you', say: 'Tu turno: el 5 y el 2 son menores que el 6.', no: ['r5', 'r2'] },
+              { say: 'El 6 sí se puede jugar.' }, { play: 'r6' }
+            ],
+            ok: 'Siempre igual o mayor que la carta de arriba.' }
         ] },
         { id: 'ceder', title: 'Ceder el paso', steps: [
-        { text: 'Ninguna de tus cartas llega a 7. <strong>Recoge la pila.</strong>', pile: ['r2', 'r5', 'r7'], hand: ['r3', 'r4', 'r2'], vis: ['r1', 'r6', 'r8'], hid: 3, task: 'pickup', hint: 'Esa carta es menor que 7.', ok: 'Toda la pila pasa a tu mano y el turno sigue con el siguiente jugador.' }
+          { task: 'watch', text: 'Arriba hay un 7.',
+            pile: ['r2', 'r5', 'r7'], hand: ['r3', 'r4', 'r2'], vis: ['r1', 'r6', 'r8'], hid: 3,
+            script: [
+              { turn: 'you', say: 'Es tu turno y ninguna de tus cartas es 7 o más.', no: 'hand' },
+              { say: 'Cedes el paso y <strong>recoges toda la pila</strong>.' }, { pickup: true },
+              { turn: 1, say: 'Las cartas pasan a tu mano y el turno sigue con el siguiente jugador.' }
+            ],
+            ok: 'Si no puedes jugar ninguna carta, recoges toda la pila central.' }
         ] },
         { id: 'via-libre', title: 'Vía libre', steps: [
-          { text: 'La pila está vacía: tienes <strong>vía libre</strong>. Juega la carta que quieras.', pile: [], hand: ['r6', 'r2', 'r8'], vis: ['r3', 'r5', 'r7'], hid: 3, task: 'play', valid: ['r6', 'r2', 'r8'], ok: 'Con vía libre puedes empezar con cualquier carta o combinación válida.' }
+          { task: 'watch', text: 'La pila está vacía: tienes <strong>vía libre</strong>.',
+            pile: [], hand: ['r2', 'r6', 'r6'], vis: ['r3', 'r5', 'r7'], hid: 3,
+            script: [
+              { turn: 'you', say: 'No hay ninguna carta que superar: puedes empezar con cualquier carta o combinación válida.' },
+              { say: 'Por ejemplo, los dos 6 juntos.' }, { play: ['r6', 'r6'] },
+              { turn: 1, say: 'El siguiente jugador tendrá que jugar un 6 o más.' }
+            ],
+            ok: 'Con vía libre empiezas con lo que quieras.' }
         ] },
         { id: 'fases', title: 'Fases de la carrera', steps: [
-        { text: 'Sin cartas en la mano, juegas tus <strong>visibles</strong>.', pile: ['r3'], hand: [], vis: ['r4', 'r1', 'r6'], hid: 3, focus: 'vis', task: 'play', valid: ['r4', 'r6'], hint: 'Esa es menor que el 3.', ok: 'Igual que con la mano: igual o mayor.' },
-        { text: 'Solo te quedan las ocultas. <strong>Toma una.</strong>', pile: ['r3', 'r4'], hand: [], vis: [], hid: 3, focus: 'hid', task: 'flip', reveal: 'r6', ok: 'Salió un 6 y pasa a tu mano.' },
-        { text: 'Puedes jugarla, porque 6 es mayor que 4.', pile: ['r3', 'r4'], hand: ['r6'], vis: [], hid: 2, task: 'play', valid: ['r6'], ok: 'Así sigues hasta quedarte sin cartas.' }
+          { task: 'watch', text: 'Te deshaces de tus cartas en tres fases.',
+            pile: ['r3'], hand: ['r4'], vis: ['r5', 'r6', 'r6'], hid: 3, focus: 'hand',
+            script: [
+              { turn: 'you', focus: 'hand', say: '<strong>Fase 1:</strong> juegas las cartas de tu mano.' }, { play: 'r4' },
+              { focus: 'vis', say: '<strong>Fase 2:</strong> sin cartas en la mano, sigues con tus cartas visibles en el mismo turno.' }, { play: 'r5', from: 'vis' },
+              { play: ['r6', 'r6'], from: 'vis' },
+              { focus: 'hid', say: '<strong>Fase 3:</strong> tomas tus cartas ocultas, una a la vez.' }, { flip: 'r7' },
+              { focus: '', say: 'La carta pasa a tu mano. Como se puede jugar, la juegas.' }, { play: 'r7' }
+            ],
+            ok: 'Mano, visibles y ocultas: siempre en ese orden.' }
         ] }
       ]
     },

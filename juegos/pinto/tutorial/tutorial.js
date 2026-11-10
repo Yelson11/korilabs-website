@@ -21,6 +21,7 @@
   ] };
 
   var sub = 0, step = 0, sc = null, busy = false, solved = false, picked = [];
+  var turn = null, runId = 0;   // whose turn is highlighted; id of the running animation
   var seen = {};
 
   function file(c) { return /^r\d$/.test(c) ? 'ritmo-' + c.slice(1) : FILES[c]; }
@@ -52,7 +53,7 @@
   function render(focusTitle) {
     var pg = page(), st = current();
     sc = { pile: (st.pile || []).slice(), hand: (st.hand || []).slice(), vis: (st.vis || []).slice(), hid: st.hid || 0 };
-    solved = st.task === 'next'; picked = []; busy = false;
+    solved = st.task === 'next'; picked = []; busy = false; turn = null; runId++;
     var si = pg.final ? -1 : pg.sec;
 
     var html = '<nav class="pt-secs" aria-label="Secciones del tutorial">' + SEC.map(function (sec, k) {
@@ -80,13 +81,15 @@
     html += '<div class="pt-foot"><p class="pt-fb" aria-live="polite"></p><div class="pt-foot__btns">' +
       (st.task === 'combo' ? '<button type="button" class="p-button pt-act" data-act="combo" disabled>Jugar</button>' : '') +
       (st.task === 'pickup' ? '<button type="button" class="p-button pt-act pt-pulse" data-act="pickup">Recoger la pila</button>' : '') +
-      (pg.final ? '' : '<button type="button" class="p-button p-button--cream pt-next" data-act="next"' + (solved ? '' : ' hidden') + '>' + nextLabel() + '</button>') +
+      (st.task === 'watch' ? '<button type="button" class="pt-replay" data-act="replay" hidden>↻ Ver otra vez</button>' : '') +
+      (pg.final ? '' : '<button type="button" class="p-button p-button--cream pt-next" data-act="next"' + (solved || (st.task === 'watch' && seen[pg.id]) ? '' : ' hidden') + '>' + nextLabel() + '</button>') +
       '</div></div>';
     if (sub > 0 || step > 0) html += '<button type="button" class="pt-back" data-act="back">← Anterior</button>';
     html += '</div>';
 
     app.innerHTML = html;
     if (!pg.final) drawTable();
+    if (st.task === 'watch') watch(st.script, runId);
     var row = $('.pt-subs'), on = $('.pt-sub.is-on');
     if (row && on && row.scrollWidth > row.clientWidth) row.scrollLeft = on.offsetLeft - row.offsetLeft - 16;
     var top = app.getBoundingClientRect().top;
@@ -129,7 +132,7 @@
     var shown = sc.pile.slice(-5);
     var pile = '<div class="pt-pilewrap"><div class="pt-pile">' + (shown.length
       ? shown.map(function (c, i) { return '<div class="pt-pc" style="--i:' + i + '">' + img(c) + '</div>'; }).join('')
-      : '<div class="pt-free">Vía libre</div>') + '</div>' +
+      : '<div class="pt-free">Sin cartas</div>') + '</div>' +
       '<span class="pt-pile__label">' + (shown.length ? 'Arriba: <strong>' + name(shown[shown.length - 1]) + '</strong>' : 'Pila vacía') + '</span></div>';
 
     var slots = Math.max(sc.vis.length, sc.hid);
@@ -151,6 +154,8 @@
       '<div class="pt-zone pt-zone--hand"><span class="pt-zone__label">Tu mano</span><div class="pt-hand">' + (hand || '<span class="pt-none">Sin cartas</span>') + '</div></div>' +
       '</div>';
     tbl.classList.toggle('is-active', !!zone);
+    if (turn === 'you') { var you = $('.pt-you'); if (you) you.classList.add('is-turn'); }
+    else if (turn) { var op = $('.pt-opp[data-p="' + turn + '"]'); if (op) op.classList.add('is-turn'); }
   }
 
   /* ---------- Animation helpers ---------- */
@@ -308,6 +313,68 @@
     done();
   }
 
+  /* ---------- Watch mode: the step plays itself as a short animation ---------- */
+  function Stop() {}
+  async function watch(script, id) {
+    function alive() { if (id !== runId) throw new Stop(); }
+    function setTurn(t) { turn = t; app.querySelectorAll('.pt-opp, .pt-you').forEach(function (e) { e.classList.remove('is-turn'); }); drawTable(); }
+    function findCard(code, from, used) {
+      var arr = from === 'hand' ? sc.hand : sc.vis;
+      for (var i = 0; i < arr.length; i++) if (arr[i] === code && used.indexOf(i) < 0) { used.push(i); return $('.pt-c[data-z="' + from + '"][data-i="' + i + '"]'); }
+      return null;
+    }
+    try {
+      await wait(900); alive();
+      for (var k = 0; k < script.length; k++) {
+        var a = script[k];
+        if (a.say) { var say = $('.pt-say'); say.innerHTML = a.say; say.classList.remove('is-new'); void say.offsetWidth; say.classList.add('is-new'); }
+        if ('focus' in a) { $('.pt-table').setAttribute('data-focus', a.focus); }
+        if (a.turn) setTurn(a.turn);
+        if (a.no) {
+          app.querySelectorAll('.pt-zone--hand .pt-c').forEach(function (el) {
+            var c = sc.hand[+el.getAttribute('data-i')];
+            if (a.no === 'hand' || a.no.indexOf(c) > -1) { el.classList.add('is-no'); if (!reduced) el.classList.add('is-shake'); }
+          });
+        }
+        if (a.play) {
+          var codes = [].concat(a.play), from = a.from || (sc.hand.length ? 'hand' : 'vis'), used = [];
+          var els = codes.map(function (c) { return findCard(c, from, used); });
+          var target = pileTarget();
+          await Promise.all(els.map(function (el, n) { return wait(n * 120).then(function () { return fly(el, target, codes[n], { rot: n % 2 ? 4 : -4 }); }); }));
+          alive();
+          used.forEach(function (i) { if (from === 'hand') sc.hand[i] = null; else sc.vis[i] = null; });
+          sc.hand = sc.hand.filter(Boolean);
+          sc.pile = sc.pile.concat(codes);
+          drawTable();
+        }
+        if (a.bot) {
+          var opp = $('.pt-opp[data-p="' + a.bot + '"]');
+          await fly(opp.querySelector('img:last-child'), pileTarget(), a.card, { width: pileTarget().getBoundingClientRect().width });
+          alive();
+          sc.pile.push(a.card); drawTable();
+        }
+        if (a.pickup) {
+          var cards = app.querySelectorAll('.pt-pile .pt-pc'), pc = sc.pile.slice(-cards.length), hand = $('.pt-hand');
+          await Promise.all(Array.prototype.map.call(cards, function (el, n) { return wait(n * 90).then(function () { return fly(el, hand, pc[n]); }); }));
+          alive();
+          sc.hand = sc.hand.concat(sc.pile); sc.pile = []; drawTable();
+        }
+        if (a.flip) {
+          var hid = app.querySelectorAll('.pt-c--hid'), el = hid[hid.length - 1];
+          el.classList.add('is-flipping');
+          await wait(350); alive();
+          await fly(el, $('.pt-hand'), a.flip);
+          alive();
+          sc.hid -= 1; sc.hand.push(a.flip); drawTable();
+        }
+        await wait(a.wait || 1500); alive();
+      }
+      setTurn(null);
+      done();
+      var r = $('.pt-replay'); if (r) r.hidden = false;
+    } catch (e) { if (!(e instanceof Stop)) throw e; }
+  }
+
   function next() {
     if (step < page().steps.length - 1) { step++; render(); return; }
     go(sub + 1);
@@ -327,6 +394,7 @@
     else if (act === 'back') back();
     else if (act === 'combo') onCombo();
     else if (act === 'pickup') onPickup();
+    else if (act === 'replay') render();
   });
   window.addEventListener('hashchange', fromHash);
   fromHash();
