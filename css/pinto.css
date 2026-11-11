@@ -1148,6 +1148,23 @@
 .p-table td { color: var(--cream-dim); }
 /* No line under the last row: next to the section divider it read as an empty extra row */
 .p-table tbody tr:last-child > * { border-bottom: 0; }
+/* Deck table as a rounded panel (separate borders so the radius works; the caption stays above, outside it) */
+.p-table--panel {
+  border: 1px solid var(--line);
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 1rem;
+  background: rgb(22 23 27 / 0.8);
+  box-sizing: border-box;
+}
+.p-table--panel th,
+.p-table--panel td { padding: 0.85rem 0.75rem; vertical-align: middle; }
+.p-table--panel thead th:first-child { border-top-left-radius: calc(1rem - 1px); }
+.p-table--panel thead th:last-child { border-top-right-radius: calc(1rem - 1px); }
+.p-table--panel thead th { background: rgb(245 240 232 / 0.06); font-family: var(--display); font-weight: 600; line-height: 1.25; }
+.p-table--panel tbody th { font: italic 800 1.05rem/1 var(--display); }
+.p-table--panel td:last-child { color: var(--cream); font-weight: 700; }
+@media (max-width: 30rem) { .p-table--panel th, .p-table--panel td { padding: 0.75rem 0.35rem; } .p-table--panel thead th { font-size: 0.74rem; } }
 
 .p-table--ref th,
 .p-table--ref td { text-align: left; }
