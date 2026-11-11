@@ -174,9 +174,9 @@
   }
 
   /* ---------- screens ---------- */
-  function render() {
+  function render(reveal) {
     if (!state) return renderHome();
-    if (state.results.length >= races(state).length) return renderFinal();
+    if (state.results.length >= races(state).length) return renderFinal(reveal);
     return renderRace();
   }
 
@@ -370,8 +370,9 @@
       '</section>';
   }
 
-  function renderFinal() {
+  function renderFinal(reveal) {
     var s = state, teams = hasTeams(s), rows = standings(s, true);
+    reveal = reveal && !reducedMotion();
     setHash(s.code);
     var podium = [1, 0, 2].map(function (k) {
       var r = rows[k]; if (!r) return '';
@@ -386,20 +387,147 @@
     var title = champs.length > 1 ? '¡' + names + ' comparten el título!' : '¡' + names + ' gana la temporada!';
 
     app.innerHTML =
-      '<section class="ps-final">' +
+      '<section class="ps-final' + (reveal ? ' is-revealing' : '') + '">' +
         topBar(s, true) +
-        '<div class="ps-final__head"><p class="p-eyebrow">🏁 Bandera a cuadros</p><h1 class="p-h2 p-h1">' + title + '</h1></div>' +
+        '<div class="ps-final__head"><p class="p-eyebrow">🏆 Fin de la temporada</p>' +
+          '<p class="ps-final__suspense" aria-hidden="true">Y el campeón de la temporada es…</p>' +
+          '<h1 class="p-h2 p-h1">' + title + '</h1></div>' +
         '<ol class="ps-podium' + (rows.length < 3 ? ' ps-podium--duo' : '') + '">' + podium + '</ol>' +
         '<div class="ps-cols">' +
           '<div class="ps-card">' + standingsBlock(s, true) + '</div>' +
           '<div class="ps-card"><h2 class="ps-h3">Carreras</h2>' + historyList(s) + '</div>' +
         '</div>' +
         '<div class="ps-actions ps-actions--center">' +
+          '<button type="button" class="p-button p-button--cream" data-act="replay">↻ Ver el podio otra vez</button>' +
           '<button type="button" class="p-button" data-act="rematch">Otra temporada con los mismos pilotos</button>' +
           '<button type="button" class="p-button p-button--cream" data-act="new">Nueva temporada</button>' +
         '</div>' +
       '</section>';
-    say(champs.map(function (r) { return r.name; }).join(' y ') + ' gana la temporada.');
+    var winnerText = champs.map(function (r) { return r.name; }).join(' y ') + ' gana la temporada.';
+    if (reveal) revealPodium(winnerText); else say(winnerText);
+  }
+
+  /* ---------- animations (skipped with prefers-reduced-motion; every overlay can be skipped with a tap or Esc) ---------- */
+  function reducedMotion() {
+    try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; }
+  }
+  var fxTimers = [];
+  function later(fn, ms) { fxTimers.push(setTimeout(fn, ms)); }
+  function clearFx() {
+    fxTimers.forEach(clearTimeout); fxTimers = [];
+    var old = document.querySelector('.ps-fx'); if (old) old.remove();
+    document.removeEventListener('keydown', fxKey);
+  }
+  function fxKey(e) { if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') { e.preventDefault(); skipFx(); } }
+  var fxDone = null;
+  function skipFx() { var cb = fxDone; fxDone = null; clearFx(); if (cb) cb(); }
+
+  /* Full-screen overlay that plays a short sequence of frames and then calls done() */
+  function overlay(html, cls, duration, done) {
+    clearFx();
+    if (reducedMotion()) { if (done) done(); return; }
+    var el = document.createElement('div');
+    el.className = 'ps-fx ' + (cls || '');
+    el.setAttribute('role', 'status');
+    el.innerHTML = '<div class="ps-fx__inner">' + html + '</div><button type="button" class="ps-fx__skip">Saltar ›</button>';
+    document.body.appendChild(el);
+    fxDone = function () { if (done) done(); };
+    el.addEventListener('click', skipFx);
+    document.addEventListener('keydown', fxKey);
+    later(function () { el.classList.add('is-out'); }, duration - 350);
+    later(skipFx, duration);
+    return el;
+  }
+
+  /* Season start: five red lights come on one by one, then go out — "¡Comienza la temporada!" */
+  function playStart(s, done) {
+    var lights = '<div class="ps-lights" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>';
+    var el = overlay(
+      '<p class="ps-fx__eyebrow">' + seasonTag(s) + '</p>' + lights +
+      '<p class="ps-fx__go">¡Comienza la temporada!</p>' +
+      '<p class="ps-fx__next">' + flag(GPS[0], 'ps-flag--fx') + 'Carrera 1 · ' + GPS[0] + '</p>',
+      'ps-fx--start', 4300, done);
+    if (!el) return;
+    var dots = el.querySelectorAll('.ps-lights i');
+    for (var i = 0; i < dots.length; i++) (function (d, k) { later(function () { d.classList.add('is-on'); }, 350 + k * 450); })(dots[i], i);
+    later(function () { el.classList.add('is-go'); }, 350 + 5 * 450 + 450);
+  }
+
+  /* Between races: who won the race that just ended, then which race comes next */
+  function playRace(s, g, done) {
+    var res = s.results[g], winner = res[0];
+    var teamLine = hasTeams(s) ? '<p class="ps-fx__team">' + esc(teamName(s, teamOf(winner))) + '</p>' : '';
+    var el = overlay(
+      '<div class="ps-fx__frame ps-fx__frame--win">' +
+        '<p class="ps-fx__eyebrow">' + flag(GPS[g], 'ps-flag--fx') + 'Carrera ' + (g + 1) + ' · ' + GPS[g] + '</p>' +
+        '<p class="ps-fx__checker" aria-hidden="true"></p>' +
+        '<p class="ps-fx__winner" style="--pc:' + PLAYER_COLORS[winner] + '">' + esc(s.players[winner]) + '</p>' +
+        teamLine +
+        '<p class="ps-fx__sub">¡gana la carrera! <b>+' + gpPoints(s, g)[0] + ' pts</b></p>' +
+      '</div>' +
+      '<div class="ps-fx__frame ps-fx__frame--next">' +
+        '<p class="ps-fx__eyebrow">Próxima carrera · ' + (g + 2) + ' de ' + races(s).length + '</p>' +
+        flag(GPS[g + 1], 'ps-flag--hero') +
+        '<p class="ps-fx__country">' + GPS[g + 1] + '</p>' +
+        (isDouble(s, g + 1) ? '<p class="ps-gp__x2"><b>×2</b> Puntos dobles</p>' : '') +
+      '</div>',
+      'ps-fx--race', 4200, done);
+    if (el) later(function () { el.classList.add('is-next'); }, 2100);
+  }
+
+  /* Winner of the final race (no "next race" frame); the podium reveal follows */
+  function playRace2(s, g, done) {
+    var winner = s.results[g][0];
+    overlay(
+      '<div class="ps-fx__frame ps-fx__frame--win">' +
+        '<p class="ps-fx__eyebrow">' + flag(GPS[g], 'ps-flag--fx') + 'Última carrera · ' + GPS[g] + '</p>' +
+        '<p class="ps-fx__checker" aria-hidden="true"></p>' +
+        '<p class="ps-fx__winner" style="--pc:' + PLAYER_COLORS[winner] + '">' + esc(s.players[winner]) + '</p>' +
+        (hasTeams(s) ? '<p class="ps-fx__team">' + esc(teamName(s, teamOf(winner))) + '</p>' : '') +
+        '<p class="ps-fx__sub">¡gana la carrera! <b>+' + gpPoints(s, g)[0] + ' pts</b></p>' +
+      '</div>',
+      'ps-fx--race', 2400, done);
+  }
+
+  /* Podium suspense: 3rd, then 2nd, a pause, then the champion with confetti */
+  function revealPodium(winnerText) {
+    var sec = app.querySelector('.ps-final'); if (!sec) return;
+    var step = function (n) { return sec.querySelector('.ps-podium__step--' + n); };
+    var skip = document.createElement('button');
+    skip.type = 'button'; skip.className = 'ps-final__skip'; skip.textContent = 'Ver resultado ›';
+    sec.querySelector('.ps-final__head').appendChild(skip);
+    function finish() {
+      fxTimers.forEach(clearTimeout); fxTimers = [];
+      ['3', '2', '1'].forEach(function (n) { var st = step(n); if (st) st.classList.add('is-in'); });
+      sec.classList.add('is-champion'); sec.classList.remove('is-revealing', 'is-suspense');
+      if (skip.parentNode) skip.remove();
+      say(winnerText);
+    }
+    skip.addEventListener('click', finish);
+    var t = 600;
+    if (step(3)) { later(function () { step(3).classList.add('is-in'); }, t); t += 1500; }
+    later(function () { if (step(2)) step(2).classList.add('is-in'); }, t); t += 1500;
+    later(function () { sec.classList.add('is-suspense'); }, t); t += 2200;
+    later(function () { step(1).classList.add('is-in'); confetti(); finish(); }, t);
+  }
+
+  function confetti() {
+    if (reducedMotion()) return;
+    var box = document.createElement('div');
+    box.className = 'ps-confetti'; box.setAttribute('aria-hidden', 'true');
+    var colors = ['#f2c230', '#e63c3c', '#22b3c4', '#3dba6a', '#9b51e0', '#f08c28', '#f5f0e8'];
+    for (var i = 0; i < 70; i++) {
+      var c = document.createElement('i');
+      c.style.left = Math.random() * 100 + '%';
+      c.style.background = colors[i % colors.length];
+      c.style.animationDelay = (Math.random() * 0.8) + 's';
+      c.style.animationDuration = (2.4 + Math.random() * 1.6) + 's';
+      c.style.setProperty('--r', (Math.random() * 720 - 360) + 'deg');
+      c.style.setProperty('--x', (Math.random() * 160 - 80) + 'px');
+      box.appendChild(c);
+    }
+    document.body.appendChild(box);
+    setTimeout(function () { box.remove(); }, 5000);
   }
 
   /* Every player needs a name, and no two names can be the same (ignoring case, accents and spaces) */
@@ -435,6 +563,7 @@
     order = [];
     save(); render(); window.scrollTo(0, 0);
     say('Temporada creada. Código ' + state.code.split('').join(' '));
+    playStart(state, function () { var first = app.querySelector('.ps-racer'); if (first) first.focus({ preventScroll: true }); });
   }
   function open(code) {
     var s = load(code);
@@ -447,7 +576,7 @@
     var t = e.target.closest('button'); if (!t || t.disabled) return;
     var act = t.getAttribute('data-act');
     if (act === 'new') { state = null; renderSetup(); window.scrollTo(0, 0); return; }
-    if (act === 'home') { state = null; order = []; renderHome(); window.scrollTo(0, 0); return; }
+    if (act === 'home') { clearFx(); state = null; order = []; renderHome(); window.scrollTo(0, 0); return; }
     if (t.hasAttribute('data-open')) { open(t.getAttribute('data-open')); return; }
     if (t.hasAttribute('data-del')) {
       var c = t.getAttribute('data-del');
@@ -469,6 +598,7 @@
       startSeason(players, draft.season, { teams: draft.teams, teamNames: teamNames, double: draft.double });
       return;
     }
+    if (act === 'replay') { render(true); window.scrollTo(0, 0); return; }
     if (act === 'rematch') {
       startSeason(state.players.slice(), state.season, { teams: state.teams, teamNames: (state.teamNames || []).slice(), double: state.double });
       return;
@@ -488,11 +618,19 @@
     }
     if (act === 'clear') { order = []; renderRace(); return; }
     if (act === 'save') {
-      var gp = GPS[state.results.length], winner = state.players[order[0]];
-      state.results.push(order.slice()); order = []; save(); render();
+      var g = state.results.length, gp = GPS[g], winner = state.players[order[0]];
+      state.results.push(order.slice()); order = []; save();
       say(winner + ' gana la carrera de ' + gp + '.');
-      if (state.results.length >= races(state).length) window.scrollTo(0, 0);
-      else { var first = app.querySelector('.ps-racer'); if (first) first.focus({ preventScroll: true }); }
+      if (state.results.length >= races(state).length) {
+        // last race: winner of the race, checkered flag, then the podium reveal
+        var s2 = state;
+        playRace2(s2, g, function () {
+          render(true); window.scrollTo(0, 0);
+        });
+      } else {
+        render(); window.scrollTo(0, 0);
+        playRace(state, g, function () { var first = app.querySelector('.ps-racer'); if (first) first.focus({ preventScroll: true }); });
+      }
       return;
     }
     if (act === 'undo') {

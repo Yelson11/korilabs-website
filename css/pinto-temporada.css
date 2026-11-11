@@ -319,3 +319,97 @@
 .ps-gp__name { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; }
 .ps-history__gp { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 0 0.3rem; }
 .ps-history__gp .ps-flag { margin-right: 0.15rem; }
+
+/* ===== Animations: season start, between races, finish, podium reveal ===== */
+.ps-fx {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: rgb(10 11 13 / 0.985);
+  color: var(--cream);
+  text-align: center;
+  cursor: pointer;
+  animation: ps-fx-in 0.3s ease both;
+}
+.ps-fx.is-out { animation: ps-fx-out 0.35s ease both; }
+.ps-fx__inner { position: relative; display: grid; justify-items: center; gap: 0.6rem; width: min(36rem, 100%); }
+.ps-fx__skip {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid rgb(245 240 232 / 0.25);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--cream-dim);
+  font: 600 0.85rem/1 var(--display);
+  cursor: pointer;
+}
+.ps-fx__skip:focus-visible { outline: 3px solid var(--cream); outline-offset: 2px; }
+.ps-fx__eyebrow { display: inline-flex; align-items: center; margin: 0; color: var(--cream-dim); font: 700 0.78rem/1.3 var(--label-font); letter-spacing: 0.2em; text-transform: uppercase; }
+.ps-fx__go { margin: 0; font: italic 800 clamp(2rem, 9vw, 3.8rem)/1.05 var(--display); text-transform: uppercase; }
+.ps-fx__sub { margin: 0; color: var(--cream-dim); font-size: 1.05rem; }
+.ps-fx__sub b { color: #f2c230; }
+.ps-fx__next { display: inline-flex; align-items: center; margin: 0.4rem 0 0; font: 700 1.05rem/1.2 var(--display); }
+.ps-flag--fx { width: 1.6rem; height: 1.07rem; margin-right: 0.5rem; }
+.ps-flag--hero { width: min(11rem, 50vw); height: auto; aspect-ratio: 3 / 2; margin: 0.6rem 0 0.2rem; border-radius: 0.4rem; box-shadow: 0 0 0 2px rgb(245 240 232 / 0.25), 0 18px 40px rgb(0 0 0 / 0.5); }
+
+/* Start lights */
+.ps-lights { display: flex; gap: clamp(0.5rem, 2.5vw, 1rem); margin: 1rem 0 0.4rem; padding: 0.8rem 1rem; border-radius: 1rem; background: #0b0b0d; box-shadow: inset 0 0 0 2px rgb(245 240 232 / 0.08); }
+.ps-lights i { width: clamp(2.2rem, 11vw, 3.4rem); aspect-ratio: 1; border-radius: 50%; background: #2a1414; box-shadow: inset 0 -4px 8px rgb(0 0 0 / 0.5); transition: background-color 0.12s ease, box-shadow 0.12s ease; }
+.ps-lights i.is-on { background: #ff3b30; box-shadow: 0 0 18px 4px rgb(255 59 48 / 0.55), inset 0 -4px 8px rgb(0 0 0 / 0.3); }
+.ps-fx--start .ps-fx__go, .ps-fx--start .ps-fx__next { opacity: 0; transform: scale(0.85); transition: opacity 0.3s ease, transform 0.4s cubic-bezier(.2,1.4,.4,1); }
+.ps-fx--start.is-go .ps-lights i { background: #2a1414; box-shadow: inset 0 -4px 8px rgb(0 0 0 / 0.5); }
+.ps-fx--start.is-go .ps-fx__go { opacity: 1; transform: none; color: #3dba6a; }
+.ps-fx--start.is-go .ps-fx__next { opacity: 1; transform: none; transition-delay: 0.25s; }
+
+/* Between races */
+.ps-fx--race .ps-fx__inner { grid-template-areas: "stack"; }
+.ps-fx__frame { grid-area: stack; display: grid; justify-items: center; gap: 0.5rem; transition: opacity 0.4s ease, transform 0.5s ease; }
+.ps-fx__frame--win { animation: ps-pop 0.6s cubic-bezier(.2,1.3,.4,1) both; }
+.ps-fx__frame--next { opacity: 0; transform: translateX(3rem); pointer-events: none; }
+.ps-fx--race.is-next .ps-fx__frame--win { animation: none; opacity: 0; transform: translateX(-3rem); }
+.ps-fx--race.is-next .ps-fx__frame--next { opacity: 1; transform: none; }
+.ps-fx__winner { margin: 0.2rem 0 0; color: var(--pc, var(--cream)); font: italic 800 clamp(2.6rem, 12vw, 4.8rem)/1 var(--display); text-transform: uppercase; overflow-wrap: anywhere; }
+.ps-fx__team { margin: 0; color: var(--cream); font: italic 800 1rem/1.2 var(--display); text-transform: uppercase; opacity: 0.85; }
+.ps-fx__country { margin: 0; font: italic 800 clamp(2.4rem, 11vw, 4.2rem)/1 var(--display); text-transform: uppercase; }
+.ps-fx__checker { width: 8rem; height: 1.2rem; margin: 0.4rem 0; border-radius: 0.2rem; background: repeating-conic-gradient(#f5f0e8 0 25%, #0b0b0d 0 50%) 0 0 / 1.2rem 1.2rem; }
+
+/* Podium reveal */
+.ps-final__suspense { display: none; margin: 0.4rem 0 0; color: var(--cream-dim); font: italic 800 clamp(1.4rem, 5vw, 2rem)/1.2 var(--display); text-transform: uppercase; }
+.ps-final__skip { margin-top: 0.8rem; padding: 0.45rem 0.9rem; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--cream-dim); font: 600 0.85rem/1 var(--display); cursor: pointer; }
+.ps-final.is-revealing .ps-final__head .p-h1,
+.ps-final.is-revealing .ps-cols,
+.ps-final.is-revealing .ps-actions { opacity: 0; visibility: hidden; }
+.ps-final.is-revealing .ps-podium__step { opacity: 0; transform: translateY(2.5rem); animation: none; }
+.ps-final.is-revealing .ps-podium__step .ps-podium__name,
+.ps-final.is-revealing .ps-podium__step .ps-podium__who,
+.ps-final.is-revealing .ps-podium__step .ps-podium__pts { opacity: 0; }
+.ps-final .ps-podium__step.is-in { opacity: 1; transform: none; transition: opacity 0.5s ease, transform 0.7s cubic-bezier(.2,1.2,.4,1); }
+.ps-final .ps-podium__step.is-in .ps-podium__name,
+.ps-final .ps-podium__step.is-in .ps-podium__who,
+.ps-final .ps-podium__step.is-in .ps-podium__pts { opacity: 1; transition: opacity 0.4s ease 0.45s; }
+.ps-final.is-suspense .ps-final__suspense { display: block; animation: ps-pulse 0.9s ease-in-out infinite alternate; }
+.ps-final.is-suspense .ps-podium__step--1 { opacity: 0.25; transform: translateY(0); transition: opacity 0.6s ease, transform 0.6s ease; }
+.ps-final.is-suspense .ps-podium__step--1 .ps-podium__block b { visibility: hidden; }
+.ps-final.is-champion .ps-final__head .p-h1 { animation: ps-pop 0.7s cubic-bezier(.2,1.3,.4,1) both; }
+.ps-final.is-champion .ps-cols, .ps-final.is-champion .ps-actions { animation: ps-fx-in 0.6s ease 0.6s both; }
+.ps-final.is-champion .ps-podium__step--1 .ps-podium__block { box-shadow: 0 0 40px rgb(242 194 48 / 0.45); }
+
+.ps-confetti { position: fixed; inset: 0; z-index: 999; overflow: hidden; pointer-events: none; }
+.ps-confetti i { position: absolute; top: -1.5rem; width: 0.55rem; height: 0.9rem; border-radius: 0.1rem; animation: ps-fall linear both; }
+
+@keyframes ps-fx-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ps-fx-out { to { opacity: 0; } }
+@keyframes ps-pop { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: none; } }
+@keyframes ps-pulse { from { opacity: 0.55; } to { opacity: 1; } }
+@keyframes ps-fall { to { transform: translate(var(--x, 0), 105vh) rotate(var(--r, 360deg)); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ps-fx, .ps-confetti { display: none; }
+  .ps-final.is-revealing .ps-podium__step, .ps-final.is-revealing .ps-cols, .ps-final.is-revealing .ps-actions,
+  .ps-final.is-revealing .ps-final__head .p-h1 { opacity: 1; visibility: visible; transform: none; }
+}
