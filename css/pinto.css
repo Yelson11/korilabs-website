@@ -835,7 +835,52 @@
   }
 }
 
-.p-guide .p-toc { margin-top: 1.4rem; }
+/* Quick-guide index: one tile per section (icon + name + arrow), colors follow the Ritmo rainbow */
+.p-gnav {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.55rem;
+  margin: 1.6rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.p-gnav li:nth-child(1) { --c: #e63c3c; }
+.p-gnav li:nth-child(2) { --c: #f08c28; }
+.p-gnav li:nth-child(3) { --c: #f2c230; }
+.p-gnav li:nth-child(4) { --c: #3dba6a; }
+.p-gnav li:nth-child(5) { --c: #22b3c4; }
+.p-gnav li:nth-child(6) { --c: #2f86de; }
+.p-gnav a {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  height: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: rgb(22 23 27 / 0.8);
+  color: var(--cream);
+  text-decoration: none;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+.p-gnav a:hover { border-color: var(--c); transform: translateY(-2px); }
+.p-gnav a:focus-visible { outline: 3px solid var(--c); outline-offset: 3px; }
+.p-gnav__icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--c) 16%, transparent);
+  color: var(--c);
+}
+.p-gnav__icon svg { width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.p-gnav__name { flex: 1; min-width: 0; font: italic 800 1rem/1.15 var(--display); text-transform: uppercase; }
+.p-gnav__arrow { flex: none; color: var(--cream-dim); font: 600 1.1rem/1 var(--display); transition: transform 0.2s ease, color 0.2s ease; }
+.p-gnav a:hover .p-gnav__arrow { color: var(--c); transform: translateX(3px); }
+@media (min-width: 34rem) { .p-gnav { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem; } }
+@media (min-width: 56rem) { .p-gnav { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.8rem; } .p-gnav a { padding: 1rem 1.1rem; } .p-gnav__icon { width: 2.75rem; height: 2.75rem; } }
 
 /* Minimal closing */
 .p-cta.p-finish { grid-template-columns: 1fr; gap: 0.9rem; text-align: center; }
@@ -1165,9 +1210,10 @@
   .p-card:hover, .p-mode:hover, .p-card:hover img, .p-start__card:hover { transform: none; }
   .p-path, .p-path:hover { transition: none; transform: none; }
   .p-rcard__play, .p-rcard__tut:hover .p-rcard__play { transition: none; transform: none; }
+  .p-gnav a, .p-gnav a:hover, .p-gnav__arrow, .p-gnav a:hover .p-gnav__arrow { transition: none; transform: none; }
   .p-tut { transition: none; }
 }
 
 @media (forced-colors: active) {
-  .p-steps li, .p-card, .p-facts li, .p-mode, .p-rules li, .p-rcard, .p-toc a, .p-start__card { border-color: CanvasText; }
+  .p-steps li, .p-card, .p-facts li, .p-mode, .p-rules li, .p-rcard, .p-gnav a, .p-toc a, .p-start__card { border-color: CanvasText; }
 }

@@ -134,7 +134,7 @@ light **welcome page** and the rules summary sits below it. Keep the top short (
 Order: `.p-welcome` (centered "Cómo Jugar" title with the PINTO logo under it, short text, fan of 5 cards), `#recursos` (`.p-paths`: three
 numbered cards with a colored top bar and a dotted "track" line under them on desktop: Guía rápida → `#guia`,
 Tutoriales → `../tutorial/`, Reglamento oficial → `../reglamento.pdf`, new tab; the owner will point it to the new
-official rules PDF), then `#guia` "Guía rápida" (intro + `p-toc` chips) followed by the summary of the official rules (v1.5),
+official rules PDF), then `#guia` "Guía rápida" (intro + `.p-gnav` index: one tile per section with a colored icon, name and arrow) followed by the summary of the official rules (v1.5),
 not a copy — never add rules that aren't in the official text: `#preparacion` (6 steps incl. "Banderazo de salida" = who starts, + deck table),
 `#desarrollo`, `#reglas` (rule cards `.p-rcard`: mini card illustration on the tutorial's wooden table + title + short
 text + "Ver tutorial" link; the art per rule is hand-picked in the HTML), `#especiales` (rules order), `#referencia` ("Qué carta puedo jugar": table with card images),
@@ -163,7 +163,7 @@ The score sheet gift is offered via "Suscribirme" (`/#suscribete`), never linked
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
   Current: `styles.css?v=2`, `home.css?v=9` (index and privacidad),
-  `pinto.css?v=26`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `pinto-tutorial.css?v=7`, `tutorial-data.js?v=8`, `tutorial.js?v=7`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
+  `pinto.css?v=27`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `pinto-tutorial.css?v=7`, `tutorial-data.js?v=8`, `tutorial.js?v=7`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
 - **Sender (newsletter):** universal script in the `<head>` of `index.html`; form is
