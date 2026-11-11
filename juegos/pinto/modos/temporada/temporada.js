@@ -1,6 +1,6 @@
 /* PINTO · Modo Temporada scorekeeper.
    Rules from the official rulebook ("Campeonato de Grandes Premios" + "Puntuación y reglas del campeonato"):
-   - Seasons: Sprint (5 GP), Clásica (10), Completa (15); longer seasons include the shorter ones, same order.
+   - Seasons: 5, 10 or 15 GP (shown as Corta / Regular / Completa, owner's names); longer seasons include the shorter ones.
    - Points per GP by finishing order: 2 players 3/1 · 3–4 players 5/3/1/0 · 5–6 players 7/4/3/2/1/0.
    - Ties at the end (owner's rule): most 1st places, then most 2nd, 3rd…; then best result in the last GP.
    Options (owner's house rules):
@@ -13,8 +13,8 @@
   var GPS = ['Australia', 'Estados Unidos', 'Arabia Saudita', 'Italia', 'Brasil', 'España', 'Países Bajos',
     'Singapur', 'Canadá', 'Bélgica', 'China', 'Japón', 'México', 'Inglaterra', 'Qatar'];
   var SEASONS = {
-    sprint:   { name: 'Temporada Sprint',   races: 5,  color: '#e63c3c' },
-    clasica:  { name: 'Temporada Clásica',  races: 10, color: '#22b3c4' },
+    sprint:   { name: 'Temporada Corta',    races: 5,  color: '#e63c3c' },
+    clasica:  { name: 'Temporada Regular',  races: 10, color: '#22b3c4' },
     completa: { name: 'Temporada Completa', races: 15, color: '#9b51e0' }
   };
   var POINTS = { 2: [3, 1], 3: [5, 3, 1], 4: [5, 3, 1, 0], 5: [7, 4, 3, 2, 1], 6: [7, 4, 3, 2, 1, 0] };
@@ -171,8 +171,8 @@
     app.innerHTML =
       '<section class="ps-hero">' +
         '<img class="ps-hero__icon" src="../../img/icono-trofeo.svg" width="512" height="512" alt="">' +
-        '<p class="p-eyebrow">PINTO · Modo Temporada</p>' +
-        '<h1 class="p-h2 p-h1">Campeonato de Grandes Premios</h1>' +
+        '<p class="p-eyebrow">PINTO</p>' +
+        '<h1 class="p-h2 p-h1">Modo Temporada</h1>' +
         '<p class="ps-lead">Juega varias partidas de PINTO y acumula puntos en cada Gran Premio. Aquí llevamos el marcador: al final de la temporada, el jugador con más puntos es el campeón.</p>' +
         '<div class="ps-actions"><button type="button" class="p-button" data-act="new">Nueva temporada <span aria-hidden="true">→</span></button></div>' +
       '</section>' +
@@ -210,21 +210,21 @@
       for (var i = 0; i < count; i++) names += nameInput(i);
     }
     var seasons = Object.keys(SEASONS).map(function (k) {
-      var s = SEASONS[k], list = GPS.slice(0, s.races);
+      var s = SEASONS[k];
       return '<button type="button" class="ps-season" data-season="' + k + '" aria-pressed="' + (draft.season === k) + '" style="--sc:' + s.color + '">' +
         '<span class="ps-season__name">' + s.name.replace('Temporada ', '') + '</span>' +
-        '<span class="ps-season__n">' + s.races + ' Grandes Premios</span>' +
-        '<span class="ps-season__route">' + list[0] + ' → ' + list[list.length - 1] + '</span></button>';
+        '<span class="ps-season__n">' + s.races + ' Grandes Premios</span></button>';
     }).join('');
     function toggle(key, label, help, disabled) {
       return '<label class="ps-toggle' + (disabled ? ' is-off' : '') + '"><input type="checkbox" data-opt="' + key + '"' +
         (draft[key] && !disabled ? ' checked' : '') + (disabled ? ' disabled' : '') + '>' +
         '<span class="ps-toggle__ui" aria-hidden="true"></span><span class="ps-toggle__txt"><b>' + label + '</b><span>' + help + '</span></span></label>';
     }
-    var options =
+    var teamToggle =
       toggle('teams', 'Modo escudería', teamsOk
         ? 'Cada uno juega sus cartas como siempre, pero los pilotos van en parejas y suman sus puntos. Gana la escudería con más puntos.'
-        : 'Disponible con 4 o 6 jugadores: se arman parejas que suman sus puntos.', !teamsOk) +
+        : 'Disponible con 4 o 6 jugadores: se arman parejas que suman sus puntos.', !teamsOk);
+    var options =
       toggle('double', 'Puntos dobles', 'Los Grandes Premios 5, 10 y 15 reparten el doble de puntos.', false);
 
     app.innerHTML =
@@ -233,6 +233,7 @@
         '<h1 class="p-h2 p-h1">Nueva temporada</h1>' +
         '<div class="ps-card"><h2 class="ps-h3"><span class="ps-step">1</span>¿Cuántos pilotos?</h2>' +
           '<div class="ps-chips" role="group" aria-label="Cantidad de jugadores">' + counts + '</div>' +
+          '<div class="ps-toggles ps-toggles--inline">' + teamToggle + '</div>' +
           '<div class="ps-names' + (teams ? ' ps-names--teams' : '') + '">' + names + '</div>' +
           '<p class="ps-hint">Puntos por Gran Premio con ' + count + ' jugadores: <b>' + p.join(' · ') + '</b> (del 1.º al ' + ord(count) + ').</p>' +
         '</div>' +
