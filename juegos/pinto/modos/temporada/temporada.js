@@ -94,6 +94,12 @@
   }
   function dot(i) { return '<i class="ps-dot" style="--pc:' + PLAYER_COLORS[i] + '"></i>'; }
   function teamDot(t) { return '<i class="ps-dot ps-dot--team" style="--pc:' + TEAM_COLORS[t] + '"></i>'; }
+  /* Points per finishing position as a row of tiles (setup) or a compact strip (race screen) */
+  function pointsStrip(p, compact) {
+    return '<ol class="ps-pts' + (compact ? ' ps-pts--compact' : '') + '" style="--n:' + p.length + '">' + p.map(function (v, i) {
+      return '<li><b>' + v + '</b><span>' + ord(i + 1) + '</span></li>';
+    }).join('') + '</ol>';
+  }
   function seasonTag(s) {
     return SEASONS[s.season].name + (hasTeams(s) ? ' · escuderías' : '') + (s.double ? ' · ×2' : '');
   }
@@ -137,7 +143,7 @@
     return rows;
   }
   function tieText(by) {
-    if (by === 'last') return 'desempate: mejor resultado en el último GP';
+    if (by === 'last') return 'desempate: mejor resultado en la última carrera';
     if (by != null) return 'desempate: más ' + ['primeros', 'segundos', 'terceros', 'cuartos', 'quintos', 'sextos'][by] + ' lugares';
     return '';
   }
@@ -161,7 +167,7 @@
           '<span class="ps-saved__info"><b>' + seasonTag(s) + '</b>' +
           '<span>' + s.players.map(esc).join(', ') + '</span>' +
           '<span class="ps-saved__meta">' + (done ? '🏆 Terminada · ganó ' + esc(leader.name)
-            : 'GP ' + (s.results.length + 1) + ' de ' + races(s).length + ' · ' + GPS[s.results.length]) + '</span></span>' +
+            : 'Carrera ' + (s.results.length + 1) + ' de ' + races(s).length + ' · ' + GPS[s.results.length]) + '</span></span>' +
           '<span class="ps-saved__go" aria-hidden="true">→</span>' +
         '</button>' +
         '<button type="button" class="ps-icon-btn" data-del="' + s.code + '" aria-label="Borrar temporada ' + s.code + '">✕</button>' +
@@ -173,7 +179,7 @@
         '<img class="ps-hero__icon" src="../../img/icono-trofeo.svg" width="512" height="512" alt="">' +
         '<p class="p-eyebrow">PINTO</p>' +
         '<h1 class="p-h2 p-h1">Modo Temporada</h1>' +
-        '<p class="ps-lead">Juega varias partidas de PINTO y acumula puntos en cada Gran Premio. Aquí llevamos el marcador: al final de la temporada, el jugador con más puntos es el campeón.</p>' +
+        '<p class="ps-lead">Juega varias partidas de PINTO y acumula puntos en cada carrera. Aquí llevamos el marcador: al final de la temporada, el jugador con más puntos es el campeón.</p>' +
         '<div class="ps-actions"><button type="button" class="p-button" data-act="new">Nueva temporada <span aria-hidden="true">→</span></button></div>' +
       '</section>' +
       '<section class="ps-card ps-resume" aria-labelledby="ps-resume-t">' +
@@ -213,7 +219,7 @@
       var s = SEASONS[k];
       return '<button type="button" class="ps-season" data-season="' + k + '" aria-pressed="' + (draft.season === k) + '" style="--sc:' + s.color + '">' +
         '<span class="ps-season__name">' + s.name.replace('Temporada ', '') + '</span>' +
-        '<span class="ps-season__n">' + s.races + ' Grandes Premios</span></button>';
+        '<span class="ps-season__n">' + s.races + ' carreras</span></button>';
     }).join('');
     function toggle(key, label, help, disabled) {
       return '<label class="ps-toggle' + (disabled ? ' is-off' : '') + '"><input type="checkbox" data-opt="' + key + '"' +
@@ -222,10 +228,10 @@
     }
     var teamToggle =
       toggle('teams', 'Modo escudería', teamsOk
-        ? 'Cada uno juega sus cartas como siempre, pero los pilotos van en parejas y suman sus puntos. Gana la escudería con más puntos.'
+        ? 'Cada uno juega sus cartas individualmente, pero los puntos se suman en equipo. Gana la escudería con más puntos.'
         : 'Disponible con 4 o 6 jugadores: se arman parejas que suman sus puntos.', !teamsOk);
     var options =
-      toggle('double', 'Puntos dobles', 'Los Grandes Premios 5, 10 y 15 reparten el doble de puntos.', false);
+      toggle('double', 'Puntos dobles', 'Las carreras 5, 10 y 15 reparten el doble de puntos.', false);
 
     app.innerHTML =
       '<section class="ps-setup">' +
@@ -235,11 +241,11 @@
           '<div class="ps-chips" role="group" aria-label="Cantidad de jugadores">' + counts + '</div>' +
           '<div class="ps-toggles ps-toggles--inline">' + teamToggle + '</div>' +
           '<div class="ps-names' + (teams ? ' ps-names--teams' : '') + '">' + names + '</div>' +
-          '<p class="ps-hint">Puntos por Gran Premio con ' + count + ' jugadores: <b>' + p.join(' · ') + '</b> (del 1.º al ' + ord(count) + ').</p>' +
+          '<div class="ps-points"><p class="ps-points__t">Puntos por carrera con ' + count + ' jugadores</p>' + pointsStrip(p) + '</div>' +
         '</div>' +
         '<div class="ps-card"><h2 class="ps-h3"><span class="ps-step">2</span>Elige la temporada</h2>' +
           '<div class="ps-seasons" role="group" aria-label="Temporada">' + seasons + '</div>' +
-          '<p class="ps-hint">Cada temporada más larga incluye todos los Grandes Premios de la anterior, en el mismo orden.</p>' +
+          '<p class="ps-hint">Cada temporada más larga incluye todas las carreras de la anterior, en el mismo orden.</p>' +
         '</div>' +
         '<div class="ps-card"><h2 class="ps-h3"><span class="ps-step">3</span>Reglas extra <small class="ps-opt">opcional</small></h2>' +
           '<div class="ps-toggles">' + options + '</div>' +
@@ -249,11 +255,11 @@
   }
 
   function progressBar(s) {
-    return '<ol class="ps-track" aria-label="Grandes Premios">' + races(s).map(function (gp, i) {
+    return '<ol class="ps-track" aria-label="Carreras">' + races(s).map(function (gp, i) {
       var cls = (i < s.results.length ? 'is-done' : (i === s.results.length ? 'is-now' : '')) + (isDouble(s, i) ? ' is-x2' : '');
       var winner = i < s.results.length ? s.players[s.results[i][0]] : '';
-      return '<li class="' + cls + '" title="GP ' + (i + 1) + ': ' + gp + (isDouble(s, i) ? ' (×2)' : '') + (winner ? ' · ganó ' + esc(winner) : '') + '">' +
-        '<span class="visually-hidden">GP ' + (i + 1) + ' ' + gp + (winner ? ', ganó ' + esc(winner) : '') + '</span></li>';
+      return '<li class="' + cls + '" title="Carrera ' + (i + 1) + ': ' + gp + (isDouble(s, i) ? ' (×2)' : '') + (winner ? ' · ganó ' + esc(winner) : '') + '">' +
+        '<span class="visually-hidden">Carrera ' + (i + 1) + ' ' + gp + (winner ? ', ganó ' + esc(winner) : '') + '</span></li>';
     }).join('') + '</ol>';
   }
 
@@ -264,7 +270,7 @@
       return '<li class="ps-row' + (r.rank === 1 && s.results.length ? ' is-lead' : '') + '">' +
         '<span class="ps-row__rank">' + r.rank + '</span>' + (r.team ? teamDot(r.i) : dot(r.i)) +
         '<span class="ps-row__name">' + esc(r.name) + sub + tie + '</span>' +
-        '<span class="ps-row__wins" title="Grandes Premios ganados">' + (r.wins ? '🏁 ' + r.wins : '') + '</span>' +
+        '<span class="ps-row__wins" title="Carreras ganadas">' + (r.wins ? '🏁 ' + r.wins : '') + '</span>' +
         '<span class="ps-row__pts"><b>' + r.points + '</b> pts</span></li>';
     }).join('') + '</ol>';
   }
@@ -276,20 +282,20 @@
   }
 
   function historyList(s) {
-    if (!s.results.length) return '<p class="ps-hint">Aquí aparecerá quién gana cada Gran Premio.</p>';
+    if (!s.results.length) return '<p class="ps-hint">Aquí aparecerá quién gana cada carrera.</p>';
     var items = s.results.map(function (res, g) {
       var p = gpPoints(s, g);
       var detail = res.map(function (pi, pos) {
         return '<li>' + ord(pos + 1) + ' ' + dot(pi) + esc(s.players[pi]) +
           (hasTeams(s) ? ' <em>' + esc(teamName(s, teamOf(pi))) + '</em>' : '') + ' <span>+' + p[pos] + '</span></li>';
       }).join('');
-      return '<li><details><summary><span class="ps-history__n">GP ' + (g + 1) + '</span>' +
+      return '<li><details><summary><span class="ps-history__n">' + (g + 1) + '</span>' +
         '<span class="ps-history__gp">' + GPS[g] + (isDouble(s, g) ? ' <b class="ps-x2">×2</b>' : '') + '</span>' +
         '<span class="ps-history__win">🏁 ' + dot(res[0]) + esc(s.players[res[0]]) + '</span></summary>' +
         '<ol class="ps-history__detail">' + detail + '</ol></details></li>';
     }).reverse().join('');
     return '<ol class="ps-history">' + items + '</ol>' +
-      '<button type="button" class="ps-link-btn" data-act="undo">↶ Corregir el último Gran Premio</button>';
+      '<button type="button" class="ps-link-btn" data-act="undo">↶ Corregir la última carrera</button>';
   }
 
   function topBar(s, done) {
@@ -319,9 +325,10 @@
         topBar(s, false) +
         progressBar(s) +
         '<div class="ps-gp">' +
-          '<p class="ps-gp__n">Gran Premio ' + (g + 1) + ' de ' + total + '</p>' +
+          '<p class="ps-gp__n">Carrera ' + (g + 1) + ' de ' + total + '</p>' +
           '<h1 class="ps-gp__name">' + GPS[g] + '</h1>' +
-          (isDouble(s, g) ? '<p class="ps-gp__x2"><b>×2</b> Puntos dobles en este Gran Premio</p>' : '') +
+          (isDouble(s, g) ? '<p class="ps-gp__x2"><b>×2</b> Puntos dobles en esta carrera</p>' : '') +
+          '<div class="ps-gp__pts">' + pointsStrip(p, true) + '</div>' +
         '</div>' +
         '<div class="ps-card ps-entry">' +
           '<p class="ps-entry__prompt">' + prompt + '</p>' +
@@ -333,7 +340,7 @@
         '</div>' +
         '<div class="ps-cols">' +
           '<div class="ps-card">' + standingsBlock(s, false) + '</div>' +
-          '<div class="ps-card"><h2 class="ps-h3">Grandes Premios</h2>' + historyList(s) + '</div>' +
+          '<div class="ps-card"><h2 class="ps-h3">Carreras</h2>' + historyList(s) + '</div>' +
         '</div>' +
       '</section>';
   }
@@ -360,7 +367,7 @@
         '<ol class="ps-podium' + (rows.length < 3 ? ' ps-podium--duo' : '') + '">' + podium + '</ol>' +
         '<div class="ps-cols">' +
           '<div class="ps-card">' + standingsBlock(s, true) + '</div>' +
-          '<div class="ps-card"><h2 class="ps-h3">Grandes Premios</h2>' + historyList(s) + '</div>' +
+          '<div class="ps-card"><h2 class="ps-h3">Carreras</h2>' + historyList(s) + '</div>' +
         '</div>' +
         '<div class="ps-actions ps-actions--center">' +
           '<button type="button" class="p-button" data-act="rematch">Otra temporada con los mismos pilotos</button>' +
@@ -432,7 +439,7 @@
     if (act === 'save') {
       var gp = GPS[state.results.length], winner = state.players[order[0]];
       state.results.push(order.slice()); order = []; save(); render();
-      say(winner + ' gana el Gran Premio de ' + gp + '.');
+      say(winner + ' gana la carrera de ' + gp + '.');
       if (state.results.length >= races(state).length) window.scrollTo(0, 0);
       else { var first = app.querySelector('.ps-racer'); if (first) first.focus({ preventScroll: true }); }
       return;
@@ -441,11 +448,11 @@
       if (!state.results.length) return;
       if (!t.getAttribute('data-sure')) {
         t.setAttribute('data-sure', '1');
-        t.textContent = '¿Seguro? Toca de nuevo para corregir el GP de ' + GPS[state.results.length - 1];
+        t.textContent = '¿Seguro? Toca de nuevo para corregir la carrera de ' + GPS[state.results.length - 1];
         return;
       }
       order = state.results.pop(); save(); renderRace(); window.scrollTo(0, 0);
-      say('Puedes corregir el orden del Gran Premio de ' + GPS[state.results.length] + '.');
+      say('Puedes corregir el orden de la carrera de ' + GPS[state.results.length] + '.');
     }
   });
 
