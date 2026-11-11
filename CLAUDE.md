@@ -73,7 +73,7 @@ comments just to translate them — only translate what you are already touching
 │       ├── index.html       PINTO page: hero with 3D box, "Cómo se juega", rhythm cards, special cards, CTA
 │       ├── box3d.js         Auto-rotating, draggable CSS-3D box with per-face shading (no deps, respects reduced motion)
 │       ├── instrucciones/index.html  Welcome page for QR visitors (tutorial, resources) + quick rules guide (v1.5). Full rules PDF opens in a new tab, no `download` attr. TARGET OF THE PRINTED QR — never move
-│       ├── reglamento.pdf   Official rules PDF (v1.3, source of truth). Linked from instrucciones/ only
+│       ├── reglamento.pdf   Official rules PDF ("Instrucciones", phone version, 9 pages; replaced Nov 2026). Linked from instrucciones/ only
 │       ├── demo/            Playable web demo (you vs 3 bots). Unlisted + noindex while it's being tested.
 │       │   ├── index.html   Page shell (board markup, help text); CSS: styles.css + pinto.css + pinto-demo.css
 │       │   ├── pinto-engine.js  Pure rules engine (no DOM, also runs in Node for simulations). Rules changes go here
@@ -130,7 +130,8 @@ colored arc move through the 5 step titles in a 10 s CSS loop, plus a cream "Ver
 `.p-specials--compact`), then a "Modos de juego" section
 (Modo Carrera Única / Modo Temporada, icons `img/icono-bandera-cuadros.svg` / `img/icono-trofeo.svg`) sits before the CTA.
 The Modo Temporada card (here and in instrucciones/) is `.p-mode--featured`: gold border + inline "★ Recomendado" badge
-in the header row (wraps under the title, never overlaps) + "Abrir marcador de temporada" button to `modos/temporada/`.
+in the header row (wraps under the title, never overlaps) + gold "Ir a modo temporada →" button (`.p-season-cta.p-mode__play`) to `modos/temporada/`.
+No subscribe button / score-sheet offer in the mode cards (owner removed it).
 Game facts (players, 5–15 min, 10+, card names, rules wording) must stay consistent between the home
 card, this page, `instrucciones/` and `reglamento.pdf` v1.3.
 
@@ -139,19 +140,18 @@ Target of the QR printed in the rules leaflet, so it's the first page a player s
 light **welcome page** and the rules summary sits below it. Keep the top short (no rules dump, no sign-ups or pop-ups).
 Order: `.p-welcome` (centered "Cómo Jugar" title with the PINTO logo under it, short text, fan of 5 cards), `#recursos` (`.p-paths`: four
 numbered cards with a colored top bar and a dotted "track" line under them on desktop: Guía rápida → `#guia`,
-Tutoriales → `../tutorial/`, Reglamento oficial → `../reglamento.pdf`, new tab; the owner will point it to the new
-official rules PDF; Modos de juego → `#modos`, marked `.p-path--new` with a "¡Nuevo!" tab on its top border and a
+Tutoriales → `../tutorial/`, Reglamento → `../reglamento.pdf`, new tab (button label is just "Reglamento"); Modos de juego → `#modos`, marked `.p-path--new` with a "¡Nuevo!" tab on its top border and a
 "Con marcador de temporada" line), then `#guia` "Guía rápida" (intro + `.p-gnav` index: one tile per section with a colored icon, name and arrow) followed by the summary of the official rules (v1.5),
 not a copy — never add rules that aren't in the official text: `#preparacion` (6 steps incl. "Banderazo de salida" = who starts, + deck table as a rounded panel `.p-table--panel`),
 `#desarrollo`, `#reglas` (rule cards `.p-rcard`: mini card illustration on the tutorial's wooden table + title + short
 text + "Ver tutorial" link; the art per rule is hand-picked in the HTML), `#especiales` (rules order), `#referencia` ("Qué carta puedo jugar": table with card images),
 `#modos` (stacked, same order and layout as the PINTO page); every rule and special card links to its tutorial subsection ("Ver tutorial").
 Minimal closing `.p-finish` ("¡Que comience la carrera!" · "PINTO · Un juego de Kori Labs" · "Conoce más de PINTO").
-The score sheet gift is offered via "Suscribirme" (`/#suscribete`), never linked directly. There are no real videos yet
+The score sheet gift is never linked directly (only via the home `#suscribete` form). There are no real videos yet
 (the "videos" are the tutorial animations); don't invent video links.
 
 ### PINTO season scorekeeper — `juegos/pinto/modos/temporada/` (CSS: `styles.css` + `pinto.css` + `pinto-temporada.css`)
-Single-page vanilla JS app (`temporada.js`, renders into `#ps-app`). Title "Modo Temporada" (not "Campeonato de Grandes Premios"). Visitor text says **"carrera"**, never "Gran Premio"/"GP" (owner's choice); points per position are shown as tiles (`.ps-pts`) in setup and on each race screen. Each country has a simplified inline SVG flag (`FLAGS` in `temporada.js`, 30×20; no emoji flags, they don't render on Windows) on the race screen, in the race history and in the saved-seasons list. Screens: home (new season, resume by code, list of
+Single-page vanilla JS app (`temporada.js`, renders into `#ps-app`). Hero: PINTO logo (links to the PINTO page, no "PINTO" eyebrow), title "Modo Temporada" (not "Campeonato de Grandes Premios"). Visitor text says **"carrera"**, never "Gran Premio"/"GP" (owner's choice); points per position are shown as tiles (`.ps-pts`) in setup and on each race screen. Each country has a simplified inline SVG flag (`FLAGS` in `temporada.js`, 30×20; no emoji flags, they don't render on Windows) on the race screen, in the race history and in the saved-seasons list. Screens: home (new season, resume by code, list of
 seasons saved on this device) → setup (2–6 players, Modo escudería toggle right under the player count, names — required and unique, compared
 ignoring case/accents/extra spaces; inline error + aria-invalid —, Temporada Corta 5 / Regular 10 /
 Completa 15 carreras — owner's names, not the rulebook's; no country list on the cards — then Puntos dobles) → one screen per Gran
@@ -195,7 +195,7 @@ on the same device/browser. If storage is blocked the page says progress won't s
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
   Current: `styles.css?v=2`, `home.css?v=9` (index and privacidad),
-  `pinto.css?v=34`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `pinto-tutorial.css?v=7`, `tutorial-data.js?v=8`, `tutorial.js?v=7`, `pinto-temporada.css?v=8`, `temporada.js?v=8`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
+  `pinto.css?v=35`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `pinto-tutorial.css?v=7`, `tutorial-data.js?v=8`, `tutorial.js?v=7`, `pinto-temporada.css?v=9`, `temporada.js?v=9`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
 - **Sender (newsletter):** universal script in the `<head>` of `index.html`; form is
@@ -204,7 +204,7 @@ on the same device/browser. If storage is blocked the page says progress won't s
   Sender, not here. Only touch code if the form ID changes.
 - **Never break public URLs:** `/juegos/pinto/instrucciones/` (printed QR), `/juegos/pinto/modos/temporada/` (season codes live in its URL hash), `/pinto/reglas/`,
   `/regalos/pinto-modo-temporada.pdf` (sent in emails), `/privacidad/`. `reglamento.pdf` is only reached
-  through the instructions page, so it may move — just update the "Reglamento oficial" card there.
+  through the instructions page, so it may move — just update the "Reglamento" card there.
 - **Share previews:** `og-korilabs.jpg` / `og-pinto.jpg` are 1200×630; regenerate if headlines change.
   Absolute `og:url` / `og:image` / canonical use `https://korilabscr.com/…`.
 - **Accessibility:** keep `aria-labelledby` on sections, `alt` text (Spanish), visible focus styles,
