@@ -201,7 +201,7 @@
 
     app.innerHTML =
       '<section class="ps-hero">' +
-        '<a class="ps-hero__logo" href="../../"><img src="../../img/logo-pinto.webp" width="584" height="175" alt="PINTO"></a>' +
+        '<img class="ps-hero__icon" src="../../img/icono-trofeo.svg" width="512" height="512" alt="">' +
         '<h1 class="p-h2 p-h1">Modo Temporada</h1>' +
         '<p class="ps-lead">Juega varias partidas y acumula puntos en cada carrera. En este modo puedes llevar el marcador, ver la tabla general y jugar con diversas modalidades que hacen de PINTO aún más emocionante. Al final de cada temporada, gana el jugador con más puntos.</p>' +
         '<div class="ps-actions"><button type="button" class="p-button" data-act="new">Nueva temporada <span aria-hidden="true">→</span></button></div>' +

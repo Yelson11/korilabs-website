@@ -91,7 +91,7 @@ comments just to translate them — only translate what you are already touching
 │       │                    CSS: styles.css + pinto.css + pinto-tutorial.css
 │       └── img/             caja-*.webp (6 box faces), cartas/*.webp (card art, 660×922, cream border baked in,
 │                            rendered from the Figma SVG export; special cards WITHOUT their description — see rules),
-│                            logo-pinto.webp, og-pinto.jpg (share preview)
+│                            logo-pinto.webp, og-pinto.jpg (share preview), favicon/ (favicon.ico, favicon.png 48px, apple-touch-icon.png — PINTO pages only)
 │       ├── modos/index.html Meta-refresh → ../instrucciones/#modos (modos/ has no page of its own)
 │       ├── modos/temporada/ Modo Temporada scorekeeper (see "PINTO season scorekeeper" below). index.html (shell) +
 │       │                    temporada.js (whole app). Linked from the Temporada mode card on the PINTO page and instrucciones/
@@ -122,7 +122,7 @@ comments just to translate them — only translate what you are already touching
 9. Inline `<script>`s at the end: workshop carousel arrows, and the Sender form fallback ("Cargando…" → after 8 s shows a link to the hosted form).
 
 ### PINTO — `juegos/pinto/index.html` (`<html class="no-js">` → `js`, CSS: `styles.css` + `pinto.css`)
-Fonts: **Poppins** (display/headings) + **Saira** for body text on every PINTO page (`--font` is overridden in `.pinto`); Istok Web only for the small spaced labels (`.p-eyebrow`, `.p-soon`, `--label-font`). Nav on every PINTO page: Juegos / Taller / Suscríbete, same as home (Suscríbete hidden under 30rem). The owner does NOT want a Temporada button in the header; instead the hero has a gold "Jugar Modo Temporada" button (`.p-season-cta`, → `modos/temporada/`) between the facts and the seal. Sections: `p-hero` (title + `#box-stage`/`#box3d` 3D box),
+Fonts: **Poppins** (display/headings) + **Saira** for body text on every PINTO page (`--font` is overridden in `.pinto`); Istok Web only for the small spaced labels (`.p-eyebrow`, `.p-soon`, `--label-font`). Every PINTO page has its **own header, not Kori Labs'**: PINTO logo on the left (`.home-link.p-brand` → `/juegos/pinto/`), nav Cómo jugar (→ instrucciones/) / Tutorial (`.site-nav__link--tutorial`, hidden under 22.4rem) / Instagram, `aria-current="page"` on the current one; PINTO favicon set in `img/favicon/` (dark tile with the logo's "P" + red swoosh); Kori Labs is credited only in the footer ("PINTO es un juego de Kori Labs", linked to the home page). Goal: PINTO should feel like its own site. The owner does NOT want a Temporada button in the header; instead the hero has a gold "Jugar Modo Temporada" button (`.p-season-cta`, → `modos/temporada/`) between the facts and the seal. Sections: `p-hero` (title + `#box-stage`/`#box3d` 3D box),
 "Cómo se juega", "Cartas de ritmo" (ritmo-1…8), "Cartas especiales" (banderas, rebufo, vuelta rápida),
 `p-cta` "Muy pronto en la parrilla de salida". Script: `box3d.js` (deferred).
 After the hero: "Acerca de PINTO" (short text), "Cómo jugar" (`.p-how`: a Ritmo-card style speedometer SVG whose needle and
@@ -151,7 +151,7 @@ The score sheet gift is never linked directly (only via the home `#suscribete` f
 (the "videos" are the tutorial animations); don't invent video links.
 
 ### PINTO season scorekeeper — `juegos/pinto/modos/temporada/` (CSS: `styles.css` + `pinto.css` + `pinto-temporada.css`)
-Single-page vanilla JS app (`temporada.js`, renders into `#ps-app`). Hero: PINTO logo (links to the PINTO page, no "PINTO" eyebrow), title "Modo Temporada" (not "Campeonato de Grandes Premios"). Visitor text says **"carrera"**, never "Gran Premio"/"GP" (owner's choice); points per position are shown as tiles (`.ps-pts`) in setup and on each race screen. Each country has a simplified inline SVG flag (`FLAGS` in `temporada.js`, 30×20; no emoji flags, they don't render on Windows) on the race screen, in the race history and in the saved-seasons list. Screens: home (new season, resume by code, list of
+Single-page vanilla JS app (`temporada.js`, renders into `#ps-app`). Hero: trophy icon + title (no "PINTO" eyebrow — the header already carries the PINTO logo), "Modo Temporada" (not "Campeonato de Grandes Premios"). Visitor text says **"carrera"**, never "Gran Premio"/"GP" (owner's choice); points per position are shown as tiles (`.ps-pts`) in setup and on each race screen. Each country has a simplified inline SVG flag (`FLAGS` in `temporada.js`, 30×20; no emoji flags, they don't render on Windows) on the race screen, in the race history and in the saved-seasons list. Screens: home (new season, resume by code, list of
 seasons saved on this device) → setup (2–6 players, Modo escudería toggle right under the player count, names — required and unique, compared
 ignoring case/accents/extra spaces; inline error + aria-invalid —, Temporada Corta 5 / Regular 10 /
 Completa 15 carreras — owner's names, not the rulebook's; no country list on the cards — then Puntos dobles) → one screen per Gran
@@ -195,7 +195,7 @@ on the same device/browser. If storage is blocked the page says progress won't s
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
   Current: `styles.css?v=2`, `home.css?v=9` (index and privacidad),
-  `pinto.css?v=35`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `pinto-tutorial.css?v=7`, `tutorial-data.js?v=8`, `tutorial.js?v=7`, `pinto-temporada.css?v=9`, `temporada.js?v=9`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
+  `pinto.css?v=36`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `pinto-tutorial.css?v=7`, `tutorial-data.js?v=8`, `tutorial.js?v=7`, `pinto-temporada.css?v=10`, `temporada.js?v=10`, PINTO favicons `?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
 - **Sender (newsletter):** universal script in the `<head>` of `index.html`; form is

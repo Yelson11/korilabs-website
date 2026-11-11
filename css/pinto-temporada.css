@@ -51,9 +51,7 @@
 
 /* Home */
 .ps-hero { display: grid; justify-items: center; gap: 0.2rem; padding-block: 1rem 0.5rem; text-align: center; }
-.ps-hero__logo { display: block; margin-bottom: 0.4rem; border-radius: 0.5rem; }
-.ps-hero__logo img { display: block; width: min(13rem, 60vw); height: auto; }
-.ps-hero__logo:focus-visible { outline: 3px solid var(--cream); outline-offset: 4px; }
+.ps-hero__icon { width: 4.5rem; height: auto; margin-bottom: 0.6rem; }
 .ps-hero .p-h1 { margin: 0.3rem 0 0; }
 .ps-lead { max-width: 36rem; margin: 1rem auto 0; color: var(--cream-dim); font-size: 1.05rem; line-height: 1.5; }
 .ps-hero .ps-actions { justify-content: center; margin-top: 1.4rem; }

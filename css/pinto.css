@@ -84,14 +84,18 @@
 .p-season-cta:focus-visible { outline: 3px solid var(--cream); outline-offset: 4px; }
 @media (prefers-reduced-motion: reduce) { .p-season-cta, .p-season-cta:hover { transition: none; transform: none; } }
 
-/* Same as the home page: with three links (main PINTO page), Suscríbete is hidden on phones */
-@media (max-width: 30rem) {
-  .site-nav:has(.site-nav__link[href$="#taller"]) .site-nav__link[href$="#suscribete"] { display: none; }
-}
+/* PINTO has its own header: PINTO logo on the left (instead of the Kori Labs wordmark),
+   Cómo jugar / Tutorial / Instagram on the right. Kori Labs is credited in the footer. */
+.p-brand { display: block; flex: none; border-radius: 0.4rem; }
+.pinto .site-nav__link { white-space: nowrap; }
+.p-brand img { display: block; width: clamp(6.25rem, 24vw, 8.5rem); height: auto; }
+.p-footer-link { color: inherit; text-decoration: underline; text-decoration-color: var(--red); text-underline-offset: 3px; }
+.p-footer-link:hover { color: var(--cream); }
+.p-footer-link:focus-visible { outline: 3px solid var(--red); outline-offset: 3px; border-radius: 2px; }
 @media (max-width: 22.4rem) {
   .site-nav { gap: 0.6rem; }
   .site-nav__link { letter-spacing: 0.06em; }
-  .site-nav__link[href$="#suscribete"] { display: none; }
+  .site-nav__link--tutorial { display: none; }
 }
 
 /* --- Textos comunes ----------------------------------------------------- */
