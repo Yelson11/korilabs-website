@@ -17,6 +17,29 @@
     clasica:  { name: 'Temporada Regular',  races: 10, color: '#22b3c4' },
     completa: { name: 'Temporada Completa', races: 15, color: '#9b51e0' }
   };
+  /* Simplified national flags (public-domain designs), 30×20, drawn inline so they look the same on every
+     device (emoji flags don't render on Windows). Keyed by the GPS names. */
+  var FLAGS = {
+    'Australia': '<rect width="30" height="20" fill="#00247d"/><path d="M0 0l15 10M15 0L0 10" stroke="#fff" stroke-width="2.2"/><path d="M0 0l15 10M15 0L0 10" stroke="#cf142b" stroke-width=".9"/><path d="M7.5 0v10M0 5h15" stroke="#fff" stroke-width="3"/><path d="M7.5 0v10M0 5h15" stroke="#cf142b" stroke-width="1.6"/><g fill="#fff"><circle cx="7.5" cy="15" r="1.6"/><circle cx="23" cy="4" r=".9"/><circle cx="20" cy="9" r=".9"/><circle cx="26" cy="8" r=".9"/><circle cx="23" cy="16" r="1"/></g>',
+    'Estados Unidos': '<rect width="30" height="20" fill="#fff"/><g fill="#b22234"><rect width="30" height="1.54"/><rect y="3.08" width="30" height="1.54"/><rect y="6.15" width="30" height="1.54"/><rect y="9.23" width="30" height="1.54"/><rect y="12.3" width="30" height="1.54"/><rect y="15.4" width="30" height="1.54"/><rect y="18.46" width="30" height="1.54"/></g><rect width="13" height="10.77" fill="#3c3b6e"/><g fill="#fff"><circle cx="2.2" cy="2" r=".55"/><circle cx="5" cy="2" r=".55"/><circle cx="7.8" cy="2" r=".55"/><circle cx="10.6" cy="2" r=".55"/><circle cx="3.6" cy="4.2" r=".55"/><circle cx="6.4" cy="4.2" r=".55"/><circle cx="9.2" cy="4.2" r=".55"/><circle cx="2.2" cy="6.4" r=".55"/><circle cx="5" cy="6.4" r=".55"/><circle cx="7.8" cy="6.4" r=".55"/><circle cx="10.6" cy="6.4" r=".55"/><circle cx="3.6" cy="8.6" r=".55"/><circle cx="6.4" cy="8.6" r=".55"/><circle cx="9.2" cy="8.6" r=".55"/></g>',
+    'Arabia Saudita': '<rect width="30" height="20" fill="#006c35"/><path d="M8 7.5c1.5-1.5 3 1 4.5-.5s3 1 4.5-.5 3 1 4.5-.5" stroke="#fff" stroke-width="1.1" fill="none" stroke-linecap="round"/><path d="M8.5 12.5h12" stroke="#fff" stroke-width=".9" stroke-linecap="round"/><path d="M20.5 12.5l1.6-.9v1.8z" fill="#fff"/>',
+    'Italia': '<rect width="10" height="20" fill="#009246"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ce2b37"/>',
+    'Brasil': '<rect width="30" height="20" fill="#009c3b"/><path d="M15 2.5L27 10 15 17.5 3 10z" fill="#ffdf00"/><circle cx="15" cy="10" r="4.3" fill="#002776"/><path d="M10.9 9.2c2.8-.9 5.7-.5 8.1.9" stroke="#fff" stroke-width=".7" fill="none"/>',
+    'España': '<rect width="30" height="20" fill="#aa151b"/><rect y="5" width="30" height="10" fill="#f1bf00"/><rect x="7" y="7.5" width="3" height="5" rx=".6" fill="#aa151b"/>',
+    'Países Bajos': '<rect width="30" height="6.67" fill="#ae1c28"/><rect y="6.67" width="30" height="6.67" fill="#fff"/><rect y="13.33" width="30" height="6.67" fill="#21468b"/>',
+    'Singapur': '<rect width="30" height="10" fill="#ef3340"/><rect y="10" width="30" height="10" fill="#fff"/><circle cx="7" cy="5" r="3.2" fill="#fff"/><circle cx="8.3" cy="5" r="3" fill="#ef3340"/><g fill="#fff"><circle cx="10.6" cy="3" r=".55"/><circle cx="12.4" cy="4.2" r=".55"/><circle cx="11.8" cy="6.3" r=".55"/><circle cx="9.6" cy="6.3" r=".55"/><circle cx="9" cy="4.2" r=".55"/></g>',
+    'Canadá': '<rect width="30" height="20" fill="#fff"/><rect width="7.5" height="20" fill="#d80621"/><rect x="22.5" width="7.5" height="20" fill="#d80621"/><path d="M15 4l1 2 1.4-.6-.5 3.3 1.8-1.7.4 1.1 1.8-.3-.6 1.9.8.4-3.2 2.5.4 1.2-2.6-.4v2.9h-.6v-2.9l-2.6.4.4-1.2-3.2-2.5.8-.4-.6-1.9 1.8.3.4-1.1 1.8 1.7-.5-3.3L14 6z" fill="#d80621"/>',
+    'Bélgica': '<rect width="10" height="20" fill="#000"/><rect x="10" width="10" height="20" fill="#fdda24"/><rect x="20" width="10" height="20" fill="#ef3340"/>',
+    'China': '<rect width="30" height="20" fill="#de2910"/><g fill="#ffde00"><path d="M5 2.2l.9 2.6h2.8L6.5 6.4l.8 2.6L5 7.4 2.7 9l.8-2.6-2.2-1.6h2.8z"/><circle cx="10" cy="2" r=".7"/><circle cx="12" cy="4" r=".7"/><circle cx="12" cy="7" r=".7"/><circle cx="10" cy="9" r=".7"/></g>',
+    'Japón': '<rect width="30" height="20" fill="#fff"/><circle cx="15" cy="10" r="6" fill="#bc002d"/>',
+    'México': '<rect width="10" height="20" fill="#006847"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ce1126"/><circle cx="15" cy="10" r="2.6" fill="#8c5a2b"/><path d="M12.6 11.6c1.4 1.4 3.4 1.4 4.8 0" stroke="#006847" stroke-width=".7" fill="none"/>',
+    'Inglaterra': '<rect width="30" height="20" fill="#fff"/><path d="M15 0v20M0 10h30" stroke="#ce1124" stroke-width="4"/>',
+    'Qatar': '<rect width="30" height="20" fill="#8a1538"/><path d="M0 0h9l2 1.11-2 1.11 2 1.11-2 1.11 2 1.11-2 1.11 2 1.11-2 1.11 2 1.11-2 1.11 2 1.11-2 1.11 2 1.11-2 1.11 2 1.11-2 1.11 2 1.11-2 1.11H0z" fill="#fff"/>'
+  };
+  function flag(name, cls) {
+    var f = FLAGS[name];
+    return f ? '<svg class="ps-flag' + (cls ? ' ' + cls : '') + '" viewBox="0 0 30 20" aria-hidden="true" focusable="false">' + f + '</svg>' : '';
+  }
   var POINTS = { 2: [3, 1], 3: [5, 3, 1], 4: [5, 3, 1, 0], 5: [7, 4, 3, 2, 1], 6: [7, 4, 3, 2, 1, 0] };
   var PLAYER_COLORS = ['#e63c3c', '#f2c230', '#22b3c4', '#3dba6a', '#9b51e0', '#f08c28'];
   /* Fixed teams in Modo escudería: a nod to three well-known racing teams without any real name or brand */
@@ -169,7 +192,7 @@
           '<span class="ps-saved__info"><b>' + seasonTag(s) + '</b>' +
           '<span>' + s.players.map(esc).join(', ') + '</span>' +
           '<span class="ps-saved__meta">' + (done ? '🏆 Terminada · ganó ' + esc(leader.name)
-            : 'Carrera ' + (s.results.length + 1) + ' de ' + races(s).length + ' · ' + GPS[s.results.length]) + '</span></span>' +
+            : 'Carrera ' + (s.results.length + 1) + ' de ' + races(s).length + ' · ' + flag(GPS[s.results.length]) + GPS[s.results.length]) + '</span></span>' +
           '<span class="ps-saved__go" aria-hidden="true">→</span>' +
         '</button>' +
         '<button type="button" class="ps-icon-btn" data-del="' + s.code + '" aria-label="Borrar temporada ' + s.code + '">✕</button>' +
@@ -292,7 +315,7 @@
           (hasTeams(s) ? ' <em>' + esc(teamName(s, teamOf(pi))) + '</em>' : '') + ' <span>+' + p[pos] + '</span></li>';
       }).join('');
       return '<li><details><summary><span class="ps-history__n">' + (g + 1) + '</span>' +
-        '<span class="ps-history__gp">' + GPS[g] + (isDouble(s, g) ? ' <b class="ps-x2">×2</b>' : '') + '</span>' +
+        '<span class="ps-history__gp">' + flag(GPS[g]) + GPS[g] + (isDouble(s, g) ? ' <b class="ps-x2">×2</b>' : '') + '</span>' +
         '<span class="ps-history__win">🏁 ' + dot(res[0]) + esc(s.players[res[0]]) + '</span></summary>' +
         '<ol class="ps-history__detail">' + detail + '</ol></details></li>';
     }).reverse().join('');
@@ -328,7 +351,7 @@
         progressBar(s) +
         '<div class="ps-gp">' +
           '<p class="ps-gp__n">Carrera ' + (g + 1) + ' de ' + total + '</p>' +
-          '<h1 class="ps-gp__name">' + GPS[g] + '</h1>' +
+          '<h1 class="ps-gp__name">' + flag(GPS[g], 'ps-flag--big') + '<span>' + GPS[g] + '</span></h1>' +
           (isDouble(s, g) ? '<p class="ps-gp__x2"><b>×2</b> Puntos dobles en esta carrera</p>' : '') +
           '<div class="ps-gp__pts">' + pointsStrip(p, true) + '</div>' +
         '</div>' +

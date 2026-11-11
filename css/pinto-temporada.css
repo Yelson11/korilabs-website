@@ -312,3 +312,10 @@
 .ps-error { margin: 0.6rem 0 0; color: #ff8a80; font-size: 0.9rem; font-weight: 600; }
 .ps-error:empty { display: none; }
 .ps-input[aria-invalid="true"] { border-color: #ff6b5e; background: rgb(229 70 59 / 0.1); }
+
+/* Country flags */
+.ps-flag { flex: none; display: inline-block; width: 1.35rem; height: 0.9rem; margin-right: 0.45rem; border-radius: 0.15rem; box-shadow: 0 0 0 1px rgb(245 240 232 / 0.25); vertical-align: -0.12em; }
+.ps-flag--big { width: 0.95em; height: 0.633em; margin-right: 0.3em; border-radius: 0.08em; vertical-align: 0; }
+.ps-gp__name { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; }
+.ps-history__gp { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 0 0.3rem; }
+.ps-history__gp .ps-flag { margin-right: 0.15rem; }
