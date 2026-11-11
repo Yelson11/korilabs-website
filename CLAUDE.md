@@ -122,7 +122,7 @@ comments just to translate them — only translate what you are already touching
 9. Inline `<script>`s at the end: workshop carousel arrows, and the Sender form fallback ("Cargando…" → after 8 s shows a link to the hosted form).
 
 ### PINTO — `juegos/pinto/index.html` (`<html class="no-js">` → `js`, CSS: `styles.css` + `pinto.css`)
-Fonts: **Poppins** (display/headings) + **Saira** for body text on every PINTO page (`--font` is overridden in `.pinto`); Istok Web only for the small spaced labels (`.p-eyebrow`, `.p-soon`, `--label-font`). Nav on every PINTO page: Juegos / Taller / Suscríbete, same as home (Suscríbete hidden under 30rem). Sections: `p-hero` (title + `#box-stage`/`#box3d` 3D box),
+Fonts: **Poppins** (display/headings) + **Saira** for body text on every PINTO page (`--font` is overridden in `.pinto`); Istok Web only for the small spaced labels (`.p-eyebrow`, `.p-soon`, `--label-font`). Nav on every PINTO page: Juegos / Taller / **Temporada** (gold pill `.site-nav__cta` with a trophy, → `modos/temporada/`, `aria-current` on that page) / Suscríbete. Phones: under 30rem Taller and Suscríbete hide; under 25rem Juegos hides too (the Kori Labs logo already links home), so it's logo + Temporada + Instagram. Sections: `p-hero` (title + `#box-stage`/`#box3d` 3D box),
 "Cómo se juega", "Cartas de ritmo" (ritmo-1…8), "Cartas especiales" (banderas, rebufo, vuelta rápida),
 `p-cta` "Muy pronto en la parrilla de salida". Script: `box3d.js` (deferred).
 After the hero: "Acerca de PINTO" (short text), "Cómo jugar" (`.p-how`: a Ritmo-card style speedometer SVG whose needle and
@@ -190,7 +190,7 @@ on the same device/browser. If storage is blocked the page says progress won't s
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
   Current: `styles.css?v=2`, `home.css?v=9` (index and privacidad),
-  `pinto.css?v=32`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `pinto-tutorial.css?v=7`, `tutorial-data.js?v=8`, `tutorial.js?v=7`, `pinto-temporada.css?v=6`, `temporada.js?v=6`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
+  `pinto.css?v=33`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `pinto-tutorial.css?v=7`, `tutorial-data.js?v=8`, `tutorial.js?v=7`, `pinto-temporada.css?v=6`, `temporada.js?v=6`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
 - **Sender (newsletter):** universal script in the `<head>` of `index.html`; form is
