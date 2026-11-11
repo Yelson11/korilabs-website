@@ -1146,6 +1146,8 @@
 }
 .p-table tbody th { font-family: var(--display); font-weight: 600; }
 .p-table td { color: var(--cream-dim); }
+/* No line under the last row: next to the section divider it read as an empty extra row */
+.p-table tbody tr:last-child > * { border-bottom: 0; }
 
 .p-table--ref th,
 .p-table--ref td { text-align: left; }
