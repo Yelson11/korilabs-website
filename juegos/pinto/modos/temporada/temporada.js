@@ -389,7 +389,7 @@
     app.innerHTML =
       '<section class="ps-final' + (reveal ? ' is-revealing' : '') + '">' +
         topBar(s, true) +
-        '<div class="ps-final__head"><p class="p-eyebrow">🏁 Bandera a cuadros</p>' +
+        '<div class="ps-final__head"><p class="p-eyebrow">🏆 Fin de la temporada</p>' +
           '<p class="ps-final__suspense" aria-hidden="true">Y el campeón de la temporada es…</p>' +
           '<h1 class="p-h2 p-h1">' + title + '</h1></div>' +
         '<ol class="ps-podium' + (rows.length < 3 ? ' ps-podium--duo' : '') + '">' + podium + '</ol>' +
@@ -439,12 +439,12 @@
     return el;
   }
 
-  /* Season start: five red lights come on one by one, then go out — "¡Arrancan!" */
+  /* Season start: five red lights come on one by one, then go out — "¡Comienza la temporada!" */
   function playStart(s, done) {
     var lights = '<div class="ps-lights" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>';
     var el = overlay(
       '<p class="ps-fx__eyebrow">' + seasonTag(s) + '</p>' + lights +
-      '<p class="ps-fx__go">¡Arrancan!</p>' +
+      '<p class="ps-fx__go">¡Comienza la temporada!</p>' +
       '<p class="ps-fx__next">' + flag(GPS[0], 'ps-flag--fx') + 'Carrera 1 · ' + GPS[0] + '</p>',
       'ps-fx--start', 4300, done);
     if (!el) return;
@@ -475,7 +475,7 @@
     if (el) later(function () { el.classList.add('is-next'); }, 2100);
   }
 
-  /* Winner of the final race (no "next race" frame) */
+  /* Winner of the final race (no "next race" frame); the podium reveal follows */
   function playRace2(s, g, done) {
     var winner = s.results[g][0];
     overlay(
@@ -487,15 +487,6 @@
         '<p class="ps-fx__sub">¡gana la carrera! <b>+' + gpPoints(s, g)[0] + ' pts</b></p>' +
       '</div>',
       'ps-fx--race', 2400, done);
-  }
-
-  /* Last race: a short "checkered flag" intro before the podium reveal */
-  function playFinish(s, done) {
-    overlay(
-      '<p class="ps-fx__checker ps-fx__checker--big" aria-hidden="true"></p>' +
-      '<p class="ps-fx__go">¡Bandera a cuadros!</p>' +
-      '<p class="ps-fx__sub">Terminó la ' + SEASONS[s.season].name.toLowerCase() + '. Veamos quién sube al podio…</p>',
-      'ps-fx--finish', 2800, done);
   }
 
   /* Podium suspense: 3rd, then 2nd, a pause, then the champion with confetti */
@@ -634,7 +625,7 @@
         // last race: winner of the race, checkered flag, then the podium reveal
         var s2 = state;
         playRace2(s2, g, function () {
-          playFinish(s2, function () { render(true); window.scrollTo(0, 0); });
+          render(true); window.scrollTo(0, 0);
         });
       } else {
         render(); window.scrollTo(0, 0);
