@@ -1,0 +1,321 @@
+/* PINTO · Modo Temporada scorekeeper (juegos/pinto/modos/temporada/). Loaded after pinto.css. Prefix: ps- */
+
+.ps { padding-block: clamp(1.5rem, 5vw, 3rem) clamp(3rem, 8vw, 5rem); }
+.ps-app { display: grid; gap: 1.25rem; max-width: 60rem; margin-inline: auto; }
+.ps-note { padding: 1rem; border: 1px solid var(--line); border-radius: 1rem; }
+
+.ps-card {
+  padding: clamp(1.1rem, 3vw, 1.6rem);
+  border: 1px solid var(--line);
+  border-radius: 1.1rem;
+  background: rgb(22 23 27 / 0.82);
+}
+.ps-h3 { display: flex; align-items: center; gap: 0.6rem; margin: 0 0 1rem; font: italic 800 1.15rem/1.15 var(--display); text-transform: uppercase; }
+.ps-h4 { margin: 1.5rem 0 0.6rem; color: var(--cream-dim); font: 700 0.75rem/1.3 var(--label-font); letter-spacing: 0.18em; text-transform: uppercase; }
+.ps-hint { margin: 0.9rem 0 0; color: var(--cream-dim); font-size: 0.92rem; line-height: 1.45; }
+.ps-hint b { color: var(--cream); }
+.ps-hint.is-error { color: #ff8a80; }
+.ps-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem; }
+.ps-actions--center { justify-content: center; }
+.p-button[disabled] { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+.ps-input {
+  width: 100%;
+  min-height: 2.9rem;
+  padding: 0.65rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: rgb(245 240 232 / 0.05);
+  color: var(--cream);
+  font: 600 1rem/1.2 var(--font);
+}
+.ps-input::placeholder { color: rgb(245 240 232 / 0.4); }
+.ps-input:focus { outline: 2px solid var(--red); outline-offset: 1px; border-color: transparent; }
+.ps-input--code { max-width: 13rem; font-family: var(--display); letter-spacing: 0.2em; text-transform: uppercase; }
+.ps-input--code::placeholder { letter-spacing: 0.02em; text-transform: none; }
+
+.ps-dot { flex: none; display: inline-block; width: 0.7rem; height: 0.7rem; border-radius: 50%; background: var(--pc); vertical-align: middle; }
+.ps-code { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 0.4rem; background: var(--cream); color: var(--asphalt); font: 800 0.95rem/1 var(--display); letter-spacing: 0.15em; }
+.ps-back { justify-self: start; }
+.ps-back, .ps-link-btn, .ps-icon-btn {
+  padding: 0.35rem 0.1rem;
+  border: 0;
+  background: none;
+  color: var(--cream-dim);
+  font: 600 0.9rem/1.2 var(--display);
+  cursor: pointer;
+}
+.ps-back:hover, .ps-link-btn:hover { color: var(--cream); }
+.ps-link-btn[disabled] { opacity: 0.35; cursor: default; }
+.ps-back:focus-visible, .ps-link-btn:focus-visible, .ps-icon-btn:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; border-radius: 0.4rem; }
+
+/* Home */
+.ps-hero { display: grid; justify-items: center; gap: 0.2rem; padding-block: 1rem 0.5rem; text-align: center; }
+.ps-hero__icon { width: 4.5rem; height: auto; margin-bottom: 0.6rem; }
+.ps-hero .p-h1 { margin: 0.3rem 0 0; }
+.ps-lead { max-width: 36rem; margin: 1rem auto 0; color: var(--cream-dim); font-size: 1.05rem; line-height: 1.5; }
+.ps-hero .ps-actions { justify-content: center; margin-top: 1.4rem; }
+.ps-code-form { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+.ps-saved { display: grid; gap: 0.55rem; margin: 0; padding: 0; list-style: none; }
+.ps-saved__item { display: flex; align-items: stretch; gap: 0.4rem; }
+.ps-saved__open {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  min-width: 0;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  background: rgb(245 240 232 / 0.03);
+  color: var(--cream);
+  text-align: left;
+  cursor: pointer;
+}
+.ps-saved__open:hover { border-color: rgb(245 240 232 / 0.35); }
+.ps-saved__open:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+.ps-saved__info { display: grid; gap: 0.15rem; min-width: 0; font-size: 0.9rem; }
+.ps-saved__info b { font: italic 800 0.95rem/1.2 var(--display); text-transform: uppercase; }
+.ps-saved__info span { overflow: hidden; color: var(--cream-dim); text-overflow: ellipsis; white-space: nowrap; }
+.ps-saved__info .ps-saved__meta { color: var(--cream); }
+.ps-saved__go { margin-left: auto; color: var(--cream-dim); font-weight: 700; }
+.ps-icon-btn { padding: 0 0.8rem; border: 1px solid var(--line); border-radius: 0.9rem; }
+.ps-icon-btn.is-sure { border-color: var(--red); color: #ff8a80; }
+
+/* Setup */
+.ps-setup { display: grid; gap: 1.25rem; }
+.ps-setup .p-h1 { margin: 0; }
+.ps-step { display: grid; place-items: center; width: 1.7rem; height: 1.7rem; border-radius: 50%; background: var(--red); color: #fff; font: 800 0.9rem/1 var(--display); font-style: normal; }
+.ps-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.ps-chip {
+  width: 3.2rem;
+  height: 3.2rem;
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  background: rgb(245 240 232 / 0.04);
+  color: var(--cream);
+  font: italic 800 1.3rem/1 var(--display);
+  cursor: pointer;
+}
+.ps-chip[aria-pressed="true"] { border-color: var(--cream); background: var(--cream); color: var(--asphalt); }
+.ps-chip:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+.ps-names { display: grid; grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr)); gap: 0.6rem; margin-top: 1.1rem; }
+.ps-name { position: relative; display: block; }
+.ps-name .ps-dot { position: absolute; top: 50%; left: 0.9rem; transform: translateY(-50%); }
+.ps-name .ps-input { padding-left: 2.2rem; }
+.ps-seasons { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 0.75rem; }
+.ps-season {
+  display: grid;
+  gap: 0.3rem;
+  padding: 1.1rem 1.1rem 1.15rem;
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--sc);
+  border-radius: 1rem;
+  background: rgb(245 240 232 / 0.03);
+  color: var(--cream);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+.ps-season[aria-pressed="true"] { border-color: var(--sc); background: color-mix(in srgb, var(--sc) 14%, transparent); box-shadow: inset 0 0 0 1px var(--sc); }
+.ps-season:focus-visible { outline: 3px solid var(--cream); outline-offset: 2px; }
+.ps-season__name { font: italic 800 1.35rem/1.1 var(--display); text-transform: uppercase; }
+.ps-season__n { color: var(--cream); font: 700 0.75rem/1.3 var(--label-font); letter-spacing: 0.16em; text-transform: uppercase; }
+.ps-season__route { color: var(--cream-dim); font-size: 0.88rem; }
+
+/* Race */
+.ps-race, .ps-final { display: grid; gap: 1.25rem; }
+.ps-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; }
+.ps-bar__season { padding: 0.3rem 0.75rem; border-radius: 999px; background: color-mix(in srgb, var(--sc) 20%, transparent); color: var(--cream); font: 700 0.8rem/1.2 var(--display); }
+.ps-bar__code { margin-left: auto; color: var(--cream-dim); font-size: 0.85rem; }
+.ps-track { display: flex; gap: 0.3rem; margin: 0; padding: 0; list-style: none; }
+.ps-track li { flex: 1; height: 0.4rem; border-radius: 999px; background: rgb(245 240 232 / 0.12); }
+.ps-track li.is-done { background: var(--cream); }
+.ps-track li.is-now { background: var(--red); box-shadow: 0 0 0 3px rgb(229 70 59 / 0.25); }
+.ps-gp { text-align: center; }
+.ps-gp__n { margin: 0; color: var(--cream-dim); font: 700 0.78rem/1.3 var(--label-font); letter-spacing: 0.2em; text-transform: uppercase; }
+.ps-gp__name { margin: 0.2rem 0 0; font: italic 800 clamp(2.2rem, 8vw, 3.6rem)/1 var(--display); text-transform: uppercase; }
+
+.ps-entry__prompt { margin: 0 0 1rem; font: 700 1.05rem/1.3 var(--display); text-align: center; }
+.ps-racers { display: grid; grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr)); gap: 0.6rem; }
+.ps-racer {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.6rem minmax(0, 1fr);
+  align-items: center;
+  column-gap: 0.7rem;
+  min-height: 4rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--pc);
+  border-radius: 0.9rem;
+  background: rgb(245 240 232 / 0.04);
+  color: var(--cream);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+.ps-racer:hover { background: rgb(245 240 232 / 0.08); }
+.ps-racer:active { transform: scale(0.98); }
+.ps-racer:focus-visible { outline: 3px solid var(--cream); outline-offset: 2px; }
+.ps-racer__pos {
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border: 2px dashed rgb(245 240 232 / 0.25);
+  border-radius: 50%;
+  font: italic 800 1rem/1 var(--display);
+}
+.ps-racer__txt { display: grid; gap: 0.1rem; min-width: 0; }
+.ps-racer__name { overflow: hidden; font: 700 1.02rem/1.2 var(--display); text-overflow: ellipsis; white-space: nowrap; }
+.ps-racer__pts { color: var(--cream-dim); font-size: 0.82rem; }
+.ps-racer[aria-pressed="true"] { background: color-mix(in srgb, var(--pc) 16%, transparent); }
+.ps-racer[aria-pressed="true"] .ps-racer__pos { border: 0; background: var(--pc); color: var(--asphalt); }
+.ps-entry__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin-top: 1.2rem; }
+
+.ps-cols { display: grid; gap: 1.25rem; }
+.ps-table { display: grid; gap: 0.4rem; margin: 0; padding: 0; list-style: none; }
+.ps-row { display: flex; align-items: center; gap: 0.7rem; padding: 0.65rem 0.85rem; border-radius: 0.8rem; background: rgb(245 240 232 / 0.04); }
+.ps-row.is-lead { background: rgb(242 194 48 / 0.12); box-shadow: inset 0 0 0 1px rgb(242 194 48 / 0.45); }
+.ps-row__rank { width: 1.4rem; font: italic 800 1.1rem/1 var(--display); text-align: center; }
+.ps-row__name { flex: 1; min-width: 0; font-weight: 700; }
+.ps-row__name small { display: block; color: var(--cream-dim); font-size: 0.75rem; font-weight: 400; }
+.ps-row__wins { color: var(--cream-dim); font-size: 0.85rem; white-space: nowrap; }
+.ps-row__pts { min-width: 3.6rem; color: var(--cream-dim); font-size: 0.85rem; text-align: right; white-space: nowrap; }
+.ps-row__pts b { color: var(--cream); font: 800 1.15rem/1 var(--display); }
+
+.ps-history { display: grid; gap: 0.4rem; margin: 0; padding: 0; list-style: none; }
+.ps-history details { border-radius: 0.8rem; background: rgb(245 240 232 / 0.04); }
+.ps-history summary { display: flex; align-items: center; gap: 0.7rem; padding: 0.65rem 0.85rem; cursor: pointer; list-style: none; }
+.ps-history summary::-webkit-details-marker { display: none; }
+.ps-history summary:focus-visible { outline: 3px solid var(--red); outline-offset: -3px; border-radius: 0.8rem; }
+.ps-history__n { color: var(--cream-dim); font: 700 0.75rem/1 var(--display); white-space: nowrap; }
+.ps-history__gp { flex: 1; min-width: 0; font-weight: 700; }
+.ps-history__win { display: inline-flex; align-items: center; gap: 0.35rem; color: var(--cream-dim); font-size: 0.88rem; white-space: nowrap; }
+.ps-history__detail { display: grid; gap: 0.3rem; margin: 0; padding: 0 0.85rem 0.8rem 3.2rem; list-style: none; color: var(--cream-dim); font-size: 0.88rem; }
+.ps-history__detail li { display: flex; align-items: center; gap: 0.4rem; }
+.ps-history__detail span { margin-left: auto; color: var(--cream); font-weight: 700; }
+.ps-history + .ps-link-btn { margin-top: 0.8rem; }
+
+/* Final: podium */
+.ps-final__head { text-align: center; }
+.ps-final__head .p-h1 { margin: 0.3rem 0 0; }
+.ps-podium { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; gap: 0.6rem; max-width: 34rem; width: 100%; margin: 0.5rem auto 0; padding: 0; list-style: none; }
+.ps-podium--duo { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 23rem; }
+.ps-podium__step { display: grid; justify-items: center; gap: 0.2rem; text-align: center; animation: ps-rise 0.6s cubic-bezier(.2,.8,.2,1) both; }
+.ps-podium__step--1 { animation-delay: 0.25s; }
+.ps-podium__step--3 { animation-delay: 0.1s; }
+.ps-podium__name { max-width: 100%; overflow: hidden; font: italic 800 1.05rem/1.15 var(--display); text-overflow: ellipsis; white-space: nowrap; }
+.ps-podium__pts { color: var(--cream-dim); font-size: 0.85rem; }
+.ps-podium__block {
+  display: grid;
+  place-items: start center;
+  width: 100%;
+  margin-top: 0.4rem;
+  padding-top: 0.6rem;
+  border-radius: 0.8rem 0.8rem 0 0;
+  border-top: 4px solid var(--pc);
+  background: linear-gradient(rgb(245 240 232 / 0.14), rgb(245 240 232 / 0.04));
+}
+.ps-podium__block b { font: italic 800 2rem/1 var(--display); }
+.ps-podium__step--1 .ps-podium__block { height: 9rem; background: linear-gradient(rgb(242 194 48 / 0.35), rgb(242 194 48 / 0.06)); }
+.ps-podium__step--2 .ps-podium__block { height: 6.5rem; }
+.ps-podium__step--3 .ps-podium__block { height: 4.75rem; }
+.ps-podium__step--1 .ps-podium__name { font-size: 1.25rem; }
+@keyframes ps-rise { from { opacity: 0; transform: translateY(1.5rem); } to { opacity: 1; transform: none; } }
+
+@media (min-width: 52rem) {
+  .ps-cols { grid-template-columns: 1fr 1fr; align-items: start; }
+}
+@media (max-width: 30rem) {
+  .ps-racers { grid-template-columns: minmax(0, 1fr); gap: 0.5rem; }
+  .ps-racer { grid-template-columns: 2.2rem minmax(0, 1fr); column-gap: 0.7rem; min-height: 3.4rem; padding: 0.5rem 0.8rem; }
+  .ps-racer__txt { grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 0.5rem; }
+  .ps-racer__pos { width: 2.2rem; height: 2.2rem; }
+  .ps-bar__code { margin-left: 0; }
+  .ps-history__win { max-width: 40%; overflow: hidden; text-overflow: ellipsis; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ps-podium__step { animation: none; }
+  .ps-racer, .ps-season { transition: none; }
+  .ps-racer:active { transform: none; }
+}
+
+/* Options: Modo escudería + Puntos dobles */
+.ps-opt { margin-left: 0.3rem; color: var(--cream-dim); font: 600 0.72rem/1 var(--display); font-style: normal; letter-spacing: 0.08em; text-transform: uppercase; }
+.ps-toggles { display: grid; gap: 0.6rem; }
+.ps-toggles--inline { margin-top: 1.1rem; }
+.ps-toggle { position: relative; display: flex; align-items: flex-start; gap: 0.9rem; padding: 0.9rem 1rem; border: 1px solid var(--line); border-radius: 0.9rem; background: rgb(245 240 232 / 0.03); cursor: pointer; }
+.ps-toggle input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.ps-toggle__ui { flex: none; position: relative; width: 2.6rem; height: 1.5rem; margin-top: 0.1rem; border-radius: 999px; background: rgb(245 240 232 / 0.18); transition: background-color 0.2s ease; }
+.ps-toggle__ui::after { content: ""; position: absolute; top: 0.2rem; left: 0.2rem; width: 1.1rem; height: 1.1rem; border-radius: 50%; background: var(--cream); transition: transform 0.2s ease; }
+.ps-toggle input:checked + .ps-toggle__ui { background: var(--red); }
+.ps-toggle input:checked + .ps-toggle__ui::after { transform: translateX(1.1rem); }
+.ps-toggle input:focus-visible + .ps-toggle__ui { outline: 3px solid var(--cream); outline-offset: 2px; }
+.ps-toggle:has(input:checked) { border-color: rgb(229 70 59 / 0.6); background: rgb(229 70 59 / 0.08); }
+.ps-toggle__txt { display: grid; gap: 0.2rem; }
+.ps-toggle__txt b { font: italic 800 1rem/1.2 var(--display); text-transform: uppercase; }
+.ps-toggle__txt span { color: var(--cream-dim); font-size: 0.9rem; line-height: 1.4; }
+.ps-toggle.is-off { cursor: not-allowed; opacity: 0.55; }
+
+.ps-names--teams { grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); }
+.ps-team { display: grid; gap: 0.5rem; padding: 0.8rem; border: 1px solid var(--line); border-top: 3px solid var(--tc); border-radius: 0.9rem; background: rgb(245 240 232 / 0.03); }
+.ps-team__name { display: flex; align-items: center; gap: 0.55rem; margin: 0.1rem 0 0.2rem; font: italic 800 1rem/1.2 var(--display); text-transform: uppercase; }
+.ps-input--team { padding-left: 2.2rem; font-family: var(--display); font-style: italic; font-weight: 800; text-transform: uppercase; }
+.ps-input--team::placeholder { text-transform: none; font-style: normal; font-weight: 600; }
+.ps-dot--team { width: 0.85rem; height: 0.85rem; border-radius: 0.2rem; }
+
+.ps-racer__name small { display: block; margin-top: 0.1rem; color: var(--cream-dim); font: 600 0.72rem/1.1 var(--font); }
+.ps-history__detail em { color: var(--cream-dim); font-size: 0.78rem; font-style: normal; opacity: 0.8; }
+.ps-podium__who { max-width: 100%; overflow: hidden; color: var(--cream-dim); font-size: 0.78rem; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Double-points GPs */
+.ps-x2 { display: inline-block; padding: 0.1rem 0.4rem; border-radius: 0.35rem; background: #f2c230; color: var(--asphalt); font: italic 800 0.72rem/1.2 var(--display); vertical-align: middle; }
+.ps-gp__x2 { display: inline-flex; align-items: center; gap: 0.5rem; margin: 0.7rem 0 0; padding: 0.35rem 0.85rem 0.35rem 0.4rem; border-radius: 999px; background: rgb(242 194 48 / 0.15); color: #f2c230; font: 700 0.88rem/1.2 var(--display); }
+.ps-gp__x2 b { padding: 0.15rem 0.45rem; border-radius: 999px; background: #f2c230; color: var(--asphalt); font-style: italic; }
+.ps-track li.is-x2 { box-shadow: inset 0 0 0 2px #f2c230; }
+.ps-track li.is-x2.is-now { box-shadow: 0 0 0 3px rgb(242 194 48 / 0.45); }
+
+@media (prefers-reduced-motion: reduce) {
+  .ps-toggle__ui, .ps-toggle__ui::after { transition: none; }
+}
+
+/* Points per race: one tile per finishing position (like the rulebook) */
+.ps-points { margin-top: 1.2rem; padding: 1rem; border-radius: 0.9rem; background: rgb(245 240 232 / 0.04); }
+.ps-points__t { margin: 0 0 0.75rem; color: var(--cream-dim); font: 700 0.72rem/1.3 var(--label-font); letter-spacing: 0.18em; text-transform: uppercase; }
+.ps-pts { display: grid; grid-template-columns: repeat(var(--n, 6), minmax(0, 1fr)); gap: 0.4rem; max-width: min(32rem, calc(var(--n, 6) * 5.5rem)); margin: 0; padding: 0; list-style: none; }
+.ps-pts li {
+  display: grid;
+  justify-items: center;
+  gap: 0.15rem;
+  padding: 0.6rem 0.3rem 0.5rem;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--c, var(--cream-dim));
+  border-radius: 0.75rem;
+  background: rgb(22 23 27 / 0.6);
+}
+.ps-pts li:nth-child(1) { --c: #f2c230; }
+.ps-pts li:nth-child(2) { --c: #c9ccd3; }
+.ps-pts li:nth-child(3) { --c: #d08a4b; }
+.ps-pts b { font: italic 800 1.6rem/1 var(--display); }
+.ps-pts span { color: var(--cream-dim); font: 600 0.75rem/1 var(--display); }
+.ps-gp__pts { display: flex; justify-content: center; margin-top: 0.9rem; }
+.ps-pts--compact { display: flex; gap: 0.35rem; }
+.ps-pts--compact li { min-width: 2.7rem; padding: 0.35rem 0.4rem 0.3rem; border-top-width: 2px; border-radius: 0.55rem; }
+.ps-pts--compact b { font-size: 1.05rem; }
+.ps-pts--compact span { font-size: 0.65rem; }
+@media (max-width: 30rem) { .ps-pts b { font-size: 1.3rem; } .ps-points { padding: 0.85rem 0.7rem; } }
+
+/* Name validation */
+.ps-error { margin: 0.6rem 0 0; color: #ff8a80; font-size: 0.9rem; font-weight: 600; }
+.ps-error:empty { display: none; }
+.ps-input[aria-invalid="true"] { border-color: #ff6b5e; background: rgb(229 70 59 / 0.1); }
+
+/* Country flags */
+.ps-flag { flex: none; display: inline-block; width: 1.35rem; height: 0.9rem; margin-right: 0.45rem; border-radius: 0.15rem; box-shadow: 0 0 0 1px rgb(245 240 232 / 0.25); vertical-align: -0.12em; }
+.ps-flag--big { width: 0.95em; height: 0.633em; margin-right: 0.3em; border-radius: 0.08em; vertical-align: 0; }
+.ps-gp__name { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; }
+.ps-history__gp { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 0 0.3rem; }
+.ps-history__gp .ps-flag { margin-right: 0.15rem; }

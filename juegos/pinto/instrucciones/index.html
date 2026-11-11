@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Istok+Web:wght@400;700&amp;family=Poppins:ital,wght@0,500;0,600;1,700;1,800&amp;family=Saira:ital,wght@0,400;0,600;0,700;0,800;1,400&amp;display=swap">
 
   <link rel="stylesheet" href="../../../css/styles.css?v=2">
-  <link rel="stylesheet" href="../../../css/pinto.css?v=30">
+  <link rel="stylesheet" href="../../../css/pinto.css?v=34">
 </head>
 <body class="pinto">
 
@@ -118,11 +118,13 @@
             </a>
           </li>
           <li>
-            <a class="p-path" href="#modos">
+            <a class="p-path p-path--new" href="#modos">
+              <span class="p-path__flag">¡Nuevo!</span>
               <span class="p-path__n" aria-hidden="true">04</span>
               <span class="p-path__icon" aria-hidden="true"><svg><use href="#icon-trophy"/></svg></span>
               <span class="p-path__title">Modos de juego</span>
               <span class="p-path__text">Juega una Carrera Única o compite en toda una Temporada.</span>
+              <span class="p-path__new">Con marcador de temporada</span>
             </a>
           </li>
         </ol>
@@ -343,13 +345,15 @@
             </div>
             <p>Una emocionante partida de aproximadamente 5 a 15 minutos. Juega tus cartas, cruza la meta y evita ser el último en llegar.</p>
           </li>
-          <li class="p-mode">
+          <li class="p-mode p-mode--featured">
             <div class="p-mode__head">
               <img class="p-mode__icon" src="../img/icono-trofeo.svg" width="512" height="512" alt="" loading="lazy">
               <h3>Modo Temporada</h3>
+              <span class="p-mode__badge">★ Recomendado</span>
             </div>
             <p>Compite en un campeonato de varias carreras para demostrar quién es el piloto más completo. Al finalizar cada carrera, los jugadores reciben puntos según su posición de llegada. Acumula puntos a lo largo de la temporada y conviértete en el campeón.</p>
             <p>Puedes elegir jugar temporadas de 5, 10 o 15 carreras. ¡Gana quien acumule más puntos al finalizar el campeonato!</p>
+            <a class="p-button p-button--small p-mode__play" href="../modos/temporada/"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 20h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Abrir marcador de temporada</a>
             <p class="p-mode__extra"><strong>Hoja de puntuación:</strong> suscríbete al boletín de Kori Labs y te la enviamos gratis.</p>
             <a class="p-button p-button--cream p-button--small" href="../../../#suscribete">Suscribirme <span aria-hidden="true">→</span></a>
           </li>

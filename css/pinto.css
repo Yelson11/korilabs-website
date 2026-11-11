@@ -64,6 +64,26 @@
   .site-nav { gap: 0.85rem; }
   .site-nav__link { letter-spacing: 0.1em; }
 }
+/* Gold button to the season scorekeeper in the PINTO hero (in the normal flow, between the facts and the seal) */
+.p-season-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 1.4rem;
+  padding: 0.75rem 1.3rem 0.75rem 1.05rem;
+  border-radius: 999px;
+  background: #f2c230;
+  color: var(--asphalt);
+  font: 700 0.98rem/1.2 var(--display);
+  text-decoration: none;
+  box-shadow: 0 8px 22px rgb(242 194 48 / 0.22);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.p-season-cta svg { flex: none; width: 1.25rem; height: 1.25rem; }
+.p-season-cta:hover { background: #ffd54d; transform: translateY(-2px); }
+.p-season-cta:focus-visible { outline: 3px solid var(--cream); outline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) { .p-season-cta, .p-season-cta:hover { transition: none; transform: none; } }
+
 /* Same as the home page: with three links (main PINTO page), Suscríbete is hidden on phones */
 @media (max-width: 30rem) {
   .site-nav:has(.site-nav__link[href$="#taller"]) .site-nav__link[href$="#suscribete"] { display: none; }
@@ -630,6 +650,25 @@
   font-size: 0.95rem;
 }
 .p-mode__extra strong { color: var(--cream); }
+/* Featured mode (Modo Temporada): gold border + inline "Recomendado" badge. The badge sits in the
+   header row (wraps under the title on narrow cards), so it never covers the icon, title or text. */
+.p-mode.p-mode--featured { border: 2px solid #f2c230; }
+.p-mode--featured .p-mode__head { flex-wrap: wrap; }
+.p-mode--featured h3 { flex: 1 1 8rem; }
+.p-mode__badge {
+  margin-left: auto;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: #f2c230;
+  color: var(--asphalt);
+  font: italic 800 0.72rem/1.2 var(--display);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+/* Link to the season scorekeeper (modos/temporada/) */
+.p-mode__play { margin-top: 1rem; }
+.p-mode__play svg { width: 1.1rem; height: 1.1rem; }
 .p-rules a { color: var(--cream); text-decoration-color: var(--red); text-underline-offset: 0.2em; }
 
 /* Hover lift for special cards and game modes, like the rhythm-card fan.
@@ -808,6 +847,24 @@
 .p-path__icon svg { width: 1.7rem; height: 1.7rem; }
 .p-path__title { font: italic 800 1.3rem/1.15 var(--display); text-transform: uppercase; }
 .p-path__text { max-width: 17rem; color: var(--cream-dim); font-size: 0.95rem; line-height: 1.4; }
+/* "¡Nuevo!" tab hanging from the top border of a path card; the card gets extra top padding so the tab,
+   the number and the icon never touch */
+.p-path.p-path--new { padding-top: 2.4rem; border-color: rgb(61 186 106 / 0.6); }
+.p-path__flag {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.25rem 0.75rem 0.3rem;
+  border-radius: 0 0 0.6rem 0.6rem;
+  background: var(--c);
+  color: #0d2a17;
+  font: italic 800 0.7rem/1.2 var(--display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.p-path__new { margin-top: 0.15rem; color: var(--c); font: 700 0.85rem/1.3 var(--display); }
 
 @media (min-width: 40rem) {
   .p-paths { grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
