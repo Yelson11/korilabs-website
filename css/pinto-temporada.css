@@ -308,3 +308,8 @@
 .ps-pts--compact b { font-size: 1.05rem; }
 .ps-pts--compact span { font-size: 0.65rem; }
 @media (max-width: 30rem) { .ps-pts b { font-size: 1.3rem; } .ps-points { padding: 0.85rem 0.7rem; } }
+
+/* Name validation */
+.ps-error { margin: 0.6rem 0 0; color: #ff8a80; font-size: 0.9rem; font-weight: 600; }
+.ps-error:empty { display: none; }
+.ps-input[aria-invalid="true"] { border-color: #ff6b5e; background: rgb(229 70 59 / 0.1); }

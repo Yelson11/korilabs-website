@@ -202,7 +202,7 @@
     }).join('');
     function nameInput(i) {
       return '<label class="ps-name">' + dot(i) + '<span class="visually-hidden">Nombre del jugador ' + (i + 1) + '</span>' +
-        '<input class="ps-input" data-name="' + i + '" maxlength="14" autocomplete="off" placeholder="Jugador ' + (i + 1) + '" value="' + esc(draft.names[i]) + '"></label>';
+        '<input class="ps-input" data-name="' + i + '" maxlength="14" autocomplete="off" required aria-describedby="ps-names-err" placeholder="Nombre del jugador ' + (i + 1) + '" value="' + esc(draft.names[i]) + '"></label>';
     }
     var names = '';
     if (teams) {
@@ -241,6 +241,7 @@
           '<div class="ps-chips" role="group" aria-label="Cantidad de jugadores">' + counts + '</div>' +
           '<div class="ps-toggles ps-toggles--inline">' + teamToggle + '</div>' +
           '<div class="ps-names' + (teams ? ' ps-names--teams' : '') + '">' + names + '</div>' +
+          '<p class="ps-error" id="ps-names-err" role="alert"></p>' +
           '<div class="ps-points"><p class="ps-points__t">Puntos por carrera con ' + count + ' jugadores</p>' + pointsStrip(p) + '</div>' +
         '</div>' +
         '<div class="ps-card"><h2 class="ps-h3"><span class="ps-step">2</span>Elige la temporada</h2>' +
@@ -377,6 +378,31 @@
     say(champs.map(function (r) { return r.name; }).join(' y ') + ' gana la temporada.');
   }
 
+  /* Every player needs a name, and no two names can be the same (ignoring case, accents and spaces) */
+  function validNames(quiet) {
+    var seen = {}, firstBad = null, empty = 0, dup = 0;
+    var key = function (v) { return v.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' '); };
+    for (var i = 0; i < draft.count; i++) {
+      var input = app.querySelector('[data-name="' + i + '"]'), v = draft.names[i] || '', k = key(v), bad = false;
+      if (!k) { empty++; bad = true; }
+      else if (seen[k] != null) {
+        dup++; bad = true;
+        var other = app.querySelector('[data-name="' + seen[k] + '"]');
+        if (other) other.setAttribute('aria-invalid', 'true');
+      } else seen[k] = i;
+      if (input) input.setAttribute('aria-invalid', bad ? 'true' : 'false');
+      if (bad && firstBad == null) firstBad = input;
+    }
+    var msg = app.querySelector('#ps-names-err');
+    if (!empty && !dup) { if (msg) msg.textContent = ''; return true; }
+    var parts = [];
+    if (empty) parts.push(empty === 1 ? 'Falta el nombre de un jugador.' : 'Faltan los nombres de ' + empty + ' jugadores.');
+    if (dup) parts.push('Hay nombres repetidos: cada jugador necesita un nombre distinto.');
+    if (msg) msg.textContent = parts.join(' ');
+    if (firstBad && !quiet) { firstBad.focus(); firstBad.scrollIntoView({ block: 'center' }); }
+    return false;
+  }
+
   /* ---------- actions ---------- */
   function startSeason(players, season, opts) {
     opts = opts || {};
@@ -413,7 +439,8 @@
     }
     if (act === 'start') {
       var players = [], teamNames = [];
-      for (var i = 0; i < draft.count; i++) players.push(draft.names[i].trim() || 'Jugador ' + (i + 1));
+      if (!validNames()) return;
+      for (var i = 0; i < draft.count; i++) players.push(draft.names[i].trim());
       for (var k = 0; k < draft.count / 2; k++) teamNames.push((draft.teamNames[k] || '').trim() || 'Escudería ' + (k + 1));
       startSeason(players, draft.season, { teams: draft.teams, teamNames: teamNames, double: draft.double });
       return;
@@ -458,7 +485,11 @@
 
   app.addEventListener('input', function (e) {
     var t = e.target;
-    if (t.hasAttribute('data-name')) draft.names[+t.getAttribute('data-name')] = t.value;
+    if (t.hasAttribute('data-name')) {
+      draft.names[+t.getAttribute('data-name')] = t.value;
+      // once an error was shown, re-check while typing (without moving focus)
+      if (app.querySelector('#ps-names-err').textContent) validNames(true);
+    }
     if (t.hasAttribute('data-team')) draft.teamNames[+t.getAttribute('data-team')] = t.value;
     if (t.id === 'ps-code-in') t.value = t.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
   });
