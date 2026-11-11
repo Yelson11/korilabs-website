@@ -768,6 +768,7 @@
 .p-paths li:nth-child(1) { --c: var(--red); }
 .p-paths li:nth-child(2) { --c: #f2c230; }
 .p-paths li:nth-child(3) { --c: #22b3c4; }
+.p-paths li:nth-child(4) { --c: #3dba6a; }
 .p-path {
   position: relative;
   display: grid;
@@ -808,14 +809,17 @@
 .p-path__title { font: italic 800 1.3rem/1.15 var(--display); text-transform: uppercase; }
 .p-path__text { max-width: 17rem; color: var(--cream-dim); font-size: 0.95rem; line-height: 1.4; }
 
-@media (min-width: 48rem) {
-  .p-paths { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; padding-bottom: 2.5rem; }
+@media (min-width: 40rem) {
+  .p-paths { grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+}
+@media (min-width: 64rem) {
+  .p-paths { grid-template-columns: repeat(4, 1fr); gap: 1.25rem; padding-bottom: 2.5rem; }
   /* track line with one dot under each card, like a race timeline */
   .p-paths::after {
     content: "";
     position: absolute;
-    left: calc(100% / 6);
-    right: calc(100% / 6);
+    left: calc(100% / 8);
+    right: calc(100% / 8);
     bottom: 0.45rem;
     height: 1px;
     background: var(--line);
