@@ -19,7 +19,9 @@
   };
   var POINTS = { 2: [3, 1], 3: [5, 3, 1], 4: [5, 3, 1, 0], 5: [7, 4, 3, 2, 1], 6: [7, 4, 3, 2, 1, 0] };
   var PLAYER_COLORS = ['#e63c3c', '#f2c230', '#22b3c4', '#3dba6a', '#9b51e0', '#f08c28'];
-  var TEAM_COLORS = ['#e63c3c', '#22b3c4', '#9b51e0'];
+  /* Fixed teams in Modo escudería: a nod to three well-known racing teams without any real name or brand */
+  var TEAMS = ['Escudería Pura Sangre', 'Silver Team', 'Nitro Racing'];
+  var TEAM_COLORS = ['#e63c3c', '#c9ccd3', '#3b6fe0'];
   var KEY = 'pinto-temporada:';
   var CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 
@@ -27,7 +29,7 @@
   var announcer = document.getElementById('ps-announce');
   var state = null;          // current season
   var order = [];            // finishing order being entered for the current GP (player indexes)
-  var draft = { count: 4, names: ['', '', '', '', '', ''], season: 'clasica', teams: false, teamNames: ['', '', ''], double: false };
+  var draft = { count: 4, names: ['', '', '', '', '', ''], season: 'clasica', teams: false, double: false };
 
   /* ---------- storage (may be unavailable: private mode, blocked cookies) ---------- */
   var canStore = (function () {
@@ -87,7 +89,7 @@
   }
   function hasTeams(s) { return !!s.teams && (s.players.length === 4 || s.players.length === 6); }
   function teamOf(i) { return Math.floor(i / 2); }
-  function teamName(s, t) { return (s.teamNames && s.teamNames[t]) || 'Escudería ' + (t + 1); }
+  function teamName(s, t) { return (s.teamNames && s.teamNames[t]) || TEAMS[t]; }
   function setHash(code) {
     try { history.replaceState(null, '', code ? '#' + code : location.pathname + location.search); }
     catch (e) { location.hash = code || ''; }
@@ -208,8 +210,7 @@
     if (teams) {
       for (var t = 0; t < count / 2; t++) {
         names += '<div class="ps-team" style="--tc:' + TEAM_COLORS[t] + '">' +
-          '<label class="ps-team__name">' + teamDot(t) + '<span class="visually-hidden">Nombre de la escudería ' + (t + 1) + '</span>' +
-          '<input class="ps-input ps-input--team" data-team="' + t + '" maxlength="18" autocomplete="off" placeholder="Escudería ' + (t + 1) + '" value="' + esc(draft.teamNames[t]) + '"></label>' +
+          '<p class="ps-team__name">' + teamDot(t) + TEAMS[t] + '</p>' +
           nameInput(t * 2) + nameInput(t * 2 + 1) + '</div>';
       }
     } else {
@@ -441,7 +442,7 @@
       var players = [], teamNames = [];
       if (!validNames()) return;
       for (var i = 0; i < draft.count; i++) players.push(draft.names[i].trim());
-      for (var k = 0; k < draft.count / 2; k++) teamNames.push((draft.teamNames[k] || '').trim() || 'Escudería ' + (k + 1));
+      for (var k = 0; k < draft.count / 2; k++) teamNames.push(TEAMS[k]);
       startSeason(players, draft.season, { teams: draft.teams, teamNames: teamNames, double: draft.double });
       return;
     }
@@ -490,7 +491,6 @@
       // once an error was shown, re-check while typing (without moving focus)
       if (app.querySelector('#ps-names-err').textContent) validNames(true);
     }
-    if (t.hasAttribute('data-team')) draft.teamNames[+t.getAttribute('data-team')] = t.value;
     if (t.id === 'ps-code-in') t.value = t.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
   });
 

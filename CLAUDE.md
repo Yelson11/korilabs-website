@@ -159,7 +159,9 @@ México, Inglaterra, Qatar (longer seasons include the shorter ones, same order)
 4 → 5/3/1/0 · 5 → 7/4/3/2/1 · 6 → 7/4/3/2/1/0. End-of-season ties (owner's rule): most 1st places, then most 2nd, 3rd…,
 then best result in the last GP; still tied = shared place. Optional house rules picked in setup (owner's
 rules, not in the rulebook): **Modo escudería** (only 4 or 6 players; everyone races alone but players 1+2, 3+4, 5+6
-form a team that adds up points; optional team names; standings show teams + drivers; team tiebreak uses the members'
+form a team that adds up points; teams default to "Escudería Pura Sangre" (red), "Silver Team" (silver) and "Nitro Racing"
+(blue) — a wink at real F1 teams without their names or brands, keep it that way. Team names are fixed (with 4 players
+only the first two); players just type their names into a team; standings show teams + drivers; team tiebreak uses the members'
 positions and the best member result in the last GP) and **Puntos dobles** (GP 5, 10 and 15 score double; tiebreak
 position counts are not doubled). **No server:** each season is saved in localStorage as
 `pinto-temporada:<CODE>` (4 chars, no 0/O/1/I/L) and the URL hash `#CODE` reopens it after a reload; codes only work
@@ -185,7 +187,7 @@ on the same device/browser. If storage is blocked the page says progress won't s
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
   Current: `styles.css?v=2`, `home.css?v=9` (index and privacidad),
-  `pinto.css?v=31`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `pinto-tutorial.css?v=7`, `tutorial-data.js?v=8`, `tutorial.js?v=7`, `pinto-temporada.css?v=4`, `temporada.js?v=4`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
+  `pinto.css?v=31`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `pinto-tutorial.css?v=7`, `tutorial-data.js?v=8`, `tutorial.js?v=7`, `pinto-temporada.css?v=5`, `temporada.js?v=5`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
 - **Sender (newsletter):** universal script in the `<head>` of `index.html`; form is

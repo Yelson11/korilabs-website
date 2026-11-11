@@ -262,8 +262,7 @@
 
 .ps-names--teams { grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); }
 .ps-team { display: grid; gap: 0.5rem; padding: 0.8rem; border: 1px solid var(--line); border-top: 3px solid var(--tc); border-radius: 0.9rem; background: rgb(245 240 232 / 0.03); }
-.ps-team__name { position: relative; display: block; }
-.ps-team__name .ps-dot { position: absolute; top: 50%; left: 0.9rem; transform: translateY(-50%); }
+.ps-team__name { display: flex; align-items: center; gap: 0.55rem; margin: 0.1rem 0 0.2rem; font: italic 800 1rem/1.2 var(--display); text-transform: uppercase; }
 .ps-input--team { padding-left: 2.2rem; font-family: var(--display); font-style: italic; font-weight: 800; text-transform: uppercase; }
 .ps-input--team::placeholder { text-transform: none; font-style: normal; font-weight: 600; }
 .ps-dot--team { width: 0.85rem; height: 0.85rem; border-radius: 0.2rem; }
