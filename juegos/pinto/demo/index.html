@@ -25,10 +25,11 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Istok+Web:wght@400;700&amp;family=Poppins:ital,wght@0,500;0,600;1,700;1,800&amp;family=Saira:ital,wght@0,400;0,600;0,700;0,800;1,400&amp;display=swap">
 
   <link rel="stylesheet" href="../../../css/styles.css?v=2">
-  <link rel="stylesheet" href="../../../css/pinto.css?v=36">
+  <link rel="stylesheet" href="../../../css/pinto.css?v=37">
   <link rel="stylesheet" href="../../../css/pinto-demo.css?v=17">
   <script src="pinto-engine.js?v=10" defer></script>
   <script src="demo.js?v=16" defer></script>
+  <script src="../menu.js?v=1" defer></script>
 </head>
 <body class="pinto pinto-demo">
 
@@ -41,15 +42,21 @@
   </svg>
 
   <div class="page">
-    <header class="site-header">
+    <header class="site-header p-header">
       <a class="home-link p-brand" href="../" aria-label="PINTO, ir a la página del juego"><img src="../img/logo-pinto.webp" width="584" height="175" alt=""></a>
-      <nav class="site-nav" aria-label="Principal">
+      <button class="p-menu-btn" type="button" aria-expanded="false" aria-controls="p-nav" hidden><span class="p-menu-btn__bars" aria-hidden="true"><span></span></span><span class="visually-hidden">Abrir menú</span></button>
+      <nav class="site-nav p-nav" id="p-nav" aria-label="PINTO">
+        <a class="site-nav__link" href="../">Inicio</a>
         <a class="site-nav__link" href="../instrucciones/">Cómo jugar</a>
-        <a class="site-nav__link site-nav__link--tutorial" href="../tutorial/">Tutorial</a>
-        <a class="site-nav__icon" href="https://www.instagram.com/korilabs_cr/" target="_blank" rel="noopener noreferrer">
+        <a class="site-nav__link" href="../#cartas">Cartas</a>
+        <a class="site-nav__link" href="../#modos">Modos</a>
+        <span class="p-nav__extra">
+          <a class="p-kori" href="../../../"><svg class="p-kori__cat" viewBox="22 17 266 266" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M57.1611 206.162C37.0604 206.162 25 192.091 25 174.001C25 159.93 28.0151 147.87 33.0403 137.82L41.0806 97.6181C42.4206 93.598 45.1007 92.928 49.1208 95.6081L69.2215 111.689C73.2417 109.679 77.2618 109.679 81.282 111.689L101.383 95.6081C105.403 92.928 108.083 94.268 109.423 99.6282L123.493 123.749C139.574 111.689 161.685 105.658 183.796 109.679C215.957 113.699 244.098 141.84 244.098 174.001C244.098 192.091 236.057 206.162 221.987 206.162H57.1611ZM43.0906 161.94C51.1309 171.321 59.1712 171.321 67.2115 161.94C59.1712 165.29 51.1309 165.29 43.0906 161.94ZM83.292 161.94C91.3323 171.321 99.3726 171.321 107.413 161.94C99.3726 165.29 91.3323 165.29 83.292 161.94ZM71.2316 176.011H79.2719C79.2719 178.356 77.9318 180.198 75.2517 181.539C72.5717 180.198 71.2316 178.356 71.2316 176.011Z"/><path d="M236.06 192.092C266.211 194.102 278.271 174.001 274.251 153.901C272.241 141.84 262.19 135.81 254.15 139.83" fill="none" stroke="currentColor" stroke-width="20.1007" stroke-linecap="round"/></svg><span>Kori Labs</span></a>
+          <a class="site-nav__icon" href="https://www.instagram.com/korilabs_cr/" target="_blank" rel="noopener noreferrer">
           <svg aria-hidden="true" focusable="false"><use href="#icon-instagram"/></svg>
           <span class="visually-hidden">Instagram de Kori Labs (se abre en una pestaña nueva)</span>
         </a>
+        </span>
       </nav>
     </header>
 

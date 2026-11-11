@@ -84,18 +84,101 @@
 .p-season-cta:focus-visible { outline: 3px solid var(--cream); outline-offset: 4px; }
 @media (prefers-reduced-motion: reduce) { .p-season-cta, .p-season-cta:hover { transition: none; transform: none; } }
 
-/* PINTO has its own header: PINTO logo on the left (instead of the Kori Labs wordmark),
-   Cómo jugar / Tutorial / Instagram on the right. Kori Labs is credited in the footer. */
+/* PINTO has its own header: PINTO logo on the left (instead of the Kori Labs wordmark), then
+   Inicio / Cómo jugar / Cartas / Modos, a "Kori Labs" pill back to the studio site and Instagram.
+   Under 56rem the nav collapses behind a hamburger (menu.js); without JS it just wraps. */
+.p-header { position: relative; }
 .p-brand { display: block; flex: none; border-radius: 0.4rem; }
-.pinto .site-nav__link { white-space: nowrap; }
 .p-brand img { display: block; width: clamp(6.25rem, 24vw, 8.5rem); height: auto; }
+.pinto .site-nav__link { white-space: nowrap; }
+.p-nav { flex-wrap: wrap; justify-content: flex-end; }
+.p-nav__extra { display: flex; align-items: center; gap: 0.75rem; margin-left: 0.25rem; }
+.p-kori {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.9rem 0.45rem 0.7rem;
+  border: 1.5px solid rgb(245 240 232 / 0.4);
+  border-radius: 999px;
+  color: var(--cream);
+  font: 700 0.8rem/1 var(--display);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.p-kori__cat { width: 1.35rem; height: 1.35rem; flex: none; }
+.p-kori:hover { background: var(--cream); border-color: var(--cream); color: var(--asphalt); }
+.p-kori:focus-visible { outline: 3px solid var(--red); outline-offset: 4px; }
+
+.p-menu-btn {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 1.5px solid rgb(245 240 232 / 0.4);
+  border-radius: 50%;
+  background: none;
+  color: var(--cream);
+  cursor: pointer;
+}
+.p-menu-btn[hidden] { display: none; }
+.p-menu-btn:focus-visible { outline: 3px solid var(--red); outline-offset: 4px; }
+.p-menu-btn__bars, .p-menu-btn__bars::before, .p-menu-btn__bars::after,
+.p-menu-btn__bars span { display: block; width: 1.15rem; height: 2px; border-radius: 2px; background: currentColor; }
+.p-menu-btn__bars { position: relative; background: none; }
+.p-menu-btn__bars span { position: absolute; top: 0; }
+.p-menu-btn__bars::before, .p-menu-btn__bars::after { content: ""; position: absolute; left: 0; transition: transform 0.2s ease; }
+.p-menu-btn__bars::before { top: -6px; }
+.p-menu-btn__bars::after { top: 6px; }
+.p-menu-btn__bars span { transition: opacity 0.15s ease; }
+.is-open .p-menu-btn__bars span { opacity: 0; }
+.is-open .p-menu-btn__bars::before { transform: translateY(6px) rotate(45deg); }
+.is-open .p-menu-btn__bars::after { transform: translateY(-6px) rotate(-45deg); }
+
 .p-footer-link { color: inherit; text-decoration: underline; text-decoration-color: var(--red); text-underline-offset: 3px; }
 .p-footer-link:hover { color: var(--cream); }
 .p-footer-link:focus-visible { outline: 3px solid var(--red); outline-offset: 3px; border-radius: 2px; }
+
+@media (min-width: 56.01rem) {
+  .p-menu-btn { display: none !important; }
+}
+@media (max-width: 56rem) {
+  .p-header--js .p-menu-btn:not([hidden]) { display: grid; }
+  .p-header--js .p-nav {
+    display: none;
+    position: absolute;
+    z-index: 50;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    left: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 0.5rem 1.25rem 1.25rem;
+    border: 1px solid var(--line);
+    border-radius: 1rem;
+    background: var(--asphalt-2);
+    box-shadow: 0 18px 40px rgb(0 0 0 / 0.45);
+  }
+  .p-header--js.is-open .p-nav { display: flex; }
+  .p-header--js .p-nav .site-nav__link {
+    padding: 0.95rem 0.25rem;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.95rem;
+    letter-spacing: 0.16em;
+  }
+  .p-header--js .p-nav .site-nav__link::after { display: none; }
+  .p-header--js .p-nav .site-nav__link[aria-current="page"] { color: var(--red); }
+  .p-header--js .p-nav__extra { justify-content: space-between; margin: 1.1rem 0 0; }
+  .p-header--js .p-kori { padding: 0.65rem 1.1rem 0.65rem 0.9rem; font-size: 0.9rem; }
+}
 @media (max-width: 22.4rem) {
   .site-nav { gap: 0.6rem; }
   .site-nav__link { letter-spacing: 0.06em; }
-  .site-nav__link--tutorial { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .p-kori, .p-menu-btn__bars::before, .p-menu-btn__bars::after, .p-menu-btn__bars span { transition: none; }
 }
 
 /* --- Textos comunes ----------------------------------------------------- */
