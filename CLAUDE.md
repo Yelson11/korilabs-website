@@ -65,6 +65,7 @@ comments just to translate them — only translate what you are already touching
 │   ├── pinto.css            PINTO page (p-* classes, box3d__*), its own dark "asphalt" palette
 │   ├── pinto-demo.css       PINTO demo board (pd-* classes), loaded after pinto.css
 │   ├── pinto-tutorial.css   PINTO rules tutorial (pt-* classes), loaded after pinto.css
+│   ├── pinto-temporada.css  PINTO season scorekeeper (ps-* classes), loaded after pinto.css
 │   └── legal.css            Privacy page layout (legal__*)
 ├── juegos/
 │   ├── index.html           Meta-refresh redirect → /#juegos (home section). Replace with a listing when there are more games
@@ -91,6 +92,9 @@ comments just to translate them — only translate what you are already touching
 │       └── img/             caja-*.webp (6 box faces), cartas/*.webp (card art, 660×922, cream border baked in,
 │                            rendered from the Figma SVG export; special cards WITHOUT their description — see rules),
 │                            logo-pinto.webp, og-pinto.jpg (share preview)
+│       ├── modos/index.html Meta-refresh → ../instrucciones/#modos (modos/ has no page of its own)
+│       ├── modos/temporada/ Modo Temporada scorekeeper (see "PINTO season scorekeeper" below). index.html (shell) +
+│       │                    temporada.js (whole app). Linked from the Temporada mode card on the PINTO page and instrucciones/
 ├── pinto/reglas/index.html  Meta-refresh → /juegos/pinto/instrucciones/ (short alias; keep working)
 ├── privacidad/index.html    Privacy policy (only email is collected, via Sender; contact info@korilabscr.com)
 └── regalos/
@@ -143,6 +147,22 @@ Minimal closing `.p-finish` ("¡Que comience la carrera!" · "PINTO · Un juego 
 The score sheet gift is offered via "Suscribirme" (`/#suscribete`), never linked directly. There are no real videos yet
 (the "videos" are the tutorial animations); don't invent video links.
 
+### PINTO season scorekeeper — `juegos/pinto/modos/temporada/` (CSS: `styles.css` + `pinto.css` + `pinto-temporada.css`)
+Single-page vanilla JS app (`temporada.js`, renders into `#ps-app`). Screens: home (new season, resume by code, list of
+seasons saved on this device) → setup (2–6 players + names, Sprint 5 / Clásica 10 / Completa 15 GP, optional extra rules) → one screen per Gran
+Premio (tap players in finishing order; the last one is filled in automatically; standings + GP history; "Corregir el último
+Gran Premio") → final podium. Data comes from the official rules ("Campeonato de Grandes Premios" / "Puntuación"): GP list
+Australia, Estados Unidos, Arabia Saudita, Italia, Brasil, España, Países Bajos, Singapur, Canadá, Bélgica, China, Japón,
+México, Inglaterra, Qatar (longer seasons include the shorter ones, same order); points 2 players 3/1 · 3 → 5/3/1 ·
+4 → 5/3/1/0 · 5 → 7/4/3/2/1 · 6 → 7/4/3/2/1/0. End-of-season ties (owner's rule): most 1st places, then most 2nd, 3rd…,
+then best result in the last GP; still tied = shared place. Optional house rules picked in setup (owner's
+rules, not in the rulebook): **Modo escudería** (only 4 or 6 players; everyone races alone but players 1+2, 3+4, 5+6
+form a team that adds up points; optional team names; standings show teams + drivers; team tiebreak uses the members'
+positions and the best member result in the last GP) and **Puntos dobles** (GP 5, 10 and 15 score double; tiebreak
+position counts are not doubled). **No server:** each season is saved in localStorage as
+`pinto-temporada:<CODE>` (4 chars, no 0/O/1/I/L) and the URL hash `#CODE` reopens it after a reload; codes only work
+on the same device/browser. If storage is blocked the page says progress won't survive a reload.
+
 ### Privacy — `privacidad/index.html` (CSS: `styles.css` + `home.css` + `legal.css`)
 
 ## Design tokens
@@ -154,7 +174,7 @@ The score sheet gift is offered via "Suscribirme" (`/#suscribete`), never linked
 - `css/pinto.css` redefines its own palette (`--asphalt*`, `--cream`, `--red`, `--display: Poppins`) and
   box dimensions `--bw/--bh/--bd` (box ratio 758 × 1057 × 244 — keep it if box images change).
 - Buttons are pills (`h-btn`, `p-button`, `p-button--cream`); don't use red-underlined text links as buttons.
-- Class prefixes: `h-` home, `p-` PINTO, `pd-` PINTO demo, `pt-` PINTO tutorial, `legal__` privacy, BEM-ish (`block__elem--mod`).
+- Class prefixes: `h-` home, `p-` PINTO, `pd-` PINTO demo, `pt-` PINTO tutorial, `ps-` PINTO season scorekeeper, `legal__` privacy, BEM-ish (`block__elem--mod`).
   Utility: `.visually-hidden`, `.accent`.
 - Every CSS file has a `prefers-reduced-motion` block; keep animations behind it.
 
@@ -163,14 +183,14 @@ The score sheet gift is offered via "Suscribirme" (`/#suscribete`), never linked
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
   Current: `styles.css?v=2`, `home.css?v=9` (index and privacidad),
-  `pinto.css?v=30`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `pinto-tutorial.css?v=7`, `tutorial-data.js?v=8`, `tutorial.js?v=7`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
+  `pinto.css?v=31`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `pinto-tutorial.css?v=7`, `tutorial-data.js?v=8`, `tutorial.js?v=7`, `pinto-temporada.css?v=1`, `temporada.js?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
 - **Sender (newsletter):** universal script in the `<head>` of `index.html`; form is
   `div.sender-form-field[data-sender-form-id="dNk3wL"]`; fallback block `[data-sender-fallback]` links to
   `https://stats.sender.net/forms/dNk3wL/view`. Form look and the welcome/gift email are configured in
   Sender, not here. Only touch code if the form ID changes.
-- **Never break public URLs:** `/juegos/pinto/instrucciones/` (printed QR), `/pinto/reglas/`,
+- **Never break public URLs:** `/juegos/pinto/instrucciones/` (printed QR), `/juegos/pinto/modos/temporada/` (season codes live in its URL hash), `/pinto/reglas/`,
   `/regalos/pinto-modo-temporada.pdf` (sent in emails), `/privacidad/`. `reglamento.pdf` is only reached
   through the instructions page, so it may move — just update the "Reglamento oficial" card there.
 - **Share previews:** `og-korilabs.jpg` / `og-pinto.jpg` are 1200×630; regenerate if headlines change.

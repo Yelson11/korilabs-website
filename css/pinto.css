@@ -630,6 +630,9 @@
   font-size: 0.95rem;
 }
 .p-mode__extra strong { color: var(--cream); }
+/* Link to the season scorekeeper (modos/temporada/) */
+.p-mode__play { margin-top: 1rem; }
+.p-mode__play svg { width: 1.1rem; height: 1.1rem; }
 .p-rules a { color: var(--cream); text-decoration-color: var(--red); text-underline-offset: 0.2em; }
 
 /* Hover lift for special cards and game modes, like the rhythm-card fan.
