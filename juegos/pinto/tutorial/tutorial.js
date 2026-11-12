@@ -102,7 +102,7 @@
     var on = view === 'detail' && r.i === cur;
     return '<a class="pt-q' + (on ? ' is-on' : '') + '" href="#' + r.id + '" data-rule="' + r.i + '"' + (on ? ' aria-current="page"' : '') + '>' +
       (r.isRef ? '<span class="pt-q__icon">' + TABLE_ICON + '</span>' : '<span class="pt-q__mini">' + thumb(miniOf(r)) + '</span>') +
-      '<span class="pt-q__t"><span class="pt-q__q">' + mark(r.q, tk) + '</span><span class="pt-q__n">' + mark(r.title, tk) + '</span></span>' +
+      '<span class="pt-q__t"><span class="pt-q__q">' + mark(r.title, tk) + '</span></span>' +
       '<span class="pt-q__go" aria-hidden="true">›</span></a>';
   }
   function groupHead(g, k, ctx) {
@@ -134,7 +134,7 @@
     var on = view === 'detail' && cur === REF.i;
     return '<a class="pt-quick' + (on ? ' is-on' : '') + '" href="#' + REF.id + '" data-rule="' + REF.i + '"' + (on ? ' aria-current="page"' : '') + '>' +
       '<span class="pt-quick__icon">' + TABLE_ICON + '</span><span class="pt-quick__t"><span class="pt-quick__k">Acceso rápido</span>' +
-      '<span class="pt-quick__q">' + esc(REF.q) + '</span>' + (ctx === 'side' ? '' : '<span class="pt-quick__s">Tabla según la carta de arriba de la pila</span>') + '</span>' +
+      '<span class="pt-quick__q">' + esc(REF.title) + '</span>' + (ctx === 'side' ? '' : '<span class="pt-quick__s">Tabla según la carta de arriba de la pila</span>') + '</span>' +
       '<span class="pt-q__go" aria-hidden="true">›</span></a>';
   }
   function listHTML(ctx) {

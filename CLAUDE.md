@@ -85,8 +85,8 @@ comments just to translate them — only translate what you are already touching
 │       ├── tutorial/        Tutorial = rules finder (indexable; linked from instrucciones/). Content follows the printed
 │       │                    leaflet ("PINTO · Instrucciones"), without Objetivo/Contenido/Preparación/Quién comienza (owner's
 │       │                    choice). Four groups: En tu turno, Fases de la carrera, Combinaciones (Encadenar + Carril Lleno;
-│       │                    our name, the leaflet has no title for them), Cartas especiales. Each rule = a visitor question
-│       │                    (+ official name), leaflet text, optional note / "Sobre" / "Luego", related rules and a looping,
+│       │                    our name, the leaflet has no title for them), Cartas especiales. Lists show each rule by its leaflet
+│       │                    name; the visitor question appears only on the rule view (and is still searched), leaflet text, optional note / "Sobre" / "Luego", related rules and a looping,
 │       │                    GIF-like animation on a mini table (pause button). Phones: list (sticky search + group chips,
 │       │                    special cards as a grid) → one rule per #hash with a fixed bottom bar (Anterior · Reglas ·
 │       │                    Siguiente) and a <dialog> bottom sheet with every rule. Desktop (≥60rem): sticky sidebar
@@ -204,7 +204,7 @@ on the same device/browser. If storage is blocked the page says progress won't s
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
   Current: `styles.css?v=2`, `home.css?v=9` (index and privacidad),
-  `pinto.css?v=37`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `pinto-tutorial.css?v=9`, `tutorial-data.js?v=11`, `tutorial.js?v=9`, `pinto-temporada.css?v=10`, `temporada.js?v=10`, PINTO favicons `?v=1`, `menu.js?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
+  `pinto.css?v=37`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `pinto-tutorial.css?v=9`, `tutorial-data.js?v=11`, `tutorial.js?v=10`, `pinto-temporada.css?v=10`, `temporada.js?v=10`, PINTO favicons `?v=1`, `menu.js?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
 - **Sender (newsletter):** universal script in the `<head>` of `index.html`; form is
