@@ -20,7 +20,8 @@
              turn ('you' | 1–3)   focus   no ('hand' | [codes] crossed out in your hand)
              play (code or [codes]) + from ('hand' | 'vis')   bot (1–3) + card
              skip (1–3)   pickup   take (visible cards move to your hand)   flip (code revealed from a hidden card)   clear (pile leaves the game)
-             wait (ms after the action, default 1100) */
+             wait (ms after the action, default 1100)
+   A player may only play different values in one turn with the Rebufo: never script e.g. a 4 and then a 6. */
 (function (root) {
   'use strict';
 
@@ -74,10 +75,10 @@
             '<p>Cuando ya jugaste al menos una, el siguiente jugador puede <strong>interrumpirte</strong> con una carta o combinación válida sobre el tope: tu turno termina y empieza el suyo. Si nadie te interrumpe, puedes seguir jugando o terminar tu turno.</p>',
           note: 'La Bandera Roja, la Bandera a Cuadros y el Carril Lleno terminan el turno de inmediato.',
           rel: ['encadenar', 'carril', 'roja', 'cuad'],
-          pile: ['r3'], hand: ['r4', 'r6', 'r2'],
+          pile: ['r3'], hand: ['r4', 'r4', 'r6'],
           script: [
-            { turn: 'you', wait: 800 }, { play: 'r4' }, { play: 'r6' },
-            { turn: 1 }
+            { turn: 'you', wait: 800 }, { play: 'r4' }, { play: 'r4' },
+            { turn: 1, wait: 500 }, { bot: 1, card: 'r7' }
           ]
         }
       ]
@@ -93,13 +94,15 @@
             '<li><strong>Visibles.</strong> Sin cartas en la mano, toma tus visibles: son tu nueva mano.</li>' +
             '<li><strong>Ocultas.</strong> Sin cartas otra vez, toma una carta oculta y súmala a tu mano: si es válida, juégala; si no, cedes el paso. Solo al deshacerte de ella puedes tomar la siguiente.</li></ol>',
           rel: ['avanzar', 'ceder'],
-          pile: ['r3'], hand: ['r4'], vis: ['r5', 'r6', 'r6'], hid: 3, focus: 'hand',
+          pile: ['r3'], hand: ['r4'], vis: ['r6', 'r6', 'r6'], hid: 3, focus: 'hand',
           script: [
             { turn: 'you', focus: 'hand' }, { play: 'r4' },
-            { focus: 'vis' }, { take: true },
-            { focus: 'hand', wait: 600 }, { play: 'r5' }, { play: ['r6', 'r6'] },
-            { focus: 'hid' }, { flip: 'r7' },
-            { focus: 'hand', wait: 700 }, { play: 'r7' }
+            { turn: 1, wait: 500 }, { bot: 1, card: 'r5' },
+            { turn: 'you', focus: 'vis' }, { take: true },
+            { focus: 'hand', wait: 600 }, { play: ['r6', 'r6', 'r6'] },
+            { turn: 2, wait: 500 }, { bot: 2, card: 'r7' },
+            { turn: 'you', focus: 'hid' }, { flip: 'r8' },
+            { focus: 'hand', wait: 700 }, { play: 'r8' }
           ]
         },
         {
