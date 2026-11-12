@@ -1,8 +1,13 @@
-/* PINTO tutorial: each subsection is a fixed explanation plus a short animation on a
-   mini table that loops like a GIF. Content lives in tutorial-data.js
-   (window.PintoTutorial.sections: three sections, each with subsections).
-   It works as a quick-reference guide: any subsection can be opened directly.
-   Routing by hash: #<subsection id> (e.g. #ritmo, #azul) or #<section id>. */
+/* PINTO tutorial: a rules finder. Content lives in tutorial-data.js (window.PintoTutorial.groups:
+   four groups in the leaflet's order, each with rules written as questions).
+
+   Views
+     Phones (< 60rem): no hash = list (search + group chips + questions); #<rule> = one rule with its
+       animation, a bottom bar (Anterior · Reglas · Siguiente) and a bottom sheet with every rule.
+     Desktop: sidebar (search + all questions) + the open rule. No hash = first rule.
+   Routing by hash: #<rule id> (e.g. #ritmo, #azul — instrucciones/ links to these) or #<group id>
+   (also the old section ids #desarrollo / #reglas). Each rule's animation loops like a GIF and can
+   be paused. */
 (function () {
   'use strict';
   var T = window.PintoTutorial;
@@ -14,87 +19,206 @@
   var FILES = { cuad: 'bandera-a-cuadros', roja: 'bandera-roja', ama: 'bandera-amarilla', azul: 'bandera-azul', vr: 'vuelta-rapida', reb: 'rebufo', back: 'reverso' };
   var NAMES = { cuad: 'Bandera a Cuadros', roja: 'Bandera Roja', ama: 'Bandera Amarilla', azul: 'Bandera Azul', vr: 'Vuelta Rápida', reb: 'Rebufo', back: 'Carta oculta' };
   var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var desk = window.matchMedia('(min-width: 60rem)');
 
-  var SEC = T.sections, SUBS = [];
-  SEC.forEach(function (sec, si) { sec.subs.forEach(function (u) { u.sec = si; SUBS.push(u); }); });
+  var GROUPS = T.groups, RULES = [];
+  GROUPS.forEach(function (g, gi) {
+    g.rules.forEach(function (r, k) { r.g = gi; r.k = k; r.i = RULES.length; RULES.push(r); });
+  });
 
-  var sub = 0, sc = null;
-  var turn = null, skipped = null, runId = 0;   // highlighted turn, skipped player, id of the running loop
+  var cur = 0, view = 'detail', query = '', lastRule = -1, paused = false;
+  var sc = null, turn = null, skipped = null, runId = 0;   // table state, highlighted turn, skipped player, running loop id
 
   function file(c) { return /^r\d$/.test(c) ? 'ritmo-' + c.slice(1) : FILES[c]; }
   function name(c) { return /^r\d$/.test(c) ? 'Ritmo ' + c.slice(1) : NAMES[c]; }
   function img(c) { return '<img src="' + BASE + file(c) + '.webp' + VER + '" alt="' + name(c) + '" width="660" height="922" draggable="false">'; }
-  function thumb(c) { return '<img src="' + BASE + file(c) + '.webp' + VER + '" alt="" width="660" height="922">'; }
+  function thumb(c) { return '<img src="' + BASE + file(c) + '.webp' + VER + '" alt="" width="660" height="922" loading="lazy">'; }
   function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
   function $(sel) { return app.querySelector(sel); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function miniOf(r) { return r.card || r.mini || 'back'; }
 
-  function page() { return SUBS[sub]; }
-  function firstOf(si) { for (var i = 0; i < SUBS.length; i++) if (SUBS[i].sec === si) return i; return 0; }
+  /* ---------- Search ---------- */
+  var STOP = ' de la el los las que y a en un una unas unos mi me se con por lo es al del le o si tu yo hay como cuando para pasa puedo hago hace ';
+  function norm(s) { return String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
+  function words(s) { return norm(s.replace(/<[^>]+>/g, ' ')).split(/[^a-z0-9]+/).filter(Boolean); }
+  function tokens(q) {
+    var all = words(q).map(function (t) { return t.length > 3 && /s$/.test(t) ? t.slice(0, -1) : t; });
+    var useful = all.filter(function (t) { return STOP.indexOf(' ' + t + ' ') < 0; });
+    return useful.length ? useful : all;
+  }
+  RULES.forEach(function (r) {
+    r.head = words(r.q + ' ' + r.title);
+    r.body = words([r.keys, r.text, r.on, r.then, r.note].filter(Boolean).join(' '));
+  });
+  function has(list, t) { for (var i = 0; i < list.length; i++) if (list[i].indexOf(t) === 0) return true; return false; }
+  function search(q) {
+    var tk = tokens(q), full = [], part = [];
+    if (!tk.length) return null;
+    RULES.forEach(function (r) {
+      var score = 0, hits = 0;
+      tk.forEach(function (t) {
+        if (has(r.head, t)) { score += 3; hits++; } else if (has(r.body, t)) { score += 1; hits++; }
+      });
+      if (hits === tk.length) full.push({ r: r, s: score });
+      else if (hits) part.push({ r: r, s: score });
+    });
+    function by(a, b) { return b.s - a.s || a.r.i - b.r.i; }
+    return { tk: tk, full: full.sort(by).map(function (x) { return x.r; }), part: part.sort(by).slice(0, 4).map(function (x) { return x.r; }) };
+  }
+  function mark(text, tk) {
+    if (!tk || !tk.length) return esc(text);
+    return text.split(/([A-Za-zÀ-ÿ0-9]+)/).map(function (seg, n) {
+      if (n % 2 === 0) return esc(seg);
+      var w = norm(seg);
+      return tk.some(function (t) { return w.indexOf(t) === 0; }) ? '<mark>' + esc(seg) + '</mark>' : esc(seg);
+    }).join('');
+  }
 
   /* ---------- Routing ---------- */
   function fromHash() {
-    var h = decodeURIComponent(location.hash.slice(1));
-    sub = 0;
-    SEC.forEach(function (sec, si) { if (h === sec.id) sub = firstOf(si); });
-    SUBS.forEach(function (u, i) { if (h === u.id) sub = i; });
-    render(!!h);
-  }
-  function go(i) {
-    if (i < 0 || i >= SUBS.length) return;
-    if (location.hash.slice(1) === SUBS[i].id) { sub = i; render(true); }
-    else location.hash = SUBS[i].id;
+    var h = decodeURIComponent(location.hash.slice(1)), gi = -1, ri = -1;
+    RULES.forEach(function (r) { if (r.id === h) ri = r.i; });
+    GROUPS.forEach(function (g, k) { if (g.id === h || (g.alias || []).indexOf(h) > -1) gi = k; });
+    var sheet = $('.pt-sheet'); if (sheet && sheet.open) sheet.close();
+    if (ri > -1) { cur = ri; view = 'detail'; }
+    else if (desk.matches) { cur = gi > -1 ? GROUPS[gi].rules[0].i : 0; view = 'detail'; }
+    else { view = 'list'; }
+    render(!!h, gi);
   }
 
-  /* ---------- Rendering ---------- */
-  function render(focusTitle) {
-    var pg = page(), si = pg.sec;
+  /* ---------- Lists (page, desktop sidebar, bottom sheet) ---------- */
+  function searchBox(ctx) {
+    return '<label class="pt-search"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>' +
+      '<span class="visually-hidden">Buscar una duda</span>' +
+      '<input type="search" class="pt-search__input" data-ctx="' + ctx + '" value="' + esc(query) + '" placeholder="¿Qué duda tienes?" autocomplete="off" enterkeyhint="search"></label>';
+  }
+  function row(r, ctx, tk) {
+    var on = view === 'detail' && r.i === cur;
+    return '<a class="pt-q' + (on ? ' is-on' : '') + '" href="#' + r.id + '" data-rule="' + r.i + '"' + (on ? ' aria-current="page"' : '') + '>' +
+      '<span class="pt-q__mini">' + thumb(miniOf(r)) + '</span>' +
+      '<span class="pt-q__t"><span class="pt-q__q">' + mark(r.q, tk) + '</span><span class="pt-q__n">' + mark(r.title, tk) + '</span></span>' +
+      '<span class="pt-q__go" aria-hidden="true">›</span></a>';
+  }
+  function groupHead(g, k, ctx) {
+    return '<h2 class="pt-g__head"' + (ctx === 'page' ? ' id="g-' + g.id + '"' : '') + '><span class="pt-g__n" style="background:' + g.color + '">' + (k + 1) + '</span>' + g.title + '</h2>';
+  }
+  function listBody(ctx) {
+    var res = search(query);
+    if (res) {
+      var html = '<p class="pt-count" role="status">' + (res.full.length === 1 ? '1 resultado' : res.full.length + ' resultados') + '</p>';
+      if (res.full.length) html += '<div class="pt-rows">' + res.full.map(function (r) { return row(r, ctx, res.tk); }).join('') + '</div>';
+      else {
+        html += '<p class="pt-empty">No encontramos esa duda. Prueba con otras palabras, como “recoger”, “azul” o “iguales”.</p>';
+        if (res.part.length) html += '<p class="pt-count">Quizás te sirva</p><div class="pt-rows">' + res.part.map(function (r) { return row(r, ctx, res.tk); }).join('') + '</div>';
+      }
+      return html + '<p class="pt-more"><button type="button" class="pt-link" data-clear>Ver todas las reglas</button> · ' +
+        '<a class="pt-link" href="../reglamento.pdf" target="_blank" rel="noopener noreferrer">Reglamento completo<span class="visually-hidden"> (se abre en una pestaña nueva)</span></a></p>';
+    }
+    return GROUPS.map(function (g, k) {
+      var inner = g.special && ctx === 'page'
+        ? '<div class="pt-cards">' + g.rules.map(function (r) {
+            return '<a class="pt-card" href="#' + r.id + '" data-rule="' + r.i + '">' + thumb(r.card) + '<span>' + r.title + '</span></a>';
+          }).join('') + '</div>'
+        : '<div class="pt-rows">' + g.rules.map(function (r) { return row(r, ctx); }).join('') + '</div>';
+      return '<section class="pt-g" data-g="' + k + '">' + groupHead(g, k, ctx) + inner + '</section>';
+    }).join('');
+  }
+  function listHTML(ctx) {
+    var chips = ctx === 'page' ? '<nav class="pt-chips" aria-label="Grupos de reglas">' + GROUPS.map(function (g, k) {
+      return '<button type="button" class="pt-chip' + (k === 0 ? ' is-on' : '') + '" data-group="' + k + '"><span class="pt-chip__dot" style="background:' + g.color + '"></span>' + g.title + '</button>';
+    }).join('') + '</nav>' : '';
+    return '<div class="pt-list pt-list--' + ctx + (query ? ' is-searching' : '') + '" data-ctx="' + ctx + '">' +
+      '<div class="pt-find">' + searchBox(ctx) + chips + '</div>' +
+      '<div class="pt-list__body">' + listBody(ctx) + '</div></div>';
+  }
+  function refreshLists(except) {
+    app.querySelectorAll('.pt-list').forEach(function (l) {
+      var ctx = l.getAttribute('data-ctx');
+      l.classList.toggle('is-searching', !!query);
+      var inp = l.querySelector('.pt-search__input');
+      if (inp !== except) inp.value = query;
+      l.querySelector('.pt-list__body').innerHTML = listBody(ctx);
+    });
+  }
+
+  /* ---------- Rule (detail) ---------- */
+  function detailHTML() {
+    var r = RULES[cur], g = GROUPS[r.g], prev = RULES[cur - 1], next = RULES[cur + 1];
+    var html = '<article class="pt-rule">' +
+      '<a class="pt-back" href="#' + g.id + '"><span aria-hidden="true">‹</span> Todas las reglas</a>' +
+      '<p class="pt-crumb"><span class="pt-crumb__dot" style="background:' + g.color + '"></span>' + g.title + ' · ' + (r.k + 1) + ' de ' + g.rules.length + '</p>' +
+      '<div class="pt-stagebox"><div class="pt-table" aria-hidden="true"></div>' +
+      '<button type="button" class="pt-pause" aria-pressed="' + paused + '"><span aria-hidden="true">' + (paused ? '▶' : '❚❚') + '</span><span class="visually-hidden">Pausar animación</span></button></div>' +
+      '<p class="pt-ask">' + esc(r.q) + '</p>' +
+      '<h2 class="pt-title" tabindex="-1">' + r.title + '</h2>' +
+      (r.on ? '<p class="pt-on"><strong>Sobre:</strong> ' + r.on + '</p>' : '') +
+      (r.text ? '<div class="pt-say">' + r.text + '</div>' : '') +
+      (r.then ? '<p class="pt-then"><strong>Luego:</strong> ' + r.then + '</p>' : '') +
+      (r.note ? '<p class="pt-note">' + r.note + '</p>' : '') +
+      (r.rel && r.rel.length ? '<div class="pt-rel"><p class="pt-rel__label">Relacionado</p><div class="pt-rel__list">' + r.rel.map(function (id) {
+        var o = RULES.filter(function (x) { return x.id === id; })[0];
+        return o ? '<a class="pt-rel__chip" href="#' + o.id + '">' + o.title + '</a>' : '';
+      }).join('') + '</div></div>' : '') +
+      '<nav class="pt-pn" aria-label="Reglas anterior y siguiente">' +
+      (prev ? '<a class="pt-pn__btn" href="#' + prev.id + '"><span class="pt-pn__dir"><span aria-hidden="true">‹</span> Anterior</span><b>' + prev.title + '</b></a>' : '<span></span>') +
+      (next ? '<a class="pt-pn__btn pt-pn__btn--next" href="#' + next.id + '"><span class="pt-pn__dir">Siguiente <span aria-hidden="true">›</span></span><b>' + next.title + '</b></a>'
+            : '<a class="pt-pn__btn pt-pn__btn--next" href="../instrucciones/"><span class="pt-pn__dir">Terminaste <span aria-hidden="true">›</span></span><b>Ver instrucciones</b></a>') +
+      '</nav></article>';
+    return html;
+  }
+  function barHTML() {
+    var prev = RULES[cur - 1], next = RULES[cur + 1];
+    return '<nav class="pt-bar" aria-label="Navegación del tutorial">' +
+      (prev ? '<a class="pt-bar__pn" href="#' + prev.id + '"><span><span aria-hidden="true">‹</span> Anterior</span><b>' + prev.title + '</b></a>' : '<span class="pt-bar__pn"></span>') +
+      '<button type="button" class="pt-bar__idx" data-sheet aria-haspopup="dialog"><span class="pt-bar__icon" aria-hidden="true"></span>Reglas</button>' +
+      (next ? '<a class="pt-bar__pn pt-bar__pn--next" href="#' + next.id + '"><span>Siguiente <span aria-hidden="true">›</span></span><b>' + next.title + '</b></a>'
+            : '<a class="pt-bar__pn pt-bar__pn--next" href="../instrucciones/"><span>Terminaste <span aria-hidden="true">›</span></span><b>Instrucciones</b></a>') +
+      '</nav>' +
+      '<dialog class="pt-sheet" aria-label="Todas las reglas"><div class="pt-sheet__top"><span class="pt-sheet__grab" aria-hidden="true"></span>' +
+      '<button type="button" class="pt-sheet__close" data-close>Cerrar</button></div>' + listHTML('sheet') + '</dialog>';
+  }
+
+  /* ---------- Render ---------- */
+  function render(fromNav, gi) {
     runId++;
+    var isDesk = desk.matches, detail = view === 'detail';
+    document.body.classList.toggle('pt-is-detail', detail && !isDesk);
+    document.body.classList.toggle('pt-is-list', !detail);
+    if (isDesk) app.innerHTML = '<div class="pt-layout"><aside class="pt-side" aria-label="Todas las reglas">' + listHTML('side') + '</aside><div class="pt-main">' + detailHTML() + '</div></div>';
+    else if (detail) app.innerHTML = detailHTML() + barHTML();
+    else app.innerHTML = listHTML('page');
 
-    // Desktop: full index (three sections with all their subsections)
-    var html = '<div class="pt-layout"><nav class="pt-index" aria-label="Secciones del tutorial">' + SEC.map(function (sec, k) {
-      return '<div class="pt-index__sec' + (k === si ? ' is-on' : '') + '">' +
-        '<button type="button" class="pt-index__head" data-sec="' + k + '"><span class="pt-index__n">' + (k + 1) + '</span>' + sec.title + '</button><ul>' +
-        SUBS.map(function (u, i) {
-          if (u.sec !== k) return '';
-          return '<li><button type="button" class="pt-index__sub' + (i === sub ? ' is-on' : '') + '" data-go="' + i + '"' + (i === sub ? ' aria-current="page"' : '') + '>' +
-            (u.card ? thumb(u.card) : '') + '<span>' + u.title + '</span></button></li>';
-        }).join('') + '</ul></div>';
-    }).join('') + '</nav><div class="pt-main">';
-
-    // Phones: section bar + subsection chips
-    html += '<nav class="pt-secs" aria-label="Secciones del tutorial">' + SEC.map(function (sec, k) {
-      return '<button type="button" class="pt-sec' + (k === si ? ' is-on' : '') + '" data-sec="' + k + '"' + (k === si ? ' aria-current="true"' : '') + '>' +
-        '<span class="pt-sec__n">' + (k + 1) + '</span><span class="pt-sec__t">' + sec.title + '</span></button>';
-    }).join('') + '</nav>';
-
-    html += '<div class="pt-stage"><div class="pt-subs" role="list" aria-label="' + SEC[si].title + '">' + SUBS.map(function (u, i) {
-      if (u.sec !== si) return '';
-      return '<button type="button" role="listitem" class="pt-sub' + (u.card ? ' pt-sub--card' : '') + (i === sub ? ' is-on' : '') + '" data-go="' + i + '"' + (i === sub ? ' aria-current="page"' : '') + '>' +
-        (u.card ? thumb(u.card) : '') + '<span>' + u.title + '</span></button>';
-    }).join('') + '</div>';
-
-    html += '<div class="pt-stage__head"><p class="pt-kicker">' + (si + 1) + '. ' + SEC[si].title + '</p>' +
-      '<h2 class="pt-title" tabindex="-1">' + pg.title + '</h2>' +
-      (pg.on ? '<p class="pt-on"><strong>Se juega:</strong> ' + pg.on + '</p>' : '') + '</div>';
-    html += '<p class="pt-say">' + pg.text + '</p>';
-    html += '<div class="pt-table" aria-hidden="true"></div>';
-
-    var prev = SUBS[sub - 1], next = SUBS[sub + 1];
-    html += '<div class="pt-pn">' +
-      (prev ? '<button type="button" class="pt-pn__btn" data-go="' + (sub - 1) + '"><span aria-hidden="true">←</span> ' + prev.title + '</button>' : '<span></span>') +
-      (next ? '<button type="button" class="pt-pn__btn pt-pn__btn--next" data-go="' + (sub + 1) + '">' + next.title + ' <span aria-hidden="true">→</span></button>' : '<a class="pt-pn__btn pt-pn__btn--next" href="../instrucciones/">Ver instrucciones <span aria-hidden="true">→</span></a>') +
-      '</div></div></div></div>';
-
-    app.innerHTML = html;
-    loop(pg, runId);
-    var row = $('.pt-subs'), on = $('.pt-sub.is-on');
-    if (row && on && row.scrollWidth > row.clientWidth) row.scrollLeft = on.offsetLeft - row.offsetLeft - 16;
-    if (focusTitle) {
-      var top = $('.pt-main').getBoundingClientRect().top;
-      if (top < 0) window.scrollTo({ top: window.scrollY + top - 12, behavior: reduced ? 'auto' : 'smooth' });
-      var t = $('.pt-title'); if (t && document.activeElement !== document.body) t.focus({ preventScroll: true });
+    if (detail) {
+      lastRule = cur;
+      loop(RULES[cur], runId);
+      if (fromNav) {
+        var top = app.getBoundingClientRect().top;
+        if (top < 0 || !isDesk) window.scrollTo({ top: Math.max(0, window.scrollY + top - 12), behavior: 'auto' });
+        var t = $('.pt-title'); if (t) t.focus({ preventScroll: true });
+      }
+      var on = $('.pt-side .pt-q.is-on');
+      if (on) { var side = $('.pt-side'), sr = side.getBoundingClientRect(), or = on.getBoundingClientRect(); if (or.top < sr.top || or.bottom > sr.bottom) side.scrollTop += or.top - sr.top - sr.height / 3; }
+    } else {
+      var target = lastRule > -1 ? $('.pt-list--page .pt-q[data-rule="' + lastRule + '"], .pt-list--page .pt-card[data-rule="' + lastRule + '"]') : null;
+      if (target) { target.scrollIntoView({ block: 'center' }); target.focus({ preventScroll: true }); }
+      else if (gi > -1) { var h = document.getElementById('g-' + GROUPS[gi].id); if (h) h.scrollIntoView({ block: 'start' }); }
+      syncChips();
     }
   }
+
+  /* Group chips follow the scroll on the phone list */
+  function syncChips() {
+    var chips = app.querySelectorAll('.pt-chip'); if (!chips.length) return;
+    var find = $('.pt-find'), line = (find ? find.getBoundingClientRect().bottom : 0) + 24, on = 0;
+    app.querySelectorAll('.pt-list--page .pt-g').forEach(function (s) { if (s.getBoundingClientRect().top <= line) on = +s.getAttribute('data-g'); });
+    chips.forEach(function (c, k) {
+      var was = c.classList.contains('is-on');
+      c.classList.toggle('is-on', k === on);
+      if (k === on && !was) { var bar = c.parentNode; bar.scrollTo({ left: c.offsetLeft - 16, behavior: reduced ? 'auto' : 'smooth' }); }
+    });
+  }
+  window.addEventListener('scroll', function () { if (view === 'list') syncChips(); }, { passive: true });
 
   function drawTable(pg) {
     var tbl = $('.pt-table'); if (!tbl) return;
@@ -146,11 +270,15 @@
   }
   function pileTarget() { return $('.pt-pile .pt-pc:last-child') || $('.pt-pile'); }
 
-  /* Plays the subsection script, then fades and starts again until the page changes.
-     Script actions: { turn, focus, no, play, from, bot, card, skip, pickup, take, flip, clear, wait } */
+  /* Plays the rule's script, then fades and starts again until the page changes.
+     Pausing holds the loop between steps. */
   function Stop() {}
   async function loop(pg, id) {
     function alive() { if (id !== runId) throw new Stop(); }
+    async function hold(ms) {
+      var t = 0;
+      while (t < ms || paused) { await wait(50); alive(); if (!paused) t += 50; }
+    }
     function findCard(code, from, used) {
       var arr = from === 'hand' ? sc.hand : sc.vis;
       for (var i = 0; i < arr.length; i++) if (arr[i] === code && used.indexOf(i) < 0) { used.push(i); return $('.pt-c[data-z="' + from + '"][data-i="' + i + '"]'); }
@@ -162,7 +290,7 @@
         turn = null; skipped = null;
         drawTable(pg);
         $('.pt-table').setAttribute('data-focus', pg.focus || '');
-        await wait(1000); alive();
+        await hold(1000);
         for (var k = 0; k < pg.script.length; k++) {
           var a = pg.script[k];
           if ('focus' in a) $('.pt-table').setAttribute('data-focus', a.focus);
@@ -216,9 +344,9 @@
             await wait(700); alive();
             sc.pile = []; drawTable(pg);
           }
-          await wait(a.wait || 1100); alive();
+          await hold(a.wait || 1100);
         }
-        await wait(1800); alive();
+        await hold(1800);
         var tbl = $('.pt-table'); tbl.classList.add('is-resetting');
         await wait(400); alive();
         tbl.classList.remove('is-resetting');
@@ -226,11 +354,52 @@
     } catch (e) { if (!(e instanceof Stop)) throw e; }
   }
 
+  /* ---------- Events ---------- */
+  app.addEventListener('input', function (e) {
+    if (!e.target.classList.contains('pt-search__input')) return;
+    query = e.target.value;
+    refreshLists(e.target);
+    if (view === 'list' && query) window.scrollTo({ top: Math.max(0, window.scrollY + $('.pt-list--page').getBoundingClientRect().top - 12) });
+  });
+  app.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && e.target.classList.contains('pt-search__input')) {
+      var first = e.target.closest('.pt-list').querySelector('.pt-list__body .pt-q');
+      if (first) { e.preventDefault(); location.hash = first.getAttribute('href').slice(1); }
+    }
+  });
   app.addEventListener('click', function (e) {
-    var t = e.target.closest('button'); if (!t || !app.contains(t)) return;
-    if (t.hasAttribute('data-go')) return go(+t.getAttribute('data-go'));
-    if (t.hasAttribute('data-sec')) return go(firstOf(+t.getAttribute('data-sec')));
+    var t = e.target;
+    var sheet = $('.pt-sheet');
+    if (t === sheet) { sheet.close(); return; }          // tap on the backdrop
+    var b = t.closest('button, a'); if (!b || !app.contains(b)) return;
+    if (b.hasAttribute('data-sheet')) {
+      sheet.showModal();
+      var on = sheet.querySelector('.pt-q.is-on'); if (on) on.scrollIntoView({ block: 'center' });
+      return;
+    }
+    if (b.hasAttribute('data-close')) { sheet.close(); return; }
+    if (b.hasAttribute('data-clear')) {
+      query = ''; refreshLists(null);
+      var inp = b.closest('.pt-list').querySelector('.pt-search__input'); if (inp) inp.focus();
+      return;
+    }
+    if (b.hasAttribute('data-group')) {
+      var g = document.getElementById('g-' + GROUPS[+b.getAttribute('data-group')].id);
+      if (g) g.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+      return;
+    }
+    if (b.classList.contains('pt-pause')) {
+      paused = !paused;
+      b.setAttribute('aria-pressed', String(paused));
+      b.querySelector('[aria-hidden]').textContent = paused ? '▶' : '❚❚';
+      return;
+    }
+    // A link to the rule already open (e.g. from the sheet): just close the sheet
+    if (b.tagName === 'A' && b.getAttribute('href') === '#' + RULES[cur].id && view === 'detail') {
+      e.preventDefault(); if (sheet && sheet.open) sheet.close();
+    }
   });
   window.addEventListener('hashchange', fromHash);
+  desk.addEventListener('change', function () { fromHash(); });
   fromHash();
 })();
