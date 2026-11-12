@@ -75,6 +75,43 @@
 .pt-back:focus-visible, .pt-rel__chip:focus-visible, .pt-pn__btn:focus-visible, .pt-pause:focus-visible,
 .pt-bar a:focus-visible, .pt-bar button:focus-visible, .pt-sheet__close:focus-visible { outline: 3px solid var(--cream); outline-offset: 3px; }
 
+/* Quick reference shortcut + table (#que-jugar) */
+.pt-quick {
+  display: flex; align-items: center; gap: .85rem; margin-top: 1.1rem; padding: .9rem 1rem; border-radius: 1rem;
+  border: 1.5px solid rgb(242 194 48 / .55); background: linear-gradient(135deg, rgb(242 194 48 / .14), rgb(242 194 48 / .04));
+  color: var(--cream); text-decoration: none; transition: border-color .2s, background .2s;
+}
+.pt-quick:hover { border-color: #f2c230; }
+.pt-quick.is-on { border-color: var(--red); }
+.pt-quick__icon, .pt-q__icon { flex: none; display: grid; place-items: center; border-radius: .6rem; background: #f2c230; color: var(--asphalt); }
+.pt-quick__icon { width: 2.6rem; height: 2.6rem; }
+.pt-q__icon { width: 2.1rem; height: 2.1rem; }
+.pt-quick__icon svg, .pt-q__icon svg { width: 60%; height: 60%; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linejoin: round; }
+.pt-quick__t { flex: 1; min-width: 0; display: grid; gap: .2rem; }
+.pt-quick__k { font: 700 .64rem/1 var(--font); letter-spacing: .16em; text-transform: uppercase; color: #f2c230; }
+.pt-quick__q { font: 700 1.02rem/1.25 var(--font); }
+.pt-quick__s { font-size: .82rem; color: var(--cream-dim); }
+.pt-quick:focus-visible { outline: 3px solid var(--cream); outline-offset: 3px; }
+
+.pt-ref { margin-top: 1.1rem; border: 1px solid var(--line); border-radius: 1rem; overflow: hidden; background: var(--asphalt-2); }
+.pt-ref__head { display: grid; grid-template-columns: minmax(9rem, 13rem) 1fr; gap: 1rem; padding: .7rem 1rem; background: var(--asphalt-3); font: 700 .68rem/1.2 var(--font); letter-spacing: .14em; text-transform: uppercase; color: var(--cream-dim); }
+.pt-ref__row { display: grid; grid-template-columns: minmax(9rem, 13rem) 1fr; gap: 1rem; align-items: center; padding: .85rem 1rem; border-top: 1px solid var(--line); }
+.pt-ref__top { display: flex; align-items: center; gap: .7rem; }
+.pt-ref__top b { display: block; font: 700 .95rem/1.2 var(--font); color: var(--cream); }
+.pt-ref__top small { display: block; margin-top: .15rem; font-size: .76rem; color: var(--cream-dim); }
+.pt-ref__card { flex: none; width: 2.5rem; }
+.pt-ref__card img { display: block; width: 100%; height: auto; border-radius: .25rem; box-shadow: 0 3px 8px rgb(0 0 0 / .4); }
+.pt-ref__card--empty { aspect-ratio: 660 / 922; border: 2px dashed rgb(245 240 232 / .4); border-radius: .3rem; }
+.pt-ref__can p { margin: 0; color: var(--cream); font-size: .96rem; line-height: 1.4; }
+.pt-ref__can strong { color: #fff; }
+.pt-ref__link { display: inline-block; margin-top: .35rem; color: var(--cream-dim); font: 600 .8rem var(--font); text-decoration: none; }
+.pt-ref__link:hover { color: var(--cream); }
+.pt-ref__link:focus-visible { outline: 3px solid var(--cream); outline-offset: 2px; border-radius: 2px; }
+@media (max-width: 34rem) {
+  .pt-ref__head { display: none; }
+  .pt-ref__row { grid-template-columns: 1fr; gap: .55rem; }
+}
+
 /* Phone list: search + chips stay on top while scrolling */
 .pt-list--page .pt-find {
   position: sticky; top: 0; z-index: 5; padding: .7rem 0 .8rem;
@@ -179,6 +216,9 @@
   .pt-list--side .pt-q__q { font-size: .88rem; }
   .pt-list--side .pt-q__n, .pt-list--side .pt-q__go { display: none; }
   .pt-list--side .pt-count { margin-top: .9rem; }
+  .pt-list--side .pt-quick { margin-top: .8rem; padding: .65rem .75rem; gap: .65rem; }
+  .pt-list--side .pt-quick__icon { width: 2rem; height: 2rem; }
+  .pt-list--side .pt-quick__q { font-size: .9rem; }
   .pt-main .pt-say { max-width: 62ch; }
 }
 
@@ -286,6 +326,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .pt-pc:last-child, .pt-c.is-shake, .pt-c.is-flipping { animation: none; }
-  .pt-c, .pt-fly, .pt-chip, .pt-q, .pt-card img, .pt-search, .pt-you, .pt-opp, .pt-zone, .pt-pile.is-leaving .pt-pc { transition: none; }
+  .pt-c, .pt-fly, .pt-chip, .pt-q, .pt-quick, .pt-card img, .pt-search, .pt-you, .pt-opp, .pt-zone, .pt-pile.is-leaving .pt-pc { transition: none; }
   .pt-sheet[open] { animation: none; }
 }

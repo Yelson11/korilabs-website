@@ -91,7 +91,10 @@ comments just to translate them — only translate what you are already touching
 │       │                    special cards as a grid) → one rule per #hash with a fixed bottom bar (Anterior · Reglas ·
 │       │                    Siguiente) and a <dialog> bottom sheet with every rule. Desktop (≥60rem): sticky sidebar
 │       │                    (search + all questions) + the open rule. Search is accent-insensitive word-prefix matching
-│       │                    over question, name, text and per-rule `keys` synonyms.
+│       │                    over question, name, text and per-rule `keys` synonyms. Quick reference "¿Qué puedo jugar
+│       │                    encima?" (REFERENCE in tutorial-data.js, #que-jugar): gold shortcut at the top of every list +
+│       │                    in search (wins ties); a table of what can be played on each top card, each row linking to its
+│       │                    rule. Same content as instrucciones/#referencia — keep both in sync.
 │       │                    tutorial-data.js (GROUPS → rules), tutorial.js (hash router #<rule id> / #<group id>, old
 │       │                    #desarrollo / #reglas still work; rule ids are linked from instrucciones/ — keep them).
 │       │                    CSS: styles.css + pinto.css + pinto-tutorial.css
@@ -150,7 +153,7 @@ Tutoriales → `../tutorial/`, Reglamento → `../reglamento.pdf`, new tab (butt
 "Con marcador de temporada" line), then `#guia` "Guía rápida" (intro + `.p-gnav` index: one tile per section with a colored icon, name and arrow) followed by the summary of the official rules (v1.5),
 not a copy — never add rules that aren't in the official text: `#preparacion` (6 steps incl. "Banderazo de salida" = who starts, + deck table as a rounded panel `.p-table--panel`),
 `#desarrollo`, `#reglas` (rule cards `.p-rcard`: mini card illustration on the tutorial's wooden table + title + short
-text + "Ver tutorial" link; the art per rule is hand-picked in the HTML), `#especiales` (rules order), `#referencia` ("Qué carta puedo jugar": table with card images),
+text + "Ver tutorial" link; the art per rule is hand-picked in the HTML), `#especiales` (rules order), `#referencia` ("Qué carta puedo jugar": table with card images; same content as the tutorial's #que-jugar — keep in sync),
 `#modos` (stacked, same order and layout as the PINTO page); every rule and special card links to its tutorial subsection ("Ver tutorial").
 Minimal closing `.p-finish` ("¡Que comience la carrera!" · "PINTO · Un juego de Kori Labs" · "Conoce más de PINTO").
 The score sheet gift is never linked directly (only via the home `#suscribete` form). There are no real videos yet
@@ -201,7 +204,7 @@ on the same device/browser. If storage is blocked the page says progress won't s
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
   Current: `styles.css?v=2`, `home.css?v=9` (index and privacidad),
-  `pinto.css?v=37`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `pinto-tutorial.css?v=8`, `tutorial-data.js?v=10`, `tutorial.js?v=8`, `pinto-temporada.css?v=10`, `temporada.js?v=10`, PINTO favicons `?v=1`, `menu.js?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
+  `pinto.css?v=37`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `pinto-tutorial.css?v=9`, `tutorial-data.js?v=11`, `tutorial.js?v=9`, `pinto-temporada.css?v=10`, `temporada.js?v=10`, PINTO favicons `?v=1`, `menu.js?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
 - **Sender (newsletter):** universal script in the `<head>` of `index.html`; form is
