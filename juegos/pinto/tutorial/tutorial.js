@@ -267,8 +267,7 @@
     var shown = sc.pile.slice(-5);
     var pile = '<div class="pt-pilewrap"><div class="pt-pile">' + (shown.length
       ? shown.map(function (c, i) { return '<div class="pt-pc" style="--i:' + i + '">' + img(c) + '</div>'; }).join('')
-      : '<div class="pt-free">Sin cartas</div>') + '</div>' +
-      '<span class="pt-pile__label">' + (shown.length ? 'Arriba: <strong>' + name(shown[shown.length - 1]) + '</strong>' : 'Pila vacía') + '</span></div>';
+      : '<div class="pt-free">Sin cartas</div>') + '</div></div>';
 
     var slots = Math.max(sc.vis.length, sc.hid), mesa = '';
     for (var i = 0; i < slots; i++) {
@@ -285,8 +284,8 @@
 
     tbl.innerHTML = opps + pile +
       '<div class="pt-you' + (turn === 'you' ? ' is-turn' : '') + '">' +
-      (pg.vis || pg.hid ? '<div class="pt-zone pt-zone--mesa"><span class="pt-zone__label">Tu mesa</span><div class="pt-mesa">' + (mesa || '<span class="pt-none">Sin cartas</span>') + '</div></div>' : '') +
-      '<div class="pt-zone pt-zone--hand"><span class="pt-zone__label">Tu mano</span><div class="pt-hand">' + (hand || '<span class="pt-none">Sin cartas</span>') + '</div></div>' +
+      (pg.vis || pg.hid ? '<div class="pt-zone pt-zone--mesa"><div class="pt-mesa">' + (mesa || '<span class="pt-none">Sin cartas</span>') + '</div></div>' : '') +
+      '<div class="pt-zone pt-zone--hand"><div class="pt-hand">' + (hand || '<span class="pt-none">Sin cartas</span>') + '</div></div>' +
       '</div>';
   }
 
