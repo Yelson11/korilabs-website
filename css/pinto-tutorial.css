@@ -104,9 +104,6 @@
 .pt-ref__card--empty { aspect-ratio: 660 / 922; border: 2px dashed rgb(245 240 232 / .4); border-radius: .3rem; }
 .pt-ref__can p { margin: 0; color: var(--cream); font-size: .96rem; line-height: 1.4; }
 .pt-ref__can strong { color: #fff; }
-.pt-ref__link { display: inline-block; margin-top: .35rem; color: var(--cream-dim); font: 600 .8rem var(--font); text-decoration: none; }
-.pt-ref__link:hover { color: var(--cream); }
-.pt-ref__link:focus-visible { outline: 3px solid var(--cream); outline-offset: 2px; border-radius: 2px; }
 @media (max-width: 34rem) {
   .pt-ref__head { display: none; }
   .pt-ref__row { grid-template-columns: 1fr; gap: .55rem; }

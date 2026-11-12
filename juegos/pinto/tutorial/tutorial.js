@@ -43,40 +43,76 @@
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function miniOf(r) { return r.card || r.mini || 'back'; }
 
-  /* ---------- Search ---------- */
-  var STOP = ' de la el los las que y a en un una unas unos mi me se con por lo es al del le o si tu yo hay como cuando para pasa puedo hago hace ';
+  /* ---------- Search ----------
+     Searches each rule's question, name, keys, text, notes and examples. Words are compared by stem
+     (no accents, no plural, no final vowel: "alta" = "alto", "quedé" = "quedan"), by prefix, and with
+     one typo allowed in longer words ("refubo" → "rebufo"). Rare words weigh more than common ones
+     ("cartas", "jugar"), so "no tengo cartas" finds Cede el paso. */
+  var STOP = ' de la el los las que y a en un una unas unos mi me se con por lo es al del le o si tu yo hay como cuando para pasa puedo hago hace mis su sus ya otro otra esta este eso hacer tengo ';
   function norm(s) { return String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
-  function words(s) { return norm(s.replace(/<[^>]+>/g, ' ')).split(/[^a-z0-9]+/).filter(Boolean); }
+  function stem(w) {
+    if (w.length > 4 && /es$/.test(w)) w = w.slice(0, -2);
+    else if (w.length > 3 && /s$/.test(w)) w = w.slice(0, -1);
+    if (w.length > 3 && /[aeo]$/.test(w)) w = w.slice(0, -1);
+    return w;
+  }
+  function words(s) { return norm(String(s).replace(/<[^>]+>/g, ' ')).split(/[^a-z0-9]+/).filter(Boolean); }
   function tokens(q) {
-    var all = words(q).map(function (t) { return t.length > 3 && /s$/.test(t) ? t.slice(0, -1) : t; });
+    var all = words(q);
     var useful = all.filter(function (t) { return STOP.indexOf(' ' + t + ' ') < 0; });
-    return useful.length ? useful : all;
+    return (useful.length ? useful : all).map(stem);
   }
   ALL.forEach(function (r) {
-    r.head = words(r.q + ' ' + r.title);
-    r.body = words([r.keys, r.text, r.on && 'sobre ' + r.on, r.then && 'luego ' + r.then, r.note, r.lead].concat(r.rows ? r.rows.map(function (x) { return x.top + ' ' + x.can; }) : []).filter(Boolean).join(' '));
+    r.head = words(r.q + ' ' + r.title).map(stem);
+    r.body = words([r.keys, r.text, r.on && 'sobre ' + r.on, r.then && 'luego ' + r.then, r.note, r.lead]
+      .concat(r.rows ? r.rows.map(function (x) { return x.top + ' ' + x.can; }) : [])
+      .concat(r.examples ? r.examples.map(function (x) { return x.label + ' ' + (x.why || ''); }) : [])
+      .filter(Boolean).join(' ')).map(stem);
   });
-  function has(list, t) { for (var i = 0; i < list.length; i++) if (list[i].indexOf(t) === 0) return true; return false; }
+  function near(a, b) {                 // one edit apart (insert, delete, change or swap two letters)
+    if (Math.abs(a.length - b.length) > 1) return false;
+    var i = 0, j = 0, e = 0;
+    while (i < a.length && j < b.length) {
+      if (a[i] === b[j]) { i++; j++; continue; }
+      if (++e > 1) return false;
+      if (a[i + 1] === b[j] && a[i] === b[j + 1]) { i += 2; j += 2; continue; }   // swap
+      if (a.length > b.length) i++; else if (b.length > a.length) j++; else { i++; j++; }
+    }
+    return e + (a.length - i) + (b.length - j) <= 1;
+  }
+  function match(list, t) {             // 1 = exact/prefix, .7 = one typo away, 0 = no
+    for (var i = 0; i < list.length; i++) if (list[i].indexOf(t) === 0 || (t.length >= 4 && t.indexOf(list[i]) === 0 && list[i].length >= 4)) return 1;
+    if (t.length >= 3) for (var k = 0; k < list.length; k++) if (list[k].length >= 4 && list[k][0] === t[0] && near(t, list[k])) return 0.7;
+    return 0;
+  }
   function search(q) {
-    var tk = tokens(q), full = [], part = [];
+    var tk = tokens(q);
     if (!tk.length) return null;
-    ALL.forEach(function (r) {
-      var score = 0, hits = 0;
-      tk.forEach(function (t) {
-        if (has(r.head, t)) { score += 3; hits++; } else if (has(r.body, t)) { score += 1; hits++; }
-      });
-      if (hits === tk.length) full.push({ r: r, s: score });
-      else if (hits) part.push({ r: r, s: score });
+    var N = ALL.length, weight = tk.map(function (t) {
+      var df = ALL.filter(function (r) { return match(r.head, t) || match(r.body, t); }).length;
+      return Math.log((N + 1) / (df + 0.5)) * (t.length === 1 ? 0.5 : 1);   // single digits count less
     });
-    function by(a, b) { return b.s - a.s || (b.r.isRef ? 1 : 0) - (a.r.isRef ? 1 : 0) || a.r.i - b.r.i; }   // ties: the quick table first
-    return { tk: tk, full: full.sort(by).map(function (x) { return x.r; }), part: part.sort(by).slice(0, 4).map(function (x) { return x.r; }) };
+    var total = weight.reduce(function (a, b) { return a + b; }, 0) || 1, res = [];
+    ALL.forEach(function (r) {
+      var got = 0, s = 0;
+      tk.forEach(function (t, n) {
+        var h = match(r.head, t), b = h ? 0 : match(r.body, t);
+        if (h) { got += weight[n] * h; s += weight[n] * h * 1.6; }
+        else if (b) { got += weight[n] * b; s += weight[n] * b; }
+      });
+      if (got) res.push({ r: r, s: s, c: got / total });
+    });
+    res.sort(function (a, b) { return b.s - a.s || (b.r.isRef ? 1 : 0) - (a.r.isRef ? 1 : 0) || a.r.i - b.r.i; });   // ties: the quick table first
+    var best = res.length ? res[0].s : 0;
+    var full = res.filter(function (x) { return x.c >= 0.5 && x.s >= best * 0.35; });
+    return { tk: tk, full: full.map(function (x) { return x.r; }), part: full.length ? [] : res.slice(0, 4).map(function (x) { return x.r; }) };
   }
   function mark(text, tk) {
     if (!tk || !tk.length) return esc(text);
     return text.split(/([A-Za-zÀ-ÿ0-9]+)/).map(function (seg, n) {
       if (n % 2 === 0) return esc(seg);
-      var w = norm(seg);
-      return tk.some(function (t) { return w.indexOf(t) === 0; }) ? '<mark>' + esc(seg) + '</mark>' : esc(seg);
+      var w = stem(norm(seg));
+      return tk.some(function (t) { return w.indexOf(t) === 0 || (t.length >= 4 && w.length >= 4 && near(t, w)); }) ? '<mark>' + esc(seg) + '</mark>' : esc(seg);
     }).join('');
   }
 
@@ -179,12 +215,11 @@
       '<div class="pt-ref" role="table" aria-label="' + REF.title + '">' +
       '<div class="pt-ref__head" role="row"><span role="columnheader">Arriba de la pila</span><span role="columnheader">Puedes jugar</span></div>' +
       REF.rows.map(function (x) {
-        var rule = RULES.filter(function (o) { return o.id === x.rel; })[0];
         return '<div class="pt-ref__row" role="row"><div class="pt-ref__top" role="rowheader">' +
           (x.card ? '<span class="pt-ref__card">' + thumb(x.card) + '</span>' : '<span class="pt-ref__card pt-ref__card--empty" aria-hidden="true"></span>') +
           '<span><b>' + x.top + '</b>' + (x.sub ? '<small>' + x.sub + '</small>' : '') + '</span></div>' +
           '<div class="pt-ref__can" role="cell"><p>' + x.can + '</p>' +
-          (rule ? '<a class="pt-ref__link" href="#' + rule.id + '">Ver regla: ' + rule.title + ' <span aria-hidden="true">›</span></a>' : '') + '</div></div>';
+          '</div></div>';
       }).join('') + '</div>' +
       (REF.note ? '<p class="pt-note">' + REF.note + '</p>' : '') +
       '<nav class="pt-pn" aria-label="Siguiente"><span></span><a class="pt-pn__btn pt-pn__btn--next" href="#' + first.id + '"><span class="pt-pn__dir">Empezar las reglas <span aria-hidden="true">›</span></span><b>' + first.title + '</b></a></nav>' +
