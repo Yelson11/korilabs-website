@@ -32,7 +32,7 @@
       rules: [
         {
           id: 'ritmo', title: 'Mantén el ritmo', q: '¿Qué carta puedo jugar?', mini: 'r5',
-          keys: 'jugar valor igual mayor menor tope arriba pila regla general numero alto bajo cual tiro',
+          keys: 'jugar valor igual mayor menor tope arriba pila regla general numero alto bajo cual tiro poner encima mayor numero 1 2 3 4 5 6 7 8',
           text: 'Juega sobre el tope de la pila una carta de Ritmo de <strong>igual o mayor</strong> valor, o una Carta Especial que lo permita.',
           rel: ['via-libre', 'encadenar', 'ceder'],
           pile: ['r3'], hand: ['r5', 'r2', 'r6'], vis: ['r4', 'r7', 'r8'], hid: 3,
@@ -46,7 +46,7 @@
         },
         {
           id: 'ceder', title: 'Cede el paso', q: 'No tengo jugada, ¿qué hago?', mini: 'back',
-          keys: 'no puedo jugar no tengo carta jugada valida recoger recojo agarrar comer llevar pila pasar paso',
+          keys: 'no puedo jugar no tengo carta jugada valida recoger recojo agarrar comer llevar pila pasar paso nada tirar comer agarro recojo',
           text: 'Si al comenzar tu turno no tienes una jugada válida, <strong>recoge toda la pila central</strong> y súmala a tu mano. Tu turno termina y el siguiente jugador tiene vía libre.',
           note: 'Aplica en cualquier fase: si recoges la pila, debes deshacerte de todas las cartas de tu mano antes de avanzar de fase.',
           rel: ['fases', 'via-libre', 'ritmo'],
@@ -70,7 +70,7 @@
         },
         {
           id: 'turno', title: 'Desarrollo del turno', q: '¿Me pueden interrumpir? ¿Cuándo termina mi turno?', mini: 'r7',
-          keys: 'interrumpir interrupcion cortar terminar acabar turno cuantas cartas varias seguidas siguiente jugador empieza',
+          keys: 'interrumpir interrupcion cortar terminar acabar turno cuantas cartas varias seguidas siguiente jugador empieza cortaron cortan corto interrumpieron interrumpen siguiente',
           text: '<p>Tu turno empieza al colocar tu primera carta. Puedes jugar <strong>tantas cartas</strong> como permitan las reglas, juntas o una tras otra.</p>' +
             '<p>Cuando ya jugaste al menos una, el siguiente jugador puede <strong>interrumpirte</strong> con una carta o combinación válida sobre el tope: tu turno termina y empieza el suyo. Si nadie te interrumpe, puedes seguir jugando o terminar tu turno.</p>',
           note: 'La Bandera Roja, la Bandera a Cuadros y el Carril Lleno terminan el turno de inmediato.',
@@ -91,7 +91,7 @@
       rules: [
         {
           id: 'fases', title: 'Fases de la carrera', q: 'Se me acabó la mano, ¿y ahora?', mini: 'back',
-          keys: 'sin cartas mano visibles ocultas boca abajo boca arriba orden mesa se acabo termine tomar oculta',
+          keys: 'sin cartas mano visibles ocultas boca abajo boca arriba orden mesa se acabo termine tomar oculta quede quedan quedo acabaron acabo acabe termine terminaron vacia',
           text: '<p>Te deshaces de tus cartas en tres fases, siempre en este orden:</p><ol>' +
             '<li><strong>Mano.</strong> Juega las cartas de tu mano.</li>' +
             '<li><strong>Visibles.</strong> Sin cartas en la mano, toma tus visibles: son tu nueva mano.</li>' +
@@ -129,7 +129,7 @@
       rules: [
         {
           id: 'encadenar', title: 'Encadenar cartas', q: '¿Puedo jugar varias cartas a la vez?', mini: 'r6',
-          keys: 'varias cartas vez iguales juntas pares trios dobles mismo valor combinar mezclar',
+          keys: 'varias cartas vez iguales juntas pares trios dobles mismo valor combinar mezclar dos tres juntas tirar poner doble triple',
           text: '<p>Puedes jugar <strong>varias cartas iguales</strong> a la vez: del mismo valor de Ritmo o del mismo tipo de Carta Especial. No es obligatorio.</p><ul>' +
             '<li>Las Cartas Especiales encadenadas aplican su efecto una sola vez.</li>' +
             '<li>No puedes mezclar valores o tipos distintos, salvo con el Rebufo.</li>' +
@@ -178,7 +178,7 @@
         },
         {
           id: 'roja', card: 'roja', title: 'Bandera Roja', q: '¿Qué hace la Bandera Roja?',
-          keys: 'roja reiniciar ritmo bajar empezar cero',
+          keys: 'roja reiniciar bajar el ritmo empezar de cero',
           on: 'cualquier carta o con vía libre.',
           text: '<strong>Reinicia el ritmo sin descartar:</strong> la pila se queda en la mesa. Tu turno termina.',
           then: 'vía libre para el siguiente.',
@@ -218,7 +218,7 @@
         },
         {
           id: 'vr', card: 'vr', title: 'Vuelta Rápida', q: '¿Qué hace la Vuelta Rápida?',
-          keys: 'vuelta rapida ritmo mas alto nadie supera cronometro',
+          keys: 'vuelta rapida ritmo mas alto nadie supera cronometro alta alto maxima maximo mas',
           on: 'cualquier carta excepto una Bandera Amarilla, o con vía libre.',
           text: '<strong>Marca el ritmo más alto:</strong> nadie puede superarlo.',
           then: 'solo se responde con otra Vuelta Rápida, una Bandera Roja o una Bandera a Cuadros.',

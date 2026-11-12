@@ -90,11 +90,10 @@ comments just to translate them — only translate what you are already touching
 │       │                    GIF-like animation on a mini table (pause button). Phones: list (sticky search + group chips,
 │       │                    special cards as a grid) → one rule per #hash with a fixed bottom bar (Anterior · Reglas ·
 │       │                    Siguiente) and a <dialog> bottom sheet with every rule. Desktop (≥60rem): sticky sidebar
-│       │                    (search + all questions) + the open rule. Search is accent-insensitive word-prefix matching
-│       │                    over question, name, text and per-rule `keys` synonyms. Quick reference "¿Qué puedo jugar
+│       │                    (search + all questions) + the open rule. Search: stems (no accents/plural/final vowel), prefix +
+│       │                    one-typo matching, rare words weigh more (IDF), over question, name, text, notes, examples and per-rule `keys`. Quick reference "¿Qué puedo jugar
 │       │                    encima?" (REFERENCE in tutorial-data.js, #que-jugar): gold shortcut at the top of every list +
-│       │                    in search (wins ties); a table of what can be played on each top card, each row linking to its
-│       │                    rule. Same content as instrucciones/#referencia — keep both in sync.
+│       │                    in search (wins ties); a table of what can be played on each top card. Same content as instrucciones/#referencia — keep both in sync.
 │       │                    tutorial-data.js (GROUPS → rules), tutorial.js (hash router #<rule id> / #<group id>, old
 │       │                    #desarrollo / #reglas still work; rule ids are linked from instrucciones/ — keep them).
 │       │                    CSS: styles.css + pinto.css + pinto-tutorial.css
@@ -204,7 +203,7 @@ on the same device/browser. If storage is blocked the page says progress won't s
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
   Current: `styles.css?v=2`, `home.css?v=9` (index and privacidad),
-  `pinto.css?v=37`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `pinto-tutorial.css?v=14`, `tutorial-data.js?v=16`, `tutorial.js?v=17`, `pinto-temporada.css?v=10`, `temporada.js?v=10`, PINTO favicons `?v=1`, `menu.js?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
+  `pinto.css?v=37`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `pinto-tutorial.css?v=15`, `tutorial-data.js?v=18`, `tutorial.js?v=19`, `pinto-temporada.css?v=10`, `temporada.js?v=10`, PINTO favicons `?v=1`, `menu.js?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
 - **Sender (newsletter):** universal script in the `<head>` of `index.html`; form is
