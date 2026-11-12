@@ -6,8 +6,9 @@
        animation, a bottom bar (Anterior · Reglas · Siguiente) and a bottom sheet with every rule.
      Desktop: sidebar (search + all questions) + the open rule. No hash = first rule.
    Routing by hash: #<rule id> (e.g. #ritmo, #azul — instrucciones/ links to these) or #<group id>
-   (also the old section ids #desarrollo / #reglas). Each rule's animation loops like a GIF and can
-   be paused. */
+   (also the old section ids #desarrollo / #reglas), or #que-jugar (quick reference table: what can be
+   played on each top card; shortcut at the top of every list). Each rule's animation loops like a GIF
+   and can be paused. */
 (function () {
   'use strict';
   var T = window.PintoTutorial;
@@ -25,6 +26,10 @@
   GROUPS.forEach(function (g, gi) {
     g.rules.forEach(function (r, k) { r.g = gi; r.k = k; r.i = RULES.length; RULES.push(r); });
   });
+  // Quick reference table: not part of any group, reachable at #que-jugar, from every list and from search
+  var REF = T.reference || null, ALL = RULES.slice();
+  if (REF) { REF.isRef = true; REF.i = RULES.length; ALL.push(REF); }
+  var TABLE_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 10h18M9 10v10"/></svg>';
 
   var cur = 0, view = 'detail', query = '', lastRule = -1, paused = false;
   var sc = null, turn = null, skipped = null, runId = 0;   // table state, highlighted turn, skipped player, running loop id
@@ -47,15 +52,15 @@
     var useful = all.filter(function (t) { return STOP.indexOf(' ' + t + ' ') < 0; });
     return useful.length ? useful : all;
   }
-  RULES.forEach(function (r) {
+  ALL.forEach(function (r) {
     r.head = words(r.q + ' ' + r.title);
-    r.body = words([r.keys, r.text, r.on, r.then, r.note].filter(Boolean).join(' '));
+    r.body = words([r.keys, r.text, r.on && 'sobre ' + r.on, r.then && 'luego ' + r.then, r.note, r.lead].concat(r.rows ? r.rows.map(function (x) { return x.top + ' ' + x.can; }) : []).filter(Boolean).join(' '));
   });
   function has(list, t) { for (var i = 0; i < list.length; i++) if (list[i].indexOf(t) === 0) return true; return false; }
   function search(q) {
     var tk = tokens(q), full = [], part = [];
     if (!tk.length) return null;
-    RULES.forEach(function (r) {
+    ALL.forEach(function (r) {
       var score = 0, hits = 0;
       tk.forEach(function (t) {
         if (has(r.head, t)) { score += 3; hits++; } else if (has(r.body, t)) { score += 1; hits++; }
@@ -63,7 +68,7 @@
       if (hits === tk.length) full.push({ r: r, s: score });
       else if (hits) part.push({ r: r, s: score });
     });
-    function by(a, b) { return b.s - a.s || a.r.i - b.r.i; }
+    function by(a, b) { return b.s - a.s || (b.r.isRef ? 1 : 0) - (a.r.isRef ? 1 : 0) || a.r.i - b.r.i; }   // ties: the quick table first
     return { tk: tk, full: full.sort(by).map(function (x) { return x.r; }), part: part.sort(by).slice(0, 4).map(function (x) { return x.r; }) };
   }
   function mark(text, tk) {
@@ -78,7 +83,7 @@
   /* ---------- Routing ---------- */
   function fromHash() {
     var h = decodeURIComponent(location.hash.slice(1)), gi = -1, ri = -1;
-    RULES.forEach(function (r) { if (r.id === h) ri = r.i; });
+    ALL.forEach(function (r) { if (r.id === h) ri = r.i; });
     GROUPS.forEach(function (g, k) { if (g.id === h || (g.alias || []).indexOf(h) > -1) gi = k; });
     var sheet = $('.pt-sheet'); if (sheet && sheet.open) sheet.close();
     if (ri > -1) { cur = ri; view = 'detail'; }
@@ -96,7 +101,7 @@
   function row(r, ctx, tk) {
     var on = view === 'detail' && r.i === cur;
     return '<a class="pt-q' + (on ? ' is-on' : '') + '" href="#' + r.id + '" data-rule="' + r.i + '"' + (on ? ' aria-current="page"' : '') + '>' +
-      '<span class="pt-q__mini">' + thumb(miniOf(r)) + '</span>' +
+      (r.isRef ? '<span class="pt-q__icon">' + TABLE_ICON + '</span>' : '<span class="pt-q__mini">' + thumb(miniOf(r)) + '</span>') +
       '<span class="pt-q__t"><span class="pt-q__q">' + mark(r.q, tk) + '</span><span class="pt-q__n">' + mark(r.title, tk) + '</span></span>' +
       '<span class="pt-q__go" aria-hidden="true">›</span></a>';
   }
@@ -115,7 +120,7 @@
       return html + '<p class="pt-more"><button type="button" class="pt-link" data-clear>Ver todas las reglas</button> · ' +
         '<a class="pt-link" href="../reglamento.pdf" target="_blank" rel="noopener noreferrer">Reglamento completo<span class="visually-hidden"> (se abre en una pestaña nueva)</span></a></p>';
     }
-    return GROUPS.map(function (g, k) {
+    return quickHTML(ctx) + GROUPS.map(function (g, k) {
       var inner = g.special && ctx === 'page'
         ? '<div class="pt-cards">' + g.rules.map(function (r) {
             return '<a class="pt-card" href="#' + r.id + '" data-rule="' + r.i + '">' + thumb(r.card) + '<span>' + r.title + '</span></a>';
@@ -123,6 +128,14 @@
         : '<div class="pt-rows">' + g.rules.map(function (r) { return row(r, ctx); }).join('') + '</div>';
       return '<section class="pt-g" data-g="' + k + '">' + groupHead(g, k, ctx) + inner + '</section>';
     }).join('');
+  }
+  function quickHTML(ctx) {
+    if (!REF) return '';
+    var on = view === 'detail' && cur === REF.i;
+    return '<a class="pt-quick' + (on ? ' is-on' : '') + '" href="#' + REF.id + '" data-rule="' + REF.i + '"' + (on ? ' aria-current="page"' : '') + '>' +
+      '<span class="pt-quick__icon">' + TABLE_ICON + '</span><span class="pt-quick__t"><span class="pt-quick__k">Acceso rápido</span>' +
+      '<span class="pt-quick__q">' + esc(REF.q) + '</span>' + (ctx === 'side' ? '' : '<span class="pt-quick__s">Tabla según la carta de arriba de la pila</span>') + '</span>' +
+      '<span class="pt-q__go" aria-hidden="true">›</span></a>';
   }
   function listHTML(ctx) {
     var chips = ctx === 'page' ? '<nav class="pt-chips" aria-label="Grupos de reglas">' + GROUPS.map(function (g, k) {
@@ -143,7 +156,30 @@
   }
 
   /* ---------- Rule (detail) ---------- */
+  function refHTML() {
+    var first = RULES[0];
+    return '<article class="pt-rule pt-rule--ref">' +
+      '<a class="pt-back" href="#todas"><span aria-hidden="true">‹</span> Todas las reglas</a>' +
+      '<p class="pt-crumb"><span class="pt-crumb__dot" style="background:var(--cream)"></span>Acceso rápido</p>' +
+      '<p class="pt-ask">' + esc(REF.q) + '</p>' +
+      '<h2 class="pt-title" tabindex="-1">' + REF.title + '</h2>' +
+      '<p class="pt-say">' + REF.lead + '</p>' +
+      '<div class="pt-ref" role="table" aria-label="' + REF.title + '">' +
+      '<div class="pt-ref__head" role="row"><span role="columnheader">Arriba de la pila</span><span role="columnheader">Puedes jugar</span></div>' +
+      REF.rows.map(function (x) {
+        var rule = RULES.filter(function (o) { return o.id === x.rel; })[0];
+        return '<div class="pt-ref__row" role="row"><div class="pt-ref__top" role="rowheader">' +
+          (x.card ? '<span class="pt-ref__card">' + thumb(x.card) + '</span>' : '<span class="pt-ref__card pt-ref__card--empty" aria-hidden="true"></span>') +
+          '<span><b>' + x.top + '</b>' + (x.sub ? '<small>' + x.sub + '</small>' : '') + '</span></div>' +
+          '<div class="pt-ref__can" role="cell"><p>' + x.can + '</p>' +
+          (rule ? '<a class="pt-ref__link" href="#' + rule.id + '">Ver regla: ' + rule.title + ' <span aria-hidden="true">›</span></a>' : '') + '</div></div>';
+      }).join('') + '</div>' +
+      (REF.note ? '<p class="pt-note">' + REF.note + '</p>' : '') +
+      '<nav class="pt-pn" aria-label="Siguiente"><span></span><a class="pt-pn__btn pt-pn__btn--next" href="#' + first.id + '"><span class="pt-pn__dir">Empezar las reglas <span aria-hidden="true">›</span></span><b>' + first.title + '</b></a></nav>' +
+      '</article>';
+  }
   function detailHTML() {
+    if (REF && cur === REF.i) return refHTML();
     var r = RULES[cur], g = GROUPS[r.g], prev = RULES[cur - 1], next = RULES[cur + 1];
     var html = '<article class="pt-rule">' +
       '<a class="pt-back" href="#' + g.id + '"><span aria-hidden="true">‹</span> Todas las reglas</a>' +
@@ -168,7 +204,8 @@
     return html;
   }
   function barHTML() {
-    var prev = RULES[cur - 1], next = RULES[cur + 1];
+    var isRef = REF && cur === REF.i;
+    var prev = isRef ? null : RULES[cur - 1], next = isRef ? RULES[0] : RULES[cur + 1];
     return '<nav class="pt-bar" aria-label="Navegación del tutorial">' +
       (prev ? '<a class="pt-bar__pn" href="#' + prev.id + '"><span><span aria-hidden="true">‹</span> Anterior</span><b>' + prev.title + '</b></a>' : '<span class="pt-bar__pn"></span>') +
       '<button type="button" class="pt-bar__idx" data-sheet aria-haspopup="dialog"><span class="pt-bar__icon" aria-hidden="true"></span>Reglas</button>' +
@@ -191,16 +228,16 @@
 
     if (detail) {
       lastRule = cur;
-      loop(RULES[cur], runId);
+      if (!(REF && cur === REF.i)) loop(RULES[cur], runId);
       if (fromNav) {
         var top = app.getBoundingClientRect().top;
         if (top < 0 || !isDesk) window.scrollTo({ top: Math.max(0, window.scrollY + top - 12), behavior: 'auto' });
         var t = $('.pt-title'); if (t) t.focus({ preventScroll: true });
       }
-      var on = $('.pt-side .pt-q.is-on');
+      var on = $('.pt-side .pt-q.is-on, .pt-side .pt-quick.is-on');
       if (on) { var side = $('.pt-side'), sr = side.getBoundingClientRect(), or = on.getBoundingClientRect(); if (or.top < sr.top || or.bottom > sr.bottom) side.scrollTop += or.top - sr.top - sr.height / 3; }
     } else {
-      var target = lastRule > -1 ? $('.pt-list--page .pt-q[data-rule="' + lastRule + '"], .pt-list--page .pt-card[data-rule="' + lastRule + '"]') : null;
+      var target = lastRule > -1 ? $('.pt-list--page [data-rule="' + lastRule + '"]') : null;
       if (target) { target.scrollIntoView({ block: 'center' }); target.focus({ preventScroll: true }); }
       else if (gi > -1) { var h = document.getElementById('g-' + GROUPS[gi].id); if (h) h.scrollIntoView({ block: 'start' }); }
       syncChips();
@@ -374,7 +411,7 @@
     var b = t.closest('button, a'); if (!b || !app.contains(b)) return;
     if (b.hasAttribute('data-sheet')) {
       sheet.showModal();
-      var on = sheet.querySelector('.pt-q.is-on'); if (on) on.scrollIntoView({ block: 'center' });
+      var on = sheet.querySelector('.pt-q.is-on, .pt-quick.is-on'); if (on) on.scrollIntoView({ block: 'center' });
       return;
     }
     if (b.hasAttribute('data-close')) { sheet.close(); return; }
@@ -395,7 +432,7 @@
       return;
     }
     // A link to the rule already open (e.g. from the sheet): just close the sheet
-    if (b.tagName === 'A' && b.getAttribute('href') === '#' + RULES[cur].id && view === 'detail') {
+    if (b.tagName === 'A' && b.getAttribute('href') === '#' + ALL[cur].id && view === 'detail') {
       e.preventDefault(); if (sheet && sheet.open) sheet.close();
     }
   });

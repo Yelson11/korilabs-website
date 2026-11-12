@@ -246,5 +246,25 @@
     }
   ];
 
-  root.PintoTutorial = { groups: GROUPS };
+  /* Quick reference ("¿Qué puedo jugar encima?"): what the next player can play on each top card.
+     Shown as a shortcut at the top of every list, in search and at #que-jugar. Same content as the
+     "Qué carta puedo jugar" table in instrucciones/#referencia — keep both in sync.
+     Row fields: top (label), sub (optional), card (code, or null for an empty pile), can (HTML), rel (rule id) */
+  var REFERENCE = {
+    id: 'que-jugar', title: 'Qué carta puedo jugar', q: '¿Qué puedo jugar encima?',
+    keys: 'que puedo jugar encima sobre tope arriba pila tabla responder carta siguiente jugador tirar poner referencia rapida',
+    lead: 'Busca la carta que está arriba de la pila y mira qué puede jugar el siguiente jugador.',
+    rows: [
+      { top: 'Vía libre', sub: 'Pila vacía', card: null, can: 'Cualquier carta o combinación válida.', rel: 'via-libre' },
+      { top: 'Ritmos Bajos', sub: 'Del 1 al 4', card: 'r2', can: 'Un Ritmo de igual o mayor valor, o <strong>cualquier</strong> Carta Especial.', rel: 'ritmo' },
+      { top: 'Ritmos Altos', sub: 'Del 5 al 8', card: 'r7', can: 'Un Ritmo de igual o mayor valor, o cualquier Carta Especial <strong>salvo</strong> el Rebufo y la Bandera Amarilla.', rel: 'ritmo' },
+      { top: 'Bandera Amarilla', card: 'ama', can: 'Un Ritmo Bajo, otra Bandera Amarilla, una Bandera Roja o una Bandera a Cuadros.', rel: 'ama' },
+      { top: 'Bandera Azul', card: 'azul', can: 'Se responde a la carta que quedó <strong>debajo</strong> de la Azul. Si se jugó con vía libre, hay vía libre.', rel: 'azul' },
+      { top: 'Vuelta Rápida', card: 'vr', can: 'Otra Vuelta Rápida, una Bandera Roja o una Bandera a Cuadros.', rel: 'vr' },
+      { top: 'Rebufo', sub: 'Solo', card: 'reb', can: 'Un Ritmo Alto, otro Rebufo, una Bandera Roja, una Bandera a Cuadros o una Vuelta Rápida. Si va acompañado, manda el valor más alto de la combinación.', rel: 'reb' }
+    ],
+    note: 'Después de una Bandera Roja, una Bandera a Cuadros o un Carril Lleno, el siguiente jugador tiene vía libre.'
+  };
+
+  root.PintoTutorial = { groups: GROUPS, reference: REFERENCE };
 })(this);
