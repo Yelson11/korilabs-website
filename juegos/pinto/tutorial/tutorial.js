@@ -264,10 +264,10 @@
         '<span class="pt-opp__name">Jugador ' + n + '</span>' + (skipped === n ? '<span class="pt-opp__tag">Pierde el turno</span>' : '') + '</div>';
     }).join('') + '</div>';
 
-    var shown = sc.pile.slice(-5);
+    var shown = sc.pile.slice(-6), base = sc.pile.length - shown.length;
     var pile = '<div class="pt-pilewrap"><div class="pt-pile">' + (shown.length
-      ? shown.map(function (c, i) { return '<div class="pt-pc" style="--i:' + i + '">' + img(c) + '</div>'; }).join('')
-      : '<div class="pt-free">Sin cartas</div>') + '</div></div>';
+      ? shown.map(function (c, i) { var m = mess(base + i); return '<div class="pt-pc" style="--dx:' + m.dx + 'px;--dy:' + m.dy + 'px;--r:' + m.r + 'deg">' + img(c) + '</div>'; }).join('')
+      : '<div class="pt-free"></div>') + '</div></div>';
 
     var slots = Math.max(sc.vis.length, sc.hid), mesa = '';
     for (var i = 0; i < slots; i++) {
@@ -294,11 +294,16 @@
   var RATIO = 922 / 660;
   function spot(el) { var r = el.getBoundingClientRect(); return { cx: r.left + r.width / 2, cy: r.top + r.height / 2, w: el.offsetWidth || r.width }; }
   function cardW() { var c = $('.pt-table .pt-c'); return c ? c.offsetWidth : 48; }
-  function pileSlot(extra) {            // where the next card of the pile goes (the pile shows the last 5, .9rem apart)
+  /* The pile is a messy stack: every card gets its own small turn and offset, fixed by its position in the pile */
+  function mess(k) {
+    var a = Math.sin(k * 12.9898 + 4.1) * 43758.5453, b = Math.sin(k * 78.233 + 1.7) * 12345.6789, c = Math.sin(k * 39.425 + 2.3) * 9876.54321;
+    a -= Math.floor(a); b -= Math.floor(b); c -= Math.floor(c);
+    return { r: Math.round((a * 2 - 1) * 24), dx: Math.round((b * 2 - 1) * 10), dy: Math.round((c * 2 - 1) * 7) };
+  }
+  function pileSlot(extra) {            // where the next card of the pile lands
     var pile = $('.pt-pile'), r = pile.getBoundingClientRect(), ref = $('.pt-pile .pt-pc') || $('.pt-free');
-    var pw = ref.offsetWidth, gap = parseFloat(getComputedStyle(document.documentElement).fontSize) * .9;
-    var j = Math.min(Math.min(sc.pile.length, 5) - (sc.pile.length >= 5 ? 1 : 0) + (extra || 0), 4);
-    return { cx: r.left + j * gap + pw / 2, cy: r.top + pw * RATIO / 2, w: pw };
+    var m = mess(sc.pile.length + (extra || 0));
+    return { cx: r.left + r.width / 2 + m.dx, cy: r.top + r.height / 2 + m.dy, w: ref.offsetWidth, rot: m.r };
   }
   function handSlot() { var h = $('.pt-hand').getBoundingClientRect(); return { cx: h.left + h.width / 2, cy: h.top + h.height / 2, w: cardW() }; }
   function fly(fromEl, to, code, opts) {
@@ -313,7 +318,7 @@
     if (!opts.keep) fromEl.style.visibility = 'hidden';   // the card leaves its spot (opponents keep their fan)
     g.getBoundingClientRect();          // commit the start position first, or the browser may skip the transition
     return new Promise(function (res) {
-      g.style.transform = 'translate(' + (to.cx - a.cx) + 'px,' + (to.cy - a.cy) + 'px) scale(' + (to.w / w) + ') rotate(' + (opts.rot || 0) + 'deg)';
+      g.style.transform = 'translate(' + (to.cx - a.cx) + 'px,' + (to.cy - a.cy) + 'px) scale(' + (to.w / w) + ') rotate(' + (opts.rot || to.rot || 0) + 'deg)';
       setTimeout(function () { g.remove(); res(); }, 520);
     });
   }

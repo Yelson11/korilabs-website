@@ -96,15 +96,15 @@
             '<li><strong>Visibles.</strong> Sin cartas en la mano, toma tus visibles: son tu nueva mano.</li>' +
             '<li><strong>Ocultas.</strong> Sin cartas otra vez, toma una carta oculta y súmala a tu mano: si es válida, juégala; si no, cedes el paso. Solo al deshacerte de ella puedes tomar la siguiente.</li></ol>',
           rel: ['avanzar', 'ceder'],
-          pile: ['r3'], hand: ['r4'], vis: ['r6', 'r6', 'r6'], hid: 3, focus: 'hand',
+          pile: ['r3'], hand: ['r4'], vis: ['r5', 'r8', 'cuad'], hid: 3, focus: 'hand',
           script: [
             { turn: 'you', focus: 'hand' }, { play: 'r4' },
+            { focus: 'vis' }, { take: true },
+            { focus: 'hand', wait: 900 },
             { turn: 1, wait: 500 }, { bot: 1, card: 'r5' },
-            { turn: 'you', focus: 'vis' }, { take: true },
-            { focus: 'hand', wait: 600 }, { play: ['r6', 'r6', 'r6'] },
-            { turn: 2, wait: 500 }, { bot: 2, card: 'r7' },
-            { turn: 'you', focus: 'hid' }, { flip: 'r8' },
-            { focus: 'hand', wait: 700 }, { play: 'r8' }
+            { turn: 2, wait: 500 }, { bot: 2, card: 'r6' },
+            { turn: 3, wait: 500 }, { bot: 3, card: 'r7' },
+            { turn: 'you', wait: 600 }, { play: 'r8' }
           ]
         },
         {
