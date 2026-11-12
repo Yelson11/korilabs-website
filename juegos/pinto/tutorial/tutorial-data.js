@@ -12,6 +12,7 @@
      mini    card shown next to the question in the lists (special cards use their own card)
      on      special cards only: "Sobre:"            then   special cards only: "Luego:"
      text    explanation (HTML allowed: <strong>, <ol>, <ul>)
+     examples  optional: plays drawn as cards (ok, cards, bad = index of the wrong card, why, label for screen readers)
      note    optional highlighted remark (HTML allowed)
      rel     ids of related rules
      pile    starting central pile (last = top); hand / vis: your cards; hid: hidden cards
@@ -232,16 +233,25 @@
           id: 'reb', card: 'reb', title: 'Rebufo', q: '¿Cómo se juega el Rebufo?',
           keys: 'rebufo ritmos altos 5 6 7 8 consecutivos combinacion acompanar acompañado',
           on: 'un Ritmo Bajo, otro Rebufo o con vía libre.',
-          text: '<p>Puedes acompañarlo con <strong>Ritmos Altos</strong> de uno o dos valores consecutivos, con varias copias de cada valor. También puedes jugarlo solo o con otros Rebufos.</p>' +
-            '<div class="pt-ex"><p class="pt-ex__ok"><strong>Válidas:</strong> Rebufo + 6 + 7 · Rebufo + Rebufo + 5 + 5 + 5 + 6 + 6 · Rebufo + 5</p>' +
-            '<p class="pt-ex__no"><strong>No válidas:</strong> Rebufo + 6 + 8 (no consecutivos) · Rebufo + 5 + 6 + 7 (tres valores) · Rebufo + 4 (Ritmo Bajo)</p></div>',
+          text: 'Puedes acompañarlo con <strong>Ritmos Altos</strong> de uno o dos valores consecutivos, con varias copias de cada valor. También puedes jugarlo solo o con otros Rebufos.',
+          // Leaflet examples, drawn as cards on the table. bad = index of the card that breaks the rule
+          examples: [
+            { ok: true, cards: ['reb', 'r6', 'r7'], label: 'Rebufo, 6 y 7' },
+            { ok: true, cards: ['reb', 'reb', 'r5', 'r5', 'r5', 'r6', 'r6'], label: 'Dos Rebufos, tres 5 y dos 6' },
+            { ok: true, cards: ['reb', 'r5'], label: 'Rebufo y 5' },
+            { ok: false, cards: ['reb', 'r6', 'r8'], bad: 2, why: 'No consecutivos', label: 'Rebufo, 6 y 8' },
+            { ok: false, cards: ['reb', 'r5', 'r6', 'r7'], bad: 3, why: 'Tres valores', label: 'Rebufo, 5, 6 y 7' },
+            { ok: false, cards: ['reb', 'r4'], bad: 1, why: 'Ritmo Bajo', label: 'Rebufo y 4' }
+          ],
           then: 'si va solo, se responde con un Ritmo Alto, otro Rebufo, una Bandera Roja, una Bandera a Cuadros o una Vuelta Rápida. Si va acompañado, manda el valor más alto de la combinación.',
           note: 'Ritmos Altos: del 5 al 8.',
           rel: ['encadenar', 'avanzar', 'ama'],
-          pile: ['r3'], hand: ['reb', 'r6', 'r2', 'r7'],
+          pile: ['r2'], hand: ['r3', 'reb', 'r6', 'r8', 'r6', 'r3', 'r7'],
           script: [
-            { turn: 'you', wait: 800 }, { play: ['reb', 'r6', 'r7'] },
-            { turn: 1 }
+            { turn: 3, wait: 500 }, { bot: 3, card: 'r4' },
+            { turn: 'you', wait: 700 },
+            { play: 'reb', wait: 600 }, { play: 'r6', wait: 600 }, { play: 'r6', wait: 600 }, { play: 'r7', wait: 900 },
+            { no: ['r8'], wait: 1800 }
           ]
         }
       ]

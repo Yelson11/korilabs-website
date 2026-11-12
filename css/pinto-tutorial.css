@@ -141,10 +141,30 @@
 .pt-on strong, .pt-then strong { color: var(--cream); }
 .pt-then { margin: .9rem 0 0; padding: .75rem .9rem; border-radius: .8rem; background: var(--asphalt-2); border: 1px solid var(--line); color: var(--cream); font-size: .98rem; }
 .pt-note { margin: .9rem 0 0; padding: .7rem .9rem; border-left: 3px solid #f2c230; border-radius: 0 .7rem .7rem 0; background: rgb(242 194 48 / .08); color: var(--cream); font-size: .95rem; }
-.pt-ex { display: grid; gap: .45rem; margin-top: .7rem; font-size: .92rem; }
-.pt-ex p { margin: 0; padding: .55rem .75rem; border-radius: .6rem; }
-.pt-ex__ok { background: rgb(79 191 122 / .12); }
-.pt-ex__no { background: rgb(229 70 59 / .12); }
+/* Rebufo examples: fans of cards on the table; swipe on phones, grid on desktop */
+.pt-exs { display: flex; gap: .7rem; margin: 1rem calc(-1 * var(--gutter, 1rem)) 0; padding: 0 var(--gutter, 1rem) .4rem; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+.pt-exs::-webkit-scrollbar { display: none; }
+.pt-exs__item {
+  flex: none; width: min(78%, 17rem); scroll-snap-align: center; position: relative; display: grid; justify-items: center; align-content: center; gap: .5rem;
+  min-height: 9.5rem; padding: 2.2rem .8rem .9rem; border-radius: 1rem;
+  background: radial-gradient(120% 90% at 50% 40%, var(--wood) 0%, var(--wood-2) 100%);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / .06), inset 0 10px 30px rgb(0 0 0 / .25);
+}
+.pt-exs__tag { position: absolute; top: .65rem; left: .7rem; padding: .3rem .55rem; border-radius: 99px; color: #fff; font: 700 .64rem/1 var(--font); letter-spacing: .14em; text-transform: uppercase; }
+.is-ok .pt-exs__tag { background: #3fa66b; }
+.is-no .pt-exs__tag { background: #e5463b; }
+.pt-exs__fan { display: flex; justify-content: center; padding: .3rem 0; }
+.pt-exs__c { width: 3.1rem; transform: rotate(var(--r, 0deg)); transform-origin: 50% 120%; }
+.pt-exs__c + .pt-exs__c { margin-left: -1.1rem; }
+.pt-exs__fan.is-many .pt-exs__c { width: 2.6rem; }
+.pt-exs__fan.is-many .pt-exs__c + .pt-exs__c { margin-left: -1.35rem; }
+.pt-exs__c img { display: block; width: 100%; height: auto; border-radius: .3rem; box-shadow: 0 4px 10px rgb(0 0 0 / .5); }
+.pt-exs__c.is-bad img { outline: 3px solid #e5463b; outline-offset: 1px; }
+.pt-exs__why { color: #fff; font: 600 .88rem/1.2 var(--font); }
+@media (min-width: 60rem) {
+  .pt-exs { display: grid; grid-template-columns: repeat(3, 1fr); margin-inline: 0; padding: 0; overflow: visible; }
+  .pt-exs__item { width: auto; }
+}
 .pt-rel { margin-top: 1.4rem; }
 .pt-rel__label { margin: 0 0 .6rem; font: 700 .72rem/1 var(--font); letter-spacing: .18em; text-transform: uppercase; color: var(--cream-dim); }
 .pt-rel__list { display: flex; flex-wrap: wrap; gap: .5rem; }

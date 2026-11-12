@@ -156,6 +156,18 @@
   }
 
   /* ---------- Rule (detail) ---------- */
+  /* Valid / not valid plays as fans of cards on the table (swipe on phones, grid on desktop) */
+  function examplesHTML(list) {
+    return '<div class="pt-exs" role="list">' + list.map(function (x) {
+      var n = x.cards.length, mid = (n - 1) / 2, step = Math.min(9, 40 / Math.max(n - 1, 1));
+      return '<div class="pt-exs__item ' + (x.ok ? 'is-ok' : 'is-no') + '" role="listitem" aria-label="' + (x.ok ? 'Válida' : 'No válida') + ': ' + x.label + (x.why ? '. ' + x.why : '') + '">' +
+        '<span class="pt-exs__tag" aria-hidden="true">' + (x.ok ? '✓ Válida' : '✕ No válida') + '</span>' +
+        '<span class="pt-exs__fan' + (n > 4 ? ' is-many' : '') + '" aria-hidden="true">' + x.cards.map(function (c, k) {
+          return '<span class="pt-exs__c' + (k === x.bad ? ' is-bad' : '') + '" style="--r:' + ((k - mid) * step).toFixed(1) + 'deg">' + thumb(c) + '</span>';
+        }).join('') + '</span>' +
+        (x.why ? '<span class="pt-exs__why" aria-hidden="true">' + x.why + '</span>' : '') + '</div>';
+    }).join('') + '</div>';
+  }
   function refHTML() {
     var first = RULES[0];
     return '<article class="pt-rule pt-rule--ref">' +
@@ -190,6 +202,7 @@
       '<h2 class="pt-title" tabindex="-1">' + r.title + '</h2>' +
       (r.on ? '<p class="pt-on"><strong>Sobre:</strong> ' + r.on + '</p>' : '') +
       (r.text ? '<div class="pt-say">' + r.text + '</div>' : '') +
+      (r.examples ? examplesHTML(r.examples) : '') +
       (r.then ? '<p class="pt-then"><strong>Luego:</strong> ' + r.then + '</p>' : '') +
       (r.note ? '<p class="pt-note">' + r.note + '</p>' : '') +
       (r.rel && r.rel.length ? '<div class="pt-rel"><p class="pt-rel__label">Relacionado</p><div class="pt-rel__list">' + r.rel.map(function (id) {
