@@ -255,7 +255,7 @@
   position: absolute; top: 50%; left: 50%; width: var(--pw); filter: drop-shadow(0 3px 5px rgb(0 0 0 / .35));
   transform: translate(-50%, -50%) translate(var(--dx, 0px), var(--dy, 0px)) rotate(var(--r, 0deg));
 }
-.pt-pc:last-child { animation: pt-land .25s ease-out; }
+.pt-pc.is-new { animation: pt-land .25s ease-out; }
 .pt-free {
   position: absolute; top: 50%; left: 50%; width: var(--pw); aspect-ratio: 660 / 922; transform: translate(-50%, -50%);
   border: 2px dashed rgb(245 240 232 / .35); border-radius: .4rem;
@@ -331,7 +331,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pt-pc:last-child, .pt-c.is-shake, .pt-c.is-flipping { animation: none; }
+  .pt-pc.is-new, .pt-c.is-shake, .pt-c.is-flipping { animation: none; }
   .pt-c, .pt-fly, .pt-chip, .pt-q, .pt-quick, .pt-card img, .pt-search, .pt-you, .pt-opp, .pt-zone, .pt-pile.is-leaving .pt-pc { transition: none; }
   .pt-sheet[open] { animation: none; }
 }

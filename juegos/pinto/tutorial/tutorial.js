@@ -32,7 +32,7 @@
   var TABLE_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 10h18M9 10v10"/></svg>';
 
   var cur = 0, view = 'detail', query = '', lastRule = -1, paused = false;
-  var sc = null, turn = null, skipped = null, runId = 0;   // table state, highlighted turn, skipped player, running loop id
+  var sc = null, turn = null, skipped = null, runId = 0, drawnPile = 0;   // table state, highlighted turn, skipped player, running loop id
 
   function file(c) { return /^r\d$/.test(c) ? 'ritmo-' + c.slice(1) : FILES[c]; }
   function name(c) { return /^r\d$/.test(c) ? 'Ritmo ' + c.slice(1) : NAMES[c]; }
@@ -265,8 +265,9 @@
     }).join('') + '</div>';
 
     var shown = sc.pile.slice(-6), base = sc.pile.length - shown.length;
+    var landed = sc.pile.length > drawnPile; drawnPile = sc.pile.length;   // bounce only a card that just arrived
     var pile = '<div class="pt-pilewrap"><div class="pt-pile">' + (shown.length
-      ? shown.map(function (c, i) { var m = mess(base + i); return '<div class="pt-pc" style="--dx:' + m.dx + 'px;--dy:' + m.dy + 'px;--r:' + m.r + 'deg">' + img(c) + '</div>'; }).join('')
+      ? shown.map(function (c, i) { var m = mess(base + i); return '<div class="pt-pc' + (landed && i === shown.length - 1 ? ' is-new' : '') + '" style="--dx:' + m.dx + 'px;--dy:' + m.dy + 'px;--r:' + m.r + 'deg">' + img(c) + '</div>'; }).join('')
       : '<div class="pt-free"></div>') + '</div></div>';
 
     var slots = Math.max(sc.vis.length, sc.hid), mesa = '';
@@ -340,6 +341,7 @@
     try {
       for (;;) {
         sc = { pile: (pg.pile || []).slice(), hand: (pg.hand || []).slice(), vis: (pg.vis || []).slice(), hid: pg.hid || 0 };
+        drawnPile = sc.pile.length;
         turn = null; skipped = null;
         drawTable(pg);
         $('.pt-table').setAttribute('data-focus', pg.focus || '');
