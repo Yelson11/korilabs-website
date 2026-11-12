@@ -310,11 +310,10 @@
     g.innerHTML = img(code);
     g.style.cssText = 'left:' + (a.cx - w / 2) + 'px;top:' + (a.cy - h / 2) + 'px;width:' + w + 'px;';
     document.body.appendChild(g);
+    g.getBoundingClientRect();          // commit the start position first, or the browser may skip the transition
     return new Promise(function (res) {
-      requestAnimationFrame(function () {
-        g.style.transform = 'translate(' + (to.cx - a.cx) + 'px,' + (to.cy - a.cy) + 'px) scale(' + (to.w / w) + ') rotate(' + (opts.rot || 0) + 'deg)';
-        setTimeout(function () { g.remove(); res(); }, 520);
-      });
+      g.style.transform = 'translate(' + (to.cx - a.cx) + 'px,' + (to.cy - a.cy) + 'px) scale(' + (to.w / w) + ') rotate(' + (opts.rot || 0) + 'deg)';
+      setTimeout(function () { g.remove(); res(); }, 520);
     });
   }
 
