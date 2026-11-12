@@ -277,35 +277,47 @@
         (i < sc.hid ? '<span class="pt-c pt-c--hid" data-z="hid" data-i="' + i + '">' + img('back') + '</span>' : '<span class="pt-c pt-c--ghost"></span>') +
         (v ? '<span class="pt-c pt-c--vis" data-z="vis" data-i="' + i + '">' + img(v) + '</span>' : '') + '</div>';
     }
-    var hand = sc.hand.map(function (c, k) { return '<span class="pt-c" data-z="hand" data-i="' + k + '">' + img(c) + '</span>'; }).join('');
+    // Your hand is held as a fan: each card turns a little around a point below the hand
+    var n = sc.hand.length, mid = (n - 1) / 2, step = n > 1 ? Math.min(9, 36 / (n - 1)) : 0;
+    var hand = sc.hand.map(function (c, k) {
+      return '<span class="pt-c" data-z="hand" data-i="' + k + '" style="--r:' + ((k - mid) * step).toFixed(1) + 'deg;--y:' + (Math.pow(k - mid, 2) * 1.6).toFixed(1) + 'px">' + img(c) + '</span>';
+    }).join('');
 
     tbl.innerHTML = opps + pile +
       '<div class="pt-you' + (turn === 'you' ? ' is-turn' : '') + '">' +
       (pg.vis || pg.hid ? '<div class="pt-zone pt-zone--mesa"><span class="pt-zone__label">Tu mesa</span><div class="pt-mesa">' + (mesa || '<span class="pt-none">Sin cartas</span>') + '</div></div>' : '') +
-      '<div class="pt-zone pt-zone--hand"><span class="pt-zone__label">Tu mano</span><div class="pt-hand' + (sc.hand.length > 4 ? ' is-tight' : '') + '">' + (hand || '<span class="pt-none">Sin cartas</span>') + '</div></div>' +
+      '<div class="pt-zone pt-zone--hand"><span class="pt-zone__label">Tu mano</span><div class="pt-hand">' + (hand || '<span class="pt-none">Sin cartas</span>') + '</div></div>' +
       '</div>';
   }
 
   /* ---------- Animation ---------- */
-  function fly(fromEl, toEl, code, opts) {
+  /* Card geometry: centre + unrotated width, so a card lands exactly where it will be drawn */
+  var RATIO = 922 / 660;
+  function spot(el) { var r = el.getBoundingClientRect(); return { cx: r.left + r.width / 2, cy: r.top + r.height / 2, w: el.offsetWidth || r.width }; }
+  function cardW() { var c = $('.pt-table .pt-c'); return c ? c.offsetWidth : 48; }
+  function pileSlot(extra) {            // where the next card of the pile goes (the pile shows the last 5, .9rem apart)
+    var pile = $('.pt-pile'), r = pile.getBoundingClientRect(), ref = $('.pt-pile .pt-pc') || $('.pt-free');
+    var pw = ref.offsetWidth, gap = parseFloat(getComputedStyle(document.documentElement).fontSize) * .9;
+    var j = Math.min(Math.min(sc.pile.length, 5) - (sc.pile.length >= 5 ? 1 : 0) + (extra || 0), 4);
+    return { cx: r.left + j * gap + pw / 2, cy: r.top + pw * RATIO / 2, w: pw };
+  }
+  function handSlot() { var h = $('.pt-hand').getBoundingClientRect(); return { cx: h.left + h.width / 2, cy: h.top + h.height / 2, w: cardW() }; }
+  function fly(fromEl, to, code, opts) {
     opts = opts || {};
-    if (!fromEl || !toEl || reduced) return Promise.resolve();
-    var a = fromEl.getBoundingClientRect(), b = toEl.getBoundingClientRect();
+    if (!fromEl || !to || reduced) return Promise.resolve();
+    var a = spot(fromEl), w = a.w, h = w * RATIO;
     var g = document.createElement('div');
     g.className = 'pt-fly';
     g.innerHTML = img(code);
-    var w = opts.width || a.width;
-    g.style.cssText = 'left:' + a.left + 'px;top:' + a.top + 'px;width:' + w + 'px;';
+    g.style.cssText = 'left:' + (a.cx - w / 2) + 'px;top:' + (a.cy - h / 2) + 'px;width:' + w + 'px;';
     document.body.appendChild(g);
-    var dx = b.left + b.width / 2 - (a.left + w / 2), dy = b.top + b.height / 2 - (a.top + a.height / 2);
     return new Promise(function (res) {
       requestAnimationFrame(function () {
-        g.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + (b.width / w) + ') rotate(' + (opts.rot || 0) + 'deg)';
+        g.style.transform = 'translate(' + (to.cx - a.cx) + 'px,' + (to.cy - a.cy) + 'px) scale(' + (to.w / w) + ') rotate(' + (opts.rot || 0) + 'deg)';
         setTimeout(function () { g.remove(); res(); }, 520);
       });
     });
   }
-  function pileTarget() { return $('.pt-pile .pt-pc:last-child') || $('.pt-pile'); }
 
   /* Plays the rule's script, then fades and starts again until the page changes.
      Pausing holds the loop between steps. */
@@ -341,8 +353,7 @@
           if (a.play) {
             var codes = [].concat(a.play), from = a.from || (sc.hand.length ? 'hand' : 'vis'), used = [];
             var els = codes.map(function (c) { return findCard(c, from, used); });
-            var target = pileTarget();
-            await Promise.all(els.map(function (el, n) { return wait(n * 120).then(function () { return fly(el, target, codes[n], { rot: n % 2 ? 4 : -4 }); }); }));
+            await Promise.all(els.map(function (el, n) { var to = pileSlot(n); return wait(n * 120).then(function () { return fly(el, to, codes[n]); }); }));
             alive();
             used.forEach(function (i) { if (from === 'hand') sc.hand[i] = null; else sc.vis[i] = null; });
             sc.hand = sc.hand.filter(Boolean);
@@ -351,20 +362,28 @@
           }
           if (a.bot) {
             var opp = $('.pt-opp[data-p="' + a.bot + '"]');
-            await fly(opp.querySelector('img:last-child'), pileTarget(), a.card, { width: pileTarget().getBoundingClientRect().width });
+            await fly(opp.querySelector('img:last-child'), pileSlot(), a.card);
             alive();
             sc.pile.push(a.card); drawTable(pg);
           }
           if (a.skip) { skipped = a.skip; drawTable(pg); }
+          if (a.tryEach) {             // lift each card of your hand as if to play it, and mark it as not valid
+            var tries = app.querySelectorAll('.pt-zone--hand .pt-c');
+            for (var t = 0; t < tries.length; t++) {
+              tries[t].classList.add('is-lift'); await hold(450);
+              tries[t].classList.add('is-no'); await hold(400);
+              tries[t].classList.remove('is-lift'); await hold(150);
+            }
+          }
           if (a.pickup) {
-            var cards = app.querySelectorAll('.pt-pile .pt-pc'), pc = sc.pile.slice(-cards.length), hand = $('.pt-hand');
-            await Promise.all(Array.prototype.map.call(cards, function (el, n) { return wait(n * 90).then(function () { return fly(el, hand, pc[n]); }); }));
+            var cards = app.querySelectorAll('.pt-pile .pt-pc'), pc = sc.pile.slice(-cards.length), hs = handSlot();
+            await Promise.all(Array.prototype.map.call(cards, function (el, n) { return wait(n * 120).then(function () { return fly(el, hs, pc[n]); }); }));
             alive();
             sc.hand = sc.hand.concat(sc.pile); sc.pile = []; drawTable(pg);
           }
           if (a.take) {
-            var vis = app.querySelectorAll('.pt-c--vis'), codesV = sc.vis.filter(Boolean), handEl = $('.pt-hand');
-            await Promise.all(Array.prototype.map.call(vis, function (el, n) { return wait(n * 110).then(function () { return fly(el, handEl, codesV[n]); }); }));
+            var vis = app.querySelectorAll('.pt-c--vis'), codesV = sc.vis.filter(Boolean), hv = handSlot();
+            await Promise.all(Array.prototype.map.call(vis, function (el, n) { return wait(n * 110).then(function () { return fly(el, hv, codesV[n]); }); }));
             alive();
             sc.hand = sc.hand.concat(codesV); sc.vis = []; drawTable(pg);
           }
@@ -372,7 +391,7 @@
             var hid = app.querySelectorAll('.pt-c--hid'), el = hid[hid.length - 1];
             el.classList.add('is-flipping');
             await wait(350); alive();
-            await fly(el, $('.pt-hand'), a.flip);
+            await fly(el, handSlot(), a.flip);
             alive();
             sc.hid -= 1; sc.hand.push(a.flip); drawTable(pg);
           }

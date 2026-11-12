@@ -19,7 +19,7 @@
      script  animation, looped like a GIF. Each action may have:
              turn ('you' | 1–3)   focus   no ('hand' | [codes] crossed out in your hand)
              play (code or [codes]) + from ('hand' | 'vis')   bot (1–3) + card
-             skip (1–3)   pickup   take (visible cards move to your hand)   flip (code revealed from a hidden card)   clear (pile leaves the game)
+             skip (1–3)   tryEach (lift each hand card, mark it not valid)   pickup   take (visible cards move to your hand)   flip (code revealed from a hidden card)   clear (pile leaves the game)
              wait (ms after the action, default 1100)
    A player may only play different values in one turn with the Rebufo: never script e.g. a 4 and then a 6. */
 (function (root) {
@@ -51,9 +51,8 @@
           rel: ['fases', 'via-libre', 'ritmo'],
           pile: ['r2', 'r5', 'r7'], hand: ['r3', 'r4', 'r2'], vis: ['r1', 'r6', 'r8'], hid: 3,
           script: [
-            { turn: 'you', wait: 700 }, { no: 'hand', wait: 1600 },
-            { pickup: true },
-            { turn: 1, wait: 900 }, { bot: 1, card: 'r2' }
+            { turn: 'you', wait: 700 }, { tryEach: true, wait: 700 },
+            { pickup: true, wait: 1600 }
           ]
         },
         {

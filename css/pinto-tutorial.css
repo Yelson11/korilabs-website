@@ -253,7 +253,7 @@
 .pt-pc { position: absolute; top: 0; left: calc(var(--i) * .9rem); width: var(--pw); filter: drop-shadow(0 3px 5px rgb(0 0 0 / .35)); }
 .pt-pc:last-child { animation: pt-land .25s ease-out; }
 .pt-free {
-  position: absolute; inset: 0 auto 0 50%; transform: translateX(-50%); width: var(--pw);
+  position: absolute; inset: 0 auto 0 0; width: var(--pw);
   display: grid; place-items: center; text-align: center; border: 2px dashed rgb(245 240 232 / .35); border-radius: .4rem;
   font: 700 .72rem var(--font); color: rgb(245 240 232 / .75);
 }
@@ -261,10 +261,15 @@
 .pt-pile__label { font-size: .78rem; color: rgb(245 240 232 / .85); }
 .pt-pile__label strong { color: #fff; }
 
-.pt-you { display: flex; justify-content: center; align-items: flex-end; gap: 1rem 1.5rem; flex-wrap: wrap; width: 100%; }
+/* You: your table cards in front of you, your hand closest to you, held as a fan */
+.pt-you { display: flex; flex-direction: column; align-items: center; gap: .35rem; width: 100%; }
 .pt-zone { display: flex; flex-direction: column; align-items: center; gap: .35rem; padding: .45rem .55rem .6rem; border-radius: .9rem; transition: background .25s, box-shadow .25s; }
 .pt-zone__label { font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: rgb(245 240 232 / .75); }
 .pt-mesa, .pt-hand { display: flex; gap: .4rem; flex-wrap: wrap; justify-content: center; min-height: calc(var(--cw) * 1.4); align-items: center; }
+.pt-hand { flex-wrap: nowrap; gap: 0; padding: .7rem .4rem .3rem; }
+.pt-hand .pt-c { transform-origin: 50% 115%; transform: translateY(calc(var(--y, 0px) + var(--lift, 0px))) rotate(var(--r, 0deg)); }
+.pt-hand .pt-c + .pt-c { margin-left: calc(var(--cw) * -.38); }
+.pt-hand .pt-c.is-lift { --lift: -.9rem; }
 .pt-none { font-size: .75rem; color: rgb(245 240 232 / .5); }
 .pt-slot { position: relative; width: var(--cw); height: calc(var(--cw) * 1.4 + .9rem); }
 .pt-slot .pt-c { position: absolute; left: 0; }
@@ -308,7 +313,7 @@
 .pt-fly img { display: block; width: 100%; height: auto; border-radius: .3rem; }
 
 @keyframes pt-land { from { transform: translateY(-6px) scale(1.04); } }
-@keyframes pt-shake { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
+@keyframes pt-shake { 20%, 60% { translate: -5px 0; } 40%, 80% { translate: 5px 0; } }
 @keyframes pt-flip { to { transform: rotateY(90deg); } }
 
 @media (max-width: 34rem) {
@@ -320,8 +325,6 @@
   .pt-you { gap: .5rem; }
   .pt-zone { padding: .35rem .45rem .45rem; }
   .pt-title { font-size: 1.6rem; }
-  .pt-hand.is-tight { flex-wrap: nowrap; gap: 0; }
-  .pt-hand.is-tight .pt-c + .pt-c { margin-left: -.9rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
