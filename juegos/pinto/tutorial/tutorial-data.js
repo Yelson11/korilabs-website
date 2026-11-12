@@ -239,9 +239,11 @@
             { ok: true, cards: ['reb', 'r6', 'r7'], label: 'Rebufo, 6 y 7' },
             { ok: true, cards: ['reb', 'reb', 'r5', 'r5', 'r5', 'r6', 'r6'], label: 'Dos Rebufos, tres 5 y dos 6' },
             { ok: true, cards: ['reb', 'r5'], label: 'Rebufo y 5' },
+            { ok: true, cards: ['reb', 'reb'], label: 'Solo Rebufos' },
             { ok: false, cards: ['reb', 'r6', 'r8'], bad: 2, why: 'No consecutivos', label: 'Rebufo, 6 y 8' },
             { ok: false, cards: ['reb', 'r5', 'r6', 'r7'], bad: 3, why: 'Tres valores', label: 'Rebufo, 5, 6 y 7' },
-            { ok: false, cards: ['reb', 'r4'], bad: 1, why: 'Ritmo Bajo', label: 'Rebufo y 4' }
+            { ok: false, cards: ['reb', 'r4'], bad: 1, why: 'Ritmo Bajo', label: 'Rebufo y 4' },
+            { ok: false, cards: ['reb', 'vr'], bad: 1, why: 'Carta Especial', label: 'Rebufo y Vuelta Rápida' }
           ],
           then: 'si va solo, se responde con un Ritmo Alto, otro Rebufo, una Bandera Roja, una Bandera a Cuadros o una Vuelta Rápida. Si va acompañado, manda el valor más alto de la combinación.',
           note: 'Ritmos Altos: del 5 al 8.',

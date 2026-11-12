@@ -162,8 +162,10 @@
 .pt-exs__c.is-bad img { outline: 3px solid #e5463b; outline-offset: 1px; }
 .pt-exs__why { color: #fff; font: 600 .88rem/1.2 var(--font); }
 @media (min-width: 60rem) {
-  .pt-exs { display: grid; grid-template-columns: repeat(3, 1fr); margin-inline: 0; padding: 0; overflow: visible; }
+  .pt-exs { display: grid; grid-template-columns: repeat(4, 1fr); margin-inline: 0; padding: 0; overflow: visible; }
   .pt-exs__item { width: auto; }
+  .pt-exs__fan.is-many .pt-exs__c { width: 2.2rem; }
+  .pt-exs__fan.is-many .pt-exs__c + .pt-exs__c { margin-left: -1.2rem; }
 }
 .pt-rel { margin-top: 1.4rem; }
 .pt-rel__label { margin: 0 0 .6rem; font: 700 .72rem/1 var(--font); letter-spacing: .18em; text-transform: uppercase; color: var(--cream-dim); }
