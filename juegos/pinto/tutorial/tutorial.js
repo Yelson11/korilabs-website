@@ -32,7 +32,7 @@
   var TABLE_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 10h18M9 10v10"/></svg>';
 
   var cur = 0, view = 'detail', query = '', lastRule = -1, paused = false;
-  var sc = null, turn = null, skipped = null, runId = 0;   // table state, highlighted turn, skipped player, running loop id
+  var sc = null, turn = null, skipped = null, runId = 0, drawnPile = 0;   // table state, highlighted turn, skipped player, running loop id
 
   function file(c) { return /^r\d$/.test(c) ? 'ritmo-' + c.slice(1) : FILES[c]; }
   function name(c) { return /^r\d$/.test(c) ? 'Ritmo ' + c.slice(1) : NAMES[c]; }
@@ -156,6 +156,18 @@
   }
 
   /* ---------- Rule (detail) ---------- */
+  /* Valid / not valid plays as fans of cards on the table (swipe on phones, grid on desktop) */
+  function examplesHTML(list) {
+    return '<div class="pt-exs" role="list">' + list.map(function (x) {
+      var n = x.cards.length, mid = (n - 1) / 2, step = Math.min(9, 40 / Math.max(n - 1, 1));
+      return '<div class="pt-exs__item ' + (x.ok ? 'is-ok' : 'is-no') + '" role="listitem" aria-label="' + (x.ok ? 'Válida' : 'No válida') + ': ' + x.label + (x.why ? '. ' + x.why : '') + '">' +
+        '<span class="pt-exs__tag" aria-hidden="true">' + (x.ok ? '✓ Válida' : '✕ No válida') + '</span>' +
+        '<span class="pt-exs__fan' + (n > 4 ? ' is-many' : '') + '" aria-hidden="true">' + x.cards.map(function (c, k) {
+          return '<span class="pt-exs__c' + (k === x.bad ? ' is-bad' : '') + '" style="--r:' + ((k - mid) * step).toFixed(1) + 'deg">' + thumb(c) + '</span>';
+        }).join('') + '</span>' +
+        (x.why ? '<span class="pt-exs__why" aria-hidden="true">' + x.why + '</span>' : '') + '</div>';
+    }).join('') + '</div>';
+  }
   function refHTML() {
     var first = RULES[0];
     return '<article class="pt-rule pt-rule--ref">' +
@@ -190,6 +202,7 @@
       '<h2 class="pt-title" tabindex="-1">' + r.title + '</h2>' +
       (r.on ? '<p class="pt-on"><strong>Sobre:</strong> ' + r.on + '</p>' : '') +
       (r.text ? '<div class="pt-say">' + r.text + '</div>' : '') +
+      (r.examples ? examplesHTML(r.examples) : '') +
       (r.then ? '<p class="pt-then"><strong>Luego:</strong> ' + r.then + '</p>' : '') +
       (r.note ? '<p class="pt-note">' + r.note + '</p>' : '') +
       (r.rel && r.rel.length ? '<div class="pt-rel"><p class="pt-rel__label">Relacionado</p><div class="pt-rel__list">' + r.rel.map(function (id) {
@@ -264,10 +277,11 @@
         '<span class="pt-opp__name">Jugador ' + n + '</span>' + (skipped === n ? '<span class="pt-opp__tag">Pierde el turno</span>' : '') + '</div>';
     }).join('') + '</div>';
 
-    var shown = sc.pile.slice(-5);
+    var shown = sc.pile.slice(-6), base = sc.pile.length - shown.length;
+    var landed = sc.pile.length > drawnPile; drawnPile = sc.pile.length;   // bounce only a card that just arrived
     var pile = '<div class="pt-pilewrap"><div class="pt-pile">' + (shown.length
-      ? shown.map(function (c, i) { return '<div class="pt-pc" style="--i:' + i + '">' + img(c) + '</div>'; }).join('')
-      : '<div class="pt-free">Sin cartas</div>') + '</div></div>';
+      ? shown.map(function (c, i) { var m = mess(base + i); return '<div class="pt-pc' + (landed && i === shown.length - 1 ? ' is-new' : '') + '" style="--dx:' + m.dx + 'px;--dy:' + m.dy + 'px;--r:' + m.r + 'deg">' + img(c) + '</div>'; }).join('')
+      : '<div class="pt-free"></div>') + '</div></div>';
 
     var slots = Math.max(sc.vis.length, sc.hid), mesa = '';
     for (var i = 0; i < slots; i++) {
@@ -294,11 +308,16 @@
   var RATIO = 922 / 660;
   function spot(el) { var r = el.getBoundingClientRect(); return { cx: r.left + r.width / 2, cy: r.top + r.height / 2, w: el.offsetWidth || r.width }; }
   function cardW() { var c = $('.pt-table .pt-c'); return c ? c.offsetWidth : 48; }
-  function pileSlot(extra) {            // where the next card of the pile goes (the pile shows the last 5, .9rem apart)
+  /* The pile is a messy stack: every card gets its own small turn and offset, fixed by its position in the pile */
+  function mess(k) {
+    var a = Math.sin(k * 12.9898 + 4.1) * 43758.5453, b = Math.sin(k * 78.233 + 1.7) * 12345.6789, c = Math.sin(k * 39.425 + 2.3) * 9876.54321;
+    a -= Math.floor(a); b -= Math.floor(b); c -= Math.floor(c);
+    return { r: Math.round((a * 2 - 1) * 24), dx: Math.round((b * 2 - 1) * 10), dy: Math.round((c * 2 - 1) * 7) };
+  }
+  function pileSlot(extra) {            // where the next card of the pile lands
     var pile = $('.pt-pile'), r = pile.getBoundingClientRect(), ref = $('.pt-pile .pt-pc') || $('.pt-free');
-    var pw = ref.offsetWidth, gap = parseFloat(getComputedStyle(document.documentElement).fontSize) * .9;
-    var j = Math.min(Math.min(sc.pile.length, 5) - (sc.pile.length >= 5 ? 1 : 0) + (extra || 0), 4);
-    return { cx: r.left + j * gap + pw / 2, cy: r.top + pw * RATIO / 2, w: pw };
+    var m = mess(sc.pile.length + (extra || 0));
+    return { cx: r.left + r.width / 2 + m.dx, cy: r.top + r.height / 2 + m.dy, w: ref.offsetWidth, rot: m.r };
   }
   function handSlot() { var h = $('.pt-hand').getBoundingClientRect(); return { cx: h.left + h.width / 2, cy: h.top + h.height / 2, w: cardW() }; }
   function fly(fromEl, to, code, opts) {
@@ -313,7 +332,7 @@
     if (!opts.keep) fromEl.style.visibility = 'hidden';   // the card leaves its spot (opponents keep their fan)
     g.getBoundingClientRect();          // commit the start position first, or the browser may skip the transition
     return new Promise(function (res) {
-      g.style.transform = 'translate(' + (to.cx - a.cx) + 'px,' + (to.cy - a.cy) + 'px) scale(' + (to.w / w) + ') rotate(' + (opts.rot || 0) + 'deg)';
+      g.style.transform = 'translate(' + (to.cx - a.cx) + 'px,' + (to.cy - a.cy) + 'px) scale(' + (to.w / w) + ') rotate(' + (opts.rot || to.rot || 0) + 'deg)';
       setTimeout(function () { g.remove(); res(); }, 520);
     });
   }
@@ -335,6 +354,7 @@
     try {
       for (;;) {
         sc = { pile: (pg.pile || []).slice(), hand: (pg.hand || []).slice(), vis: (pg.vis || []).slice(), hid: pg.hid || 0 };
+        drawnPile = sc.pile.length;
         turn = null; skipped = null;
         drawTable(pg);
         $('.pt-table').setAttribute('data-focus', pg.focus || '');
