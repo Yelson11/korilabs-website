@@ -74,10 +74,13 @@
             '<p>Cuando ya jugaste al menos una, el siguiente jugador puede <strong>interrumpirte</strong> con una carta o combinación válida sobre el tope: tu turno termina y empieza el suyo. Si nadie te interrumpe, puedes seguir jugando o terminar tu turno.</p>',
           note: 'La Bandera Roja, la Bandera a Cuadros y el Carril Lleno terminan el turno de inmediato.',
           rel: ['encadenar', 'carril', 'roja', 'cuad'],
-          pile: ['r3'], hand: ['r4', 'r4', 'r6'],
+          pile: ['r1'], hand: ['r2', 'r2', 'r3', 'r6', 'vr'],
           script: [
-            { turn: 'you', wait: 800 }, { play: 'r4' }, { play: 'r4' },
-            { turn: 1, wait: 500 }, { bot: 1, card: 'r7' }
+            { turn: 'you', wait: 800 }, { play: 'r2' }, { play: 'r2' },
+            { turn: 1, wait: 500 }, { bot: 1, card: 'r3' },
+            { turn: 2, wait: 500 }, { bot: 2, card: 'r5' },
+            { turn: 3, wait: 500 }, { bot: 3, card: 'r6' },
+            { turn: 'you', wait: 600 }, { play: 'r6' }
           ]
         }
       ]
