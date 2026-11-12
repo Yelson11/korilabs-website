@@ -80,10 +80,26 @@
     }
     return e + (a.length - i) + (b.length - j) <= 1;
   }
-  function match(list, t) {             // 1 = exact/prefix, .7 = one typo away, 0 = no
+  function dist(a, b) {                 // edit distance with swaps (stops early above 2)
+    if (Math.abs(a.length - b.length) > 2) return 3;
+    var d = [], i, j;
+    for (i = 0; i <= a.length; i++) { d[i] = [i]; }
+    for (j = 0; j <= b.length; j++) d[0][j] = j;
+    for (i = 1; i <= a.length; i++) for (j = 1; j <= b.length; j++) {
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+    }
+    return d[a.length][b.length];
+  }
+  function match(list, t) {             // 1 = exact/prefix, .7 = one typo, .5 = two typos in a long word, 0 = no
     for (var i = 0; i < list.length; i++) if (list[i].indexOf(t) === 0 || (t.length >= 4 && t.indexOf(list[i]) === 0 && list[i].length >= 4)) return 1;
     if (t.length >= 3) for (var k = 0; k < list.length; k++) if (list[k].length >= 4 && list[k][0] === t[0] && near(t, list[k])) return 0.7;
+    if (t.length >= 5) for (var m = 0; m < list.length; m++) if (list[m].length >= 5 && list[m][0] === t[0] && dist(t, list[m]) <= 2) return 0.5;
     return 0;
+  }
+  function phrase(list, a, b) {         // two query words found side by side ("ritmo bajo")
+    for (var i = 0; i + 1 < list.length; i++) if (list[i].indexOf(a) === 0 && list[i + 1].indexOf(b) === 0) return true;
+    return false;
   }
   function search(q) {
     var tk = tokens(q);
@@ -100,6 +116,7 @@
         if (h) { got += weight[n] * h; s += weight[n] * h * 1.6; }
         else if (b) { got += weight[n] * b; s += weight[n] * b; }
       });
+      for (var n = 0; n + 1 < tk.length; n++) if (phrase(r.head, tk[n], tk[n + 1]) || phrase(r.body, tk[n], tk[n + 1])) s += (weight[n] + weight[n + 1]) * 1.2;
       if (got) res.push({ r: r, s: s, c: got / total });
     });
     res.sort(function (a, b) { return b.s - a.s || (b.r.isRef ? 1 : 0) - (a.r.isRef ? 1 : 0) || a.r.i - b.r.i; });   // ties: the quick table first

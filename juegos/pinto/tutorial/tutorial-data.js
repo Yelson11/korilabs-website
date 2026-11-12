@@ -178,7 +178,7 @@
         },
         {
           id: 'roja', card: 'roja', title: 'Bandera Roja', q: '¿Qué hace la Bandera Roja?',
-          keys: 'roja reiniciar ritmo bajar empezar cero',
+          keys: 'roja reiniciar bajar el ritmo empezar de cero',
           on: 'cualquier carta o con vía libre.',
           text: '<strong>Reinicia el ritmo sin descartar:</strong> la pila se queda en la mesa. Tu turno termina.',
           then: 'vía libre para el siguiente.',
