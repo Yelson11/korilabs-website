@@ -310,6 +310,7 @@
     g.innerHTML = img(code);
     g.style.cssText = 'left:' + (a.cx - w / 2) + 'px;top:' + (a.cy - h / 2) + 'px;width:' + w + 'px;';
     document.body.appendChild(g);
+    if (!opts.keep) fromEl.style.visibility = 'hidden';   // the card leaves its spot (opponents keep their fan)
     g.getBoundingClientRect();          // commit the start position first, or the browser may skip the transition
     return new Promise(function (res) {
       g.style.transform = 'translate(' + (to.cx - a.cx) + 'px,' + (to.cy - a.cy) + 'px) scale(' + (to.w / w) + ') rotate(' + (opts.rot || 0) + 'deg)';
@@ -360,7 +361,7 @@
           }
           if (a.bot) {
             var opp = $('.pt-opp[data-p="' + a.bot + '"]');
-            await fly(opp.querySelector('img:last-child'), pileSlot(), a.card);
+            await fly(opp.querySelector('img:last-child'), pileSlot(), a.card, { keep: true });
             alive();
             sc.pile.push(a.card); drawTable(pg);
           }
