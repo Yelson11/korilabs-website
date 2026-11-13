@@ -58,7 +58,8 @@ comments just to translate them — only translate what you are already touching
 │   ├── og-korilabs.jpg      1200×630 share preview for the home page
 │   ├── pinto-caja.webp      PINTO box used on the home game card
 │   ├── sello-hecho-en-costa-rica.svg  "Hecho en Costa Rica · Kori Labs" seal (PINTO hero, under the fact chips)
-│   └── taller/              Logos for the home "Taller" carousel (last-of-the-wilds.webp)
+│   └── taller/              Logos for the home "Taller" carousel (last-of-the-wilds.webp, pinto-logo.webp) and
+│                            pinto/ (01-…08-*.webp: photos of the PINTO process page)
 ├── css/
 │   ├── styles.css           Base: tokens, reset, header/nav, footer, shared bits (loaded on every page)
 │   ├── home.css             Home page (h-* classes); also reused by /privacidad/
@@ -104,6 +105,10 @@ comments just to translate them — only translate what you are already touching
 │       ├── modos/temporada/ Modo Temporada scorekeeper (see "PINTO season scorekeeper" below). index.html (shell) +
 │       │                    temporada.js (whole app). Linked from the Temporada mode card on the PINTO page and instrucciones/
 ├── pinto/reglas/index.html  Meta-refresh → /juegos/pinto/instrucciones/ (short alias; keep working)
+├── taller/
+│   ├── index.html           Meta-refresh → /#taller
+│   └── pinto/index.html     "Diario del taller" for PINTO: PINTO logo, lead text, vertical timeline of 8 photos (title only,
+│                            no captions — owner's choice), "Conoce PINTO" / "Volver al taller". CSS: styles.css + home.css (pp-*)
 ├── privacidad/index.html    Privacy policy (only email is collected, via Sender; contact info@korilabscr.com)
 └── regalos/
     └── pinto-modo-temporada.pdf  Subscriber gift (score sheets). Public by URL, hidden from search engines
@@ -121,7 +126,8 @@ comments just to translate them — only translate what you are already touching
 4. `section#juegos.h-games` — "Nuestros juegos": released/upcoming games (PINTO card with a cream "Ver el juego" pill).
 5. `section#taller.h-lab` — "Otros proyectos / Taller": horizontal scroll-snap carousel (`.h-lab__track`, arrow
    buttons via inline script, hidden when nothing overflows). Cards: `.h-lab__item` with logo + name + type line
-   (`.h-lab__type`), or `.h-lab__item--locked` (striped dark art, corner lock, name "???"). Keep cards minimal:
+   (`.h-lab__type`), or `.h-lab__item--locked`. First card: PINTO (logo on the PINTO rhombus background, red
+   "Próximamente" badge, no hover effect on the logo, no extra text) linking to `taller/pinto/`. Other cards: (striped dark art, corner lock, name "???"). Keep cards minimal:
    name and game type only — no project numbers or development stages. To add a game, copy an item and put its
    logo in `assets/taller/`.
 6. `section#suscribete.h-join` — Sender newsletter form (see below).
@@ -202,7 +208,7 @@ on the same device/browser. If storage is blocked the page says progress won't s
 
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
-  Current: `styles.css?v=2`, `home.css?v=9` (index and privacidad),
+  Current: `styles.css?v=2`, `home.css?v=10` (index, privacidad and taller/pinto),
   `pinto.css?v=37`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `pinto-tutorial.css?v=15`, `tutorial-data.js?v=18`, `tutorial.js?v=19`, `pinto-temporada.css?v=10`, `temporada.js?v=10`, PINTO favicons `?v=1`, `menu.js?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
