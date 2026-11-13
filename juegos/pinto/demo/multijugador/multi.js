@@ -1,9 +1,11 @@
-/* PINTO online (2 to 4 players): one creates a room, the others join with its
+/* PINTO online (2 to 6 players): one creates a room, the others join with its
    code. The room creator's browser is the referee: it runs pinto-engine.js and
    sends each player only what they're allowed to see (their own hand, how many
    cards the others hold, the tables and the pile). Connection: PeerJS (WebRTC,
    free public broker, no backend of our own). Add ?transporte=local to test with
-   several tabs of the same browser (BroadcastChannel). */
+   several tabs of the same browser (BroadcastChannel).
+   After someone plays, their turn stays open for 5 s; the next player may
+   interrupt it with a valid play (leaflet, "Desarrollo del turno"). */
 (function () {
   'use strict';
   var E = window.PintoEngine;
@@ -16,19 +18,19 @@
   var CHAIN_MS = 5000;
   var FLY_MS = 750;
   var DOUBLE_TAP_MS = 380;
-  var MAX_PLAYERS = 4;
+  var MAX_PLAYERS = 6;
   var ID_PREFIX = 'korilabs-pinto-';
   var CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
   var params = new URLSearchParams(location.search);
   var LOCAL = params.get('transporte') === 'local';
 
   var INFO = {
-    reb: 'Se juega sobre un ritmo del 1 al 4, con vía libre, sobre una Bandera Roja u otro Rebufo. Te deja sumar hasta dos valores seguidos de 5 o más, por ejemplo Rebufo + 6 + 7. Puedes jugarlo solo y seguir con los ritmos en tus 5 segundos.',
-    roja: 'Cierra la pista sin descartar la pila: el siguiente jugador tiene vía libre. Se puede jugar sobre cualquier carta.',
-    ama: 'Obliga al siguiente jugador a jugar ritmos bajos, del 1 al 4. No se puede jugar sobre ritmos altos, Vuelta Rápida ni Rebufo.',
-    azul: 'Salta el turno del siguiente jugador. No se puede jugar sobre Bandera Amarilla, Rebufo ni Vuelta Rápida.',
-    cuad: 'Descarta toda la pila y termina tu turno. El siguiente jugador tiene vía libre. Se juega de una en una y entra sobre cualquier carta.',
-    vr: 'Es el ritmo más alto del juego. Se puede jugar sobre cualquier carta, excepto sobre la Bandera Amarilla.'
+    reb: 'Sobre un Ritmo Bajo, otro Rebufo o con vía libre. Puedes acompañarlo con Ritmos Altos de uno o dos valores consecutivos (por ejemplo Rebufo + 6 + 7), jugarlo solo o con otros Rebufos. Si va acompañado, manda el valor más alto.',
+    roja: 'Sobre cualquier carta o con vía libre. Reinicia el ritmo sin descartar: la pila se queda en la mesa. Tu turno termina y el siguiente tiene vía libre.',
+    ama: 'Sobre un Ritmo Bajo, otra Bandera Amarilla o con vía libre. El siguiente solo puede responder con un Ritmo Bajo, otra Amarilla, una Bandera Roja o una Bandera a Cuadros.',
+    azul: 'Sobre una carta de Ritmo, otra Bandera Azul o con vía libre. El siguiente jugador en carrera pierde su turno y quien sigue responde a la carta que quedó debajo de la Azul.',
+    cuad: 'Sobre cualquier carta o con vía libre. Toda la pila se retira de la partida, tu turno termina y el siguiente tiene vía libre. Solo una por turno.',
+    vr: 'Sobre cualquier carta excepto una Bandera Amarilla, o con vía libre. Marca el ritmo más alto: solo se responde con otra Vuelta Rápida, una Bandera Roja o una Bandera a Cuadros.'
   };
 
   /* ---------- Lobby elements ---------- */
@@ -308,9 +310,18 @@
 
   function act(pid, a, m) {
     if (!s || s.over) return;
-    if (s.current !== pid) { sendError(pid, 'Espera tu turno.'); return; }
     var before = s.log.length, r;
-    if (a === 'play') {
+    if (s.current !== pid) {
+      // Interrupting the open turn of the player before you
+      if (a !== 'play' || !s.chain || E.nextPlayer(s) !== pid) { sendError(pid, 'Espera tu turno.'); return; }
+      r = E.interrupt(s, pid, (m.ids || []).map(Number));
+      if (r.error) { sendError(pid, r.error); return; }
+      if (r.canChain && s.current === pid) startChain(); else clearTimeout(chainTimer);
+    } else if (a === 'end') {
+      if (!s.chain) return;
+      clearTimeout(chainTimer);
+      E.endChain(s);
+    } else if (a === 'play') {
       r = E.play(s, (m.ids || []).map(Number));
       if (r.error) { sendError(pid, r.error); return; }
       if (r.canChain && s.current === pid) startChain(); else clearTimeout(chainTimer);
@@ -346,18 +357,17 @@
     else if (roster[pid] && roster[pid].send) roster[pid].send({ t: 'error', msg: msg });
   }
 
-  // Seats around the table, seen from player `pid`: next player on the left, then top, then right
+  // Seats around the table, seen from player `pid`: 1 = next player (on your left), then clockwise.
+  // The side of the table for each seat comes from E.seatSides(n).
   function seatOf(pid, other) {
-    var n = s.players.length, rel = (other - pid + n) % n;
-    if (rel === 0) return 0;
-    if (n === 2) return 2;
-    if (n === 3) return rel === 1 ? 1 : 3;
-    return rel;
+    var n = s.players.length;
+    return (other - pid + n) % n;
   }
 
   // What player `pid` is allowed to see
   function viewFor(pid) {
     var p = s.players[pid], mine = s.current === pid && !s.over;
+    var canCut = !mine && E.canInterrupt(s, pid);
     var moves = s.moves.slice(sentMoves[pid]).map(function (mv) {
       var seat = seatOf(pid, mv.pid);
       if (mv.type === 'reveal') return { type: 'reveal', seat: seat, card: seat === 0 ? mv.card : null };
@@ -379,8 +389,9 @@
       turn: s.over ? null : (mine ? 'me' : s.players[s.current].name),
       opening: s.opening,
       chain: mine ? s.chain : null,
+      interrupt: canCut ? s.players[s.current].name : null,
       chainLeft: mine && s.chain ? Math.max(0, chainDeadline - Date.now()) : 0,
-      playable: mine ? Object.keys(E.playableIds(s)).map(Number) : [],
+      playable: mine ? Object.keys(E.playableIds(s)).map(Number) : canCut ? [].concat.apply([], E.movesFor(s, pid)).map(function (c) { return c.id; }) : [],
       noMoves: mine && !s.chain && p.hand.length > 0 && E.legalMoves(s).length === 0,
       hiddenStage: mine && !p.hand.length && !p.visible.length && p.hidden.length > 0,
       log: s.log.slice(-8).map(function (l) { return { text: l.text, mine: l.pid === pid }; }),
@@ -423,9 +434,9 @@
   /* ---------- Rendering ---------- */
 
   var $ = function (sel) { return board.querySelector(sel); };
-  var seats = [$('[data-seat="0"]'), $('[data-seat="1"]'), $('[data-seat="2"]'), $('[data-seat="3"]')];
-  var SIDES = ['', 'left', 'top', 'right'];
-  var ORIENT = [0, 90, 180, -90];
+  var seats = [0, 1, 2, 3, 4, 5].map(function (i) { return $('[data-seat="' + i + '"]'); });
+  var ORIENT_BY_SIDE = { left: 90, right: -90, top: 180, tl: 180, tr: 180 };
+  function sideOf(seat) { return seat === 0 || !view ? '' : E.seatSides(view.n)[seat - 1]; }
   var resultBox = $('.pd-result');
 
   function src(card) { return BASE + (card ? E.cardFile(card) : 'reverso') + '.webp' + VER; }
@@ -458,21 +469,23 @@
   function renderSafe() { if (view) render(); }
 
   function render() {
-    var v = view, me = v.me, mine = v.turn === 'me';
+    var v = view, me = v.me, mine = v.turn === 'me', cutting = !!v.interrupt;
     var playable = {};
     v.playable.forEach(function (id) { playable[id] = true; });
 
     board.classList.toggle('pd-board--duo', v.n === 2);
+    board.classList.toggle('pd-board--many', v.n >= 5);
     // Other players around the table
-    [1, 2, 3].forEach(function (seat) {
+    [1, 2, 3, 4, 5].forEach(function (seat) {
       var o = v.others.filter(function (x) { return x.seat === seat; })[0], el = seats[seat];
       el.hidden = !o;
+      el.className = 'pd-seat' + (o ? ' pd-seat--' + sideOf(seat) : '');
       if (!o) { el.innerHTML = ''; return; }
       el.classList.toggle('is-turn', o.turn);
       el.classList.toggle('is-out', !!o.place);
       el.classList.toggle('is-away', o.away);
       var sub = o.away ? 'desconectado' : o.place ? o.place + '.º lugar' : 'x' + plural(o.hand, 'carta', 'cartas');
-      el.innerHTML = label(o.name, sub) + '<div class="pd-matbox pd-matbox--' + SIDES[seat] + '"><div class="pd-mat">' +
+      el.innerHTML = label(o.name, sub) + '<div class="pd-matbox pd-matbox--' + sideOf(seat) + '"><div class="pd-mat">' +
         slots(o.visible, o.hidden, 'pd-table', false) + fan(o.hand) + '</div></div>';
     });
 
@@ -489,13 +502,14 @@
     // You (bottom)
     var hand = me.hand.map(function (c) {
       var on = selected.indexOf(c.id) >= 0;
-      return '<button type="button" class="pd-hand__card' + (mine && !playable[c.id] ? ' is-dim' : '') + '" data-card="' + c.id + '" aria-pressed="' + on + '" aria-label="' + E.cardName(c) + (on ? ', elegida' : '') + '">' +
+      return '<button type="button" class="pd-hand__card' + ((mine || cutting) && !playable[c.id] ? ' is-dim' : '') + '" data-card="' + c.id + '" aria-pressed="' + on + '" aria-label="' + E.cardName(c) + (on ? ', elegida' : '') + '">' +
         img(c, arriving[c.id] ? 'is-arriving' : '') + '</button>';
     }).join('');
     var actions = '';
     if (mine) {
       if (v.chain) {
-        actions = '<p class="pd-status">¿Tienes otra carta para jugar?</p><div class="pd-timer" aria-hidden="true"><i style="animation-duration:' + CHAIN_MS + 'ms;animation-delay:-' + (CHAIN_MS - v.chainLeft) + 'ms"></i></div>';
+        actions = '<p class="pd-status">¿Tienes otra carta para jugar?</p><div class="pd-timer" aria-hidden="true"><i style="animation-duration:' + CHAIN_MS + 'ms;animation-delay:-' + (CHAIN_MS - v.chainLeft) + 'ms"></i></div>' +
+          '<button type="button" class="p-button p-button--cream p-button--small" data-act="end-turn">Terminar mi turno</button>';
       } else if (v.hiddenStage) {
         actions = '<p class="pd-status">Toca una de tus cartas ocultas para revelarla.</p>';
       } else if (v.noMoves) {
@@ -505,6 +519,8 @@
       } else {
         actions = '<p class="pd-status pd-status--hint">Toca para elegir · doble toque o arrastra a la pila para jugar</p>';
       }
+    } else if (cutting) {
+      actions = '<p class="pd-status">Puedes interrumpir a ' + esc(v.interrupt) + ': juega una carta válida.</p>';
     } else if (!v.over && v.turn) {
       actions = '<p class="pd-status pd-status--hint">Turno de ' + esc(v.turn) + '…</p>';
     }
@@ -514,7 +530,7 @@
     seats[0].classList.toggle('is-turn', mine);
     seats[0].innerHTML = label(me.name + ' (tú)', me.place ? me.place + '.º lugar' : '') +
       slots(me.visible, me.hidden, 'pd-table pd-table--me', v.hiddenStage) + tip +
-      '<div class="pd-hand' + (mine ? ' is-active' : '') + (me.hand.length > 10 ? ' is-crowded' : '') + '" role="group" aria-label="Tu mano">' + hand + '</div>' +
+      '<div class="pd-hand' + (mine || cutting ? ' is-active' : '') + (me.hand.length > 10 ? ' is-crowded' : '') + '" role="group" aria-label="Tu mano">' + hand + '</div>' +
       '<div class="pd-actions" aria-live="polite">' + actions + '</div>';
 
     // Log and result
@@ -545,7 +561,7 @@
   }
   function seatSpot(seat) {
     var el = seat === 0 ? seats[0].querySelector('.pd-hand') || seats[0] : seats[seat].querySelector('.pd-matbox') || seats[seat];
-    return { c: center(el.getBoundingClientRect()), w: cardWidth(seat), rot: ORIENT[seat] };
+    return { c: center(el.getBoundingClientRect()), w: cardWidth(seat), rot: seat === 0 ? 0 : ORIENT_BY_SIDE[sideOf(seat)] };
   }
   function pileSpot() {
     var pile = $('.pd-pile'), sample = pile.querySelector('.pd-card, .pd-pile__empty');
@@ -607,7 +623,8 @@
   /* ---------- Input: tap, double tap, drag (same as the solo demo) ---------- */
 
   function say(text, isError) { message = text || ''; messageError = !!isError; }
-  function myTurn() { return view && view.turn === 'me'; }
+  // You can use your hand on your turn, or to interrupt the player before you
+  function myTurn() { return view && (view.turn === 'me' || !!view.interrupt); }
   function findInHand(id) { return view.me.hand.find(function (c) { return c.id === id; }); }
   function compatibleWith(sel, card) {
     var cards = sel.map(findInHand).filter(Boolean);
@@ -724,6 +741,7 @@
     }
     switch (t.getAttribute('data-act')) {
       case 'pickup': selected = []; say(''); sendAction('pickup'); break;
+      case 'end-turn': sendAction('end'); break;
       case 'rematch':
         if (role === 'host') { if (connectedCount() >= 2) startGame(); else { say('Nadie más está conectado para la revancha.', true); render(); } }
         else link.send({ t: 'rematch' });
