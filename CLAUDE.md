@@ -76,11 +76,11 @@ comments just to translate them — only translate what you are already touching
 │       ├── box3d.js         Auto-rotating, draggable CSS-3D box with per-face shading (no deps, respects reduced motion)
 │       ├── instrucciones/index.html  Welcome page for QR visitors (tutorial, resources) + quick rules guide (v1.5). Full rules PDF opens in a new tab, no `download` attr. TARGET OF THE PRINTED QR — never move
 │       ├── reglamento.pdf   Official rules PDF ("Instrucciones", phone version, 9 pages; replaced Nov 2026). Linked from instrucciones/ only
-│       ├── demo/            Playable web demo (you vs 3 bots). Unlisted + noindex while it's being tested.
+│       ├── demo/            Playable web demo (you vs 1–5 bots; 2–6 players picked above the board, remembered as `pd-players`, default 6). Unlisted + noindex.
 │       │   ├── index.html   Page shell (board markup, help text); CSS: styles.css + pinto.css + pinto-demo.css
-│       │   ├── pinto-engine.js  Pure rules engine (no DOM, also runs in Node for simulations). Rules changes go here
-│       │   ├── demo.js      Rendering, selection, bot pacing, result panel (uses window.PintoEngine)
-│       │   └── multijugador/ Online with friends, 2–4 players (unlisted + noindex). index.html (lobby + board) and
+│       │   ├── pinto-engine.js  Pure rules engine (no DOM, also runs in Node for simulations), rules from the printed leaflet (v1.5). Rules changes go here. Open turns + interruptions (`canInterrupt`/`interrupt`), seat sides per player count (`seatSides`: left/tl/top/tr/right)
+│       │   ├── demo.js      Rendering, selection, bot pacing, result panel (uses window.PintoEngine). Your 5 s open turn has "Terminar mi turno"; the next bot may interrupt it (INTERRUPT_CHANCE). The race start is unchanged on purpose (you always open with a Ritmo 1)
+│       │   └── multijugador/ Online with friends, 2–6 players (unlisted + noindex); the next player can interrupt an open turn. index.html (lobby + board) and
 │       │                    multi.js: PeerJS rooms (4-char code, ?sala=CODE link); the room creator's browser runs
 │       │                    the engine and sends each player only their view. ?transporte=local = multi-tab test mode
 │       ├── tutorial/        Tutorial = rules finder (indexable; linked from instrucciones/). Content follows the printed
@@ -209,7 +209,7 @@ on the same device/browser. If storage is blocked the page says progress won't s
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
   Current: `styles.css?v=2`, `home.css?v=10` (index, privacidad and taller/pinto),
-  `pinto.css?v=37`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=17`, `pinto-engine.js?v=10`, `demo.js?v=16`, `multi.js?v=3`, `legal.css?v=1`, `pinto-tutorial.css?v=15`, `tutorial-data.js?v=18`, `tutorial.js?v=19`, `pinto-temporada.css?v=10`, `temporada.js?v=10`, PINTO favicons `?v=1`, `menu.js?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
+  `pinto.css?v=37`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=18`, `pinto-engine.js?v=11`, `demo.js?v=17`, `multi.js?v=4`, `legal.css?v=1`, `pinto-tutorial.css?v=15`, `tutorial-data.js?v=18`, `tutorial.js?v=19`, `pinto-temporada.css?v=10`, `temporada.js?v=10`, PINTO favicons `?v=1`, `menu.js?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
 - **Sender (newsletter):** universal script in the `<head>` of `index.html`; form is

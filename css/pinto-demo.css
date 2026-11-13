@@ -27,6 +27,18 @@
 
 .pd-intro { padding-block: clamp(1.75rem, 5vw, 3rem) 1.5rem; }
 .pd-intro .p-intro__lead { max-width: 44rem; }
+/* Number of players */
+.pd-players { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin-top: 1.1rem; }
+.pd-players__label { margin-right: 0.35rem; color: var(--cream-dim); font-size: 0.9rem; font-weight: 600; }
+.pd-players__opt {
+  width: 2.6rem; height: 2.6rem; border: 1.5px solid rgb(245 240 232 / 0.25); border-radius: 50%;
+  background: transparent; color: var(--cream); font: 700 1rem var(--font); cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.pd-players__opt:hover { border-color: var(--cream-dim); }
+.pd-players__opt[aria-checked="true"] { background: var(--cream); border-color: var(--cream); color: var(--asphalt); }
+.pd-players__opt:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+.pd-actions .p-button--small { margin-top: 0.4rem; }
 .pd-intro__actions { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
 .pd-intro__actions .p-button { margin-top: 1.25rem; }
 
@@ -36,7 +48,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 1fr);
   grid-template-areas:
-    ".    top    ."
+    "tl   top    tr"
     "left center right"
     "me   me     me";
   align-items: center;
@@ -64,6 +76,8 @@
 }
 
 .pd-seat--top { grid-area: top; }
+.pd-seat--tl { grid-area: tl; }
+.pd-seat--tr { grid-area: tr; }
 .pd-seat--left { grid-area: left; }
 .pd-seat--right { grid-area: right; }
 .pd-center { grid-area: center; }
@@ -123,7 +137,7 @@ img.pd-card { height: auto; object-fit: cover; }
   height: var(--mat-h);
   transform: translate(-50%, -50%) rotate(var(--rot, 0deg));
 }
-.pd-matbox--top .pd-mat { --rot: 180deg; }
+.pd-matbox--top .pd-mat, .pd-matbox--tl .pd-mat, .pd-matbox--tr .pd-mat { --rot: 180deg; }
 .pd-matbox--left .pd-mat { --rot: 90deg; }
 .pd-matbox--right .pd-mat { --rot: -90deg; }
 
@@ -379,6 +393,8 @@ button.pd-hidden-btn:focus-visible { outline: 3px solid var(--cream); outline-of
   .pd-seat { padding: 0.4rem 0.2rem; gap: 0.35rem; }
   .pd-label strong { font-size: 0.78rem; }
   .pd-label span { font-size: 0.72rem; }
+  /* 5–6 players: smaller bot mats so three fit across the top */
+  .pd-board--many { --card-mini: 1.25rem; }
   .pd-pile__note { font-size: 0.85rem; }
   .pd-below { grid-template-columns: minmax(0, 1fr); }
 }
@@ -467,7 +483,7 @@ button.pd-hidden-btn:focus-visible { outline: 3px solid var(--cream); outline-of
   @keyframes pd-blink { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
 }
 @media (prefers-reduced-motion: reduce) {
-  .pd-hand__card, .pd-seat, .pd-me { transition: none; }
+  .pd-hand__card, .pd-seat, .pd-me, .pd-players__opt { transition: none; }
   .pd-hand__card:hover, .pd-hand__card[aria-pressed="true"] { transform: none; }
   .pd-timer i { animation: none; }
 }
