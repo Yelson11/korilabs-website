@@ -808,3 +808,50 @@ html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) {
   .h-game:hover, .h-lab__item:hover { transform: none; }
 }
+
+/* --- Taller: PINTO card (links to taller/pinto/) ------------------------- */
+.h-lab__link { display: grid; grid-template-rows: auto 1fr; grid-row: 1 / -1; color: inherit; text-decoration: none; }
+.h-lab__link:focus-visible { outline: 3px solid var(--peach); outline-offset: -3px; border-radius: 1.25rem; }
+.h-lab__art--pinto { position: relative; overflow: hidden; }
+.h-lab__badge { position: absolute; left: .7rem; top: .7rem; padding: .3rem .6rem; border-radius: 99px; background: #e5463b; color: #fff; font: 700 .68rem/1 var(--font); letter-spacing: .12em; text-transform: uppercase; }
+
+
+/* --- PINTO process page (taller/pinto/) --------------------------------- */
+.h-lab__art--pinto {
+  display: grid; place-items: center; background-color: var(--asphalt);
+  background-image: radial-gradient(ellipse 60% 70% at 25% 50%, rgb(229 70 59 / .12), transparent 70%),
+    conic-gradient(from 45deg, var(--asphalt-2) 25%, transparent 0 50%, var(--asphalt-2) 0 75%, transparent 0);
+  background-size: auto, 3.5rem 3.5rem;
+}
+.h-lab__art--pinto img { width: 72%; height: auto; }
+.pp { display: block; padding: 1rem 0 4rem; }
+.pp-title { margin: 0; line-height: 0; }
+.pp-back { display: inline-flex; gap: .4rem; color: var(--cream-dim, #d9d3c5); font-weight: 700; text-decoration: none; }
+.pp-back:hover { color: #f7f3ea; }
+.pp-head { display: grid; justify-items: center; text-align: center; gap: .6rem; margin: 2rem auto 3rem; max-width: 36rem; }
+.pp-logo { width: min(22rem, 70vw); height: auto; filter: drop-shadow(0 8px 18px rgb(0 0 0 / .35)); }
+.pp-lead { margin: 0; color: rgb(247 243 234 / .8); font-size: 1.1rem; }
+.pp-steps { list-style: none; margin: 0 auto; padding: 0; max-width: 60rem; position: relative; display: grid; gap: 3.5rem; }
+.pp-steps::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; border-left: 3px dashed rgb(254 228 193 / .35); }
+.pp-step { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
+.pp-step::after { content: ""; position: absolute; left: 50%; top: 50%; width: 1rem; height: 1rem; margin: -.5rem 0 0 -.5rem; border-radius: 50%; background: #fee4c1; box-shadow: 0 0 0 5px rgb(254 228 193 / .2); }
+.pp-step:nth-child(even) .pp-photo { order: 2; }
+.pp-photo { margin: 0; padding: .7rem .7rem 1.6rem; background: #f7f3ea; border-radius: .5rem; box-shadow: 0 16px 36px rgb(0 0 0 / .35); transform: rotate(-2deg); transition: transform .3s ease; }
+.pp-step:nth-child(even) .pp-photo { transform: rotate(2deg); }
+.pp-photo:hover { transform: rotate(0) scale(1.02); }
+.pp-photo img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: .3rem; }
+.pp-text h2 { margin: .3rem 0 .4rem; font-size: clamp(1.4rem, 3vw, 2rem); color: #f7f3ea; }
+.pp-text p { margin: 0; color: rgb(247 243 234 / .8); font-size: 1.05rem; }
+.pp-n { font: 700 .8rem/1 var(--font); letter-spacing: .16em; color: #fee4c1; }
+.pp-end { display: flex; flex-wrap: wrap; justify-content: center; gap: .8rem; margin-top: 4rem; }
+@media (max-width: 47.99rem) {
+  .pp-steps::before { left: .5rem; }
+  .pp-step { grid-template-columns: 1fr; gap: 1rem; padding-left: 2rem; }
+  .pp-step::after { left: .5rem; top: 1.5rem; }
+  .pp-step:nth-child(even) .pp-photo { order: 0; }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .pp-photo { transition: none; }
+}
