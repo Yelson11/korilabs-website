@@ -2,7 +2,7 @@
    ("PINTO · Instrucciones"): En tu turno, Fases de la carrera, Combinaciones (Encadenar
    cartas + Carril Lleno; the leaflet has no group title for these) and Cartas especiales.
    Rule text comes from the leaflet; don't add rules that aren't in it.
-   Card codes: r1–r8 (Ritmo), cuad, roja, ama, azul, vr (Vuelta Rápida), reb (Rebufo), back.
+   Card codes: r1–r8 (Ritmo), cuad, roja, ama, azul, vr (Vuelta Rápida), reb (Turbo), back.
 
    Group fields: id (hash for the list view), title, color (CSS var), alias (old hashes)
    Rule fields:
@@ -22,7 +22,7 @@
              play (code or [codes]) + from ('hand' | 'vis')   bot (1–3) + card
              skip (1–3)   tryEach (lift each hand card, mark it not valid)   pickup   take (visible cards move to your hand)   flip (code revealed from a hidden card)   clear (pile leaves the game)
              wait (ms after the action, default 1100)
-   A player may only play different values in one turn with the Rebufo: never script e.g. a 4 and then a 6. */
+   A player may only play different values in one turn with the Turbo: never script e.g. a 4 and then a 6. */
 (function (root) {
   'use strict';
 
@@ -47,7 +47,7 @@
         {
           id: 'ceder', title: 'Cede el paso', q: 'No tengo jugada, ¿qué hago?', mini: 'back',
           keys: 'no puedo jugar no tengo carta jugada valida recoger recojo agarrar comer llevar pila pasar paso nada tirar comer agarro recojo',
-          text: 'Si al comenzar tu turno no tienes una jugada válida, <strong>recoge toda la pila central</strong> y súmala a tu mano. Tu turno termina y el siguiente jugador tiene vía libre.',
+          text: 'Si al comenzar tu turno no tienes una jugada válida, <strong>recoge toda la pila central</strong> y súmala a tu mano. Tu turno termina y el siguiente jugador tiene pista libre.',
           note: 'Aplica en cualquier fase: si recoges la pila, debes deshacerte de todas las cartas de tu mano antes de avanzar de fase.',
           rel: ['fases', 'via-libre', 'ritmo'],
           pile: ['r2', 'r5', 'r7'], hand: ['r3', 'r4', 'r2'], vis: ['r1', 'r6', 'r8'], hid: 3,
@@ -57,8 +57,8 @@
           ]
         },
         {
-          id: 'via-libre', title: 'Vía libre', q: '¿Cuándo puedo empezar con cualquier carta?', mini: 'r2',
-          keys: 'pila vacia empezar iniciar cualquier carta nueva secuencia libre',
+          id: 'via-libre', title: 'Pista libre', q: '¿Cuándo puedo empezar con cualquier carta?', mini: 'r2',
+          keys: 'via libre pila vacia empezar iniciar cualquier carta nueva secuencia libre',
           text: 'Con la pila vacía, o cuando una carta lo indica, el jugador puede empezar con <strong>cualquier carta</strong> o combinación válida.',
           rel: ['ceder', 'cuad', 'roja', 'carril'],
           pile: [], hand: ['r2', 'r6', 'r6'], vis: ['r3', 'r5', 'r7'], hid: 3,
@@ -111,7 +111,7 @@
         {
           id: 'avanzar', title: 'Avanzar en el mismo turno', q: '¿Sigo jugando al cambiar de fase?', mini: 'r4',
           keys: 'cambiar fase seguir jugando mismo turno continuar sin esperar visibles terminar mano',
-          text: 'Si terminas una fase y puedes seguir jugando (por Encadenar cartas o el Rebufo), <strong>continúas en la siguiente</strong> sin esperar.',
+          text: 'Si terminas una fase y puedes seguir jugando (por Encadenar cartas o el Turbo), <strong>continúas en la siguiente</strong> sin esperar.',
           note: 'Ej.: terminas tu mano con un Ritmo 4 y tienes otro 4 en tus visibles: juégalo de inmediato.',
           rel: ['fases', 'encadenar', 'reb'],
           pile: ['r3'], hand: ['r4'], vis: ['r4', 'r6', 'r7'], hid: 3, focus: 'hand',
@@ -132,7 +132,7 @@
           keys: 'varias cartas vez iguales juntas pares trios dobles mismo valor combinar mezclar dos tres juntas tirar poner doble triple',
           text: '<p>Puedes jugar <strong>varias cartas iguales</strong> a la vez: del mismo valor de Ritmo o del mismo tipo de Carta Especial. No es obligatorio.</p><ul>' +
             '<li>Las Cartas Especiales encadenadas aplican su efecto una sola vez.</li>' +
-            '<li>No puedes mezclar valores o tipos distintos, salvo con el Rebufo.</li>' +
+            '<li>No puedes mezclar valores o tipos distintos, salvo con el Turbo.</li>' +
             '<li>La Bandera a Cuadros no se puede encadenar.</li></ul>',
           rel: ['carril', 'reb', 'turno'],
           pile: ['r2'], hand: ['r4', 'r1', 'r4'],
@@ -144,7 +144,7 @@
         {
           id: 'carril', title: 'Carril Lleno', q: '¿Qué pasa con 4 cartas iguales seguidas?', mini: 'r3',
           keys: '4 cuatro iguales seguidas descartar retirar quemar pila',
-          text: 'Cuatro cartas iguales seguidas en la pila central, de uno o varios jugadores, forman un <strong>Carril Lleno</strong>: la pila se retira de la partida, el turno de quien colocó la cuarta termina y el siguiente jugador tiene vía libre.',
+          text: 'Cuatro cartas iguales seguidas en la pila central, de uno o varios jugadores, forman un <strong>Carril Lleno</strong>: la pila se retira de la partida, el turno de quien colocó la cuarta termina y el siguiente jugador tiene pista libre.',
           note: 'La Bandera Azul corta la secuencia de un Carril Lleno.',
           rel: ['encadenar', 'azul', 'via-libre'],
           pile: ['r3'], hand: ['r5', 'r8', 'r2'],
@@ -165,9 +165,9 @@
         {
           id: 'cuad', card: 'cuad', title: 'Bandera a Cuadros', q: '¿Qué hace la Bandera a Cuadros?',
           keys: 'cuadros cerrar etapa descartar retirar quemar pila terminar',
-          on: 'cualquier carta o con vía libre.',
+          on: 'cualquier carta o con pista libre.',
           text: '<strong>Cierra la etapa:</strong> toda la pila, incluida la Bandera a Cuadros, se retira de la partida. Tu turno termina y solo puedes jugar una por turno.',
-          then: 'vía libre para el siguiente.',
+          then: 'pista libre para el siguiente.',
           rel: ['roja', 'carril', 'via-libre'],
           pile: ['r3', 'r6', 'r8'], hand: ['cuad', 'r2', 'r4'],
           script: [
@@ -179,9 +179,9 @@
         {
           id: 'roja', card: 'roja', title: 'Bandera Roja', q: '¿Qué hace la Bandera Roja?',
           keys: 'roja reiniciar bajar el ritmo empezar de cero',
-          on: 'cualquier carta o con vía libre.',
+          on: 'cualquier carta o con pista libre.',
           text: '<strong>Reinicia el ritmo sin descartar:</strong> la pila se queda en la mesa. Tu turno termina.',
-          then: 'vía libre para el siguiente.',
+          then: 'pista libre para el siguiente.',
           rel: ['cuad', 'via-libre'],
           pile: ['r4', 'r7'], hand: ['roja', 'r2', 'r3'],
           script: [
@@ -192,7 +192,7 @@
         {
           id: 'ama', card: 'ama', title: 'Bandera Amarilla', q: '¿Qué puedo responder a una Bandera Amarilla?',
           keys: 'amarilla ritmo bajo responder bajar 1 2 3 4',
-          on: 'un Ritmo Bajo, otra Bandera Amarilla o con vía libre.',
+          on: 'un Ritmo Bajo, otra Bandera Amarilla o con pista libre.',
           then: 'el siguiente solo puede responder con un <strong>Ritmo Bajo</strong>, otra Bandera Amarilla, una Bandera Roja o una Bandera a Cuadros. Si es otra Amarilla, el efecto pasa al siguiente jugador.',
           note: 'Ritmos Bajos: del 1 al 4.',
           rel: ['vr', 'reb', 'roja'],
@@ -205,9 +205,9 @@
         {
           id: 'azul', card: 'azul', title: 'Bandera Azul', q: '¿Qué hace la Bandera Azul?',
           keys: 'azul saltar brincar pierde turno siguiente jugador meta',
-          on: 'una carta de Ritmo, otra Bandera Azul o con vía libre.',
+          on: 'una carta de Ritmo, otra Bandera Azul o con pista libre.',
           text: 'El siguiente jugador en carrera <strong>pierde su turno</strong> (si ya cruzó la meta, lo pierde el próximo en carrera). La pila queda intacta y la Azul corta la secuencia de un Carril Lleno.',
-          then: 'quien sigue responde a la carta que quedó debajo de la Azul; si se jugó con vía libre, tiene vía libre.',
+          then: 'quien sigue responde a la carta que quedó debajo de la Azul; si se jugó con pista libre, tiene pista libre.',
           rel: ['carril', 'via-libre'],
           pile: ['r5'], hand: ['azul', 'r2', 'r3'],
           script: [
@@ -219,7 +219,7 @@
         {
           id: 'vr', card: 'vr', title: 'Vuelta Rápida', q: '¿Qué hace la Vuelta Rápida?',
           keys: 'vuelta rapida ritmo mas alto nadie supera cronometro alta alto maxima maximo mas',
-          on: 'cualquier carta excepto una Bandera Amarilla, o con vía libre.',
+          on: 'cualquier carta excepto una Bandera Amarilla, o con pista libre.',
           text: '<strong>Marca el ritmo más alto:</strong> nadie puede superarlo.',
           then: 'solo se responde con otra Vuelta Rápida, una Bandera Roja o una Bandera a Cuadros.',
           rel: ['ama', 'roja', 'cuad'],
@@ -230,22 +230,22 @@
           ]
         },
         {
-          id: 'reb', card: 'reb', title: 'Rebufo', q: '¿Cómo se juega el Rebufo?',
-          keys: 'rebufo ritmos altos 5 6 7 8 consecutivos combinacion acompanar acompañado',
-          on: 'un Ritmo Bajo, otro Rebufo o con vía libre.',
-          text: 'Puedes acompañarlo con <strong>Ritmos Altos</strong> de uno o dos valores consecutivos, con varias copias de cada valor. También puedes jugarlo solo o con otros Rebufos.',
+          id: 'reb', card: 'reb', title: 'Turbo', q: '¿Cómo se juega el Turbo?',
+          keys: 'turbo rebufo ritmos altos 5 6 7 8 consecutivos combinacion acompanar acompañado',
+          on: 'un Ritmo Bajo, otro Turbo o con pista libre.',
+          text: 'Puedes acompañarlo con <strong>Ritmos Altos</strong> de uno o dos valores consecutivos, con varias copias de cada valor. También puedes jugarlo solo o con otros Turbos.',
           // Leaflet examples, drawn as cards on the table. bad = index of the card that breaks the rule
           examples: [
-            { ok: true, cards: ['reb', 'r6', 'r7'], label: 'Rebufo, 6 y 7' },
-            { ok: true, cards: ['reb', 'reb', 'r5', 'r5', 'r5', 'r6', 'r6'], label: 'Dos Rebufos, tres 5 y dos 6' },
-            { ok: true, cards: ['reb', 'r5'], label: 'Rebufo y 5' },
-            { ok: true, cards: ['reb', 'reb'], label: 'Solo Rebufos' },
-            { ok: false, cards: ['reb', 'r6', 'r8'], bad: 2, why: 'No consecutivos', label: 'Rebufo, 6 y 8' },
-            { ok: false, cards: ['reb', 'r5', 'r6', 'r7'], bad: 3, why: 'Tres valores', label: 'Rebufo, 5, 6 y 7' },
-            { ok: false, cards: ['reb', 'r4'], bad: 1, why: 'Ritmo Bajo', label: 'Rebufo y 4' },
-            { ok: false, cards: ['reb', 'vr'], bad: 1, why: 'Carta Especial', label: 'Rebufo y Vuelta Rápida' }
+            { ok: true, cards: ['reb', 'r6', 'r7'], label: 'Turbo, 6 y 7' },
+            { ok: true, cards: ['reb', 'reb', 'r5', 'r5', 'r5', 'r6', 'r6'], label: 'Dos Turbos, tres 5 y dos 6' },
+            { ok: true, cards: ['reb', 'r5'], label: 'Turbo y 5' },
+            { ok: true, cards: ['reb', 'reb'], label: 'Solo Turbos' },
+            { ok: false, cards: ['reb', 'r6', 'r8'], bad: 2, why: 'No consecutivos', label: 'Turbo, 6 y 8' },
+            { ok: false, cards: ['reb', 'r5', 'r6', 'r7'], bad: 3, why: 'Tres valores', label: 'Turbo, 5, 6 y 7' },
+            { ok: false, cards: ['reb', 'r4'], bad: 1, why: 'Ritmo Bajo', label: 'Turbo y 4' },
+            { ok: false, cards: ['reb', 'vr'], bad: 1, why: 'Carta Especial', label: 'Turbo y Vuelta Rápida' }
           ],
-          then: 'si va solo, se responde con un Ritmo Alto, otro Rebufo, una Bandera Roja, una Bandera a Cuadros o una Vuelta Rápida. Si va acompañado, manda el valor más alto de la combinación.',
+          then: 'si va solo, se responde con un Ritmo Alto, otro Turbo, una Bandera Roja, una Bandera a Cuadros o una Vuelta Rápida. Si va acompañado, manda el valor más alto de la combinación.',
           note: 'Ritmos Altos: del 5 al 8.',
           rel: ['encadenar', 'avanzar', 'ama'],
           pile: ['r2'], hand: ['r3', 'reb', 'r6', 'r8', 'r6', 'r3', 'r7'],
@@ -269,15 +269,15 @@
     keys: 'que puedo jugar encima sobre tope arriba pila tabla responder carta siguiente jugador tirar poner referencia rapida',
     lead: 'Busca la carta que está arriba de la pila y mira qué puede jugar el siguiente jugador.',
     rows: [
-      { top: 'Vía libre', sub: 'Pila vacía', card: null, can: 'Cualquier carta o combinación válida.', rel: 'via-libre' },
+      { top: 'Pista libre', sub: 'Pila vacía', card: null, can: 'Cualquier carta o combinación válida.', rel: 'via-libre' },
       { top: 'Ritmos Bajos', sub: 'Del 1 al 4', card: 'r2', can: 'Un Ritmo de igual o mayor valor, o <strong>cualquier</strong> Carta Especial.', rel: 'ritmo' },
-      { top: 'Ritmos Altos', sub: 'Del 5 al 8', card: 'r7', can: 'Un Ritmo de igual o mayor valor, o cualquier Carta Especial <strong>salvo</strong> el Rebufo y la Bandera Amarilla.', rel: 'ritmo' },
+      { top: 'Ritmos Altos', sub: 'Del 5 al 8', card: 'r7', can: 'Un Ritmo de igual o mayor valor, o cualquier Carta Especial <strong>salvo</strong> el Turbo y la Bandera Amarilla.', rel: 'ritmo' },
       { top: 'Bandera Amarilla', card: 'ama', can: 'Un Ritmo Bajo, otra Bandera Amarilla, una Bandera Roja o una Bandera a Cuadros.', rel: 'ama' },
-      { top: 'Bandera Azul', card: 'azul', can: 'Se responde a la carta que quedó <strong>debajo</strong> de la Azul. Si se jugó con vía libre, hay vía libre.', rel: 'azul' },
+      { top: 'Bandera Azul', card: 'azul', can: 'Se responde a la carta que quedó <strong>debajo</strong> de la Azul. Si se jugó con pista libre, hay pista libre.', rel: 'azul' },
       { top: 'Vuelta Rápida', card: 'vr', can: 'Otra Vuelta Rápida, una Bandera Roja o una Bandera a Cuadros.', rel: 'vr' },
-      { top: 'Rebufo', sub: 'Solo', card: 'reb', can: 'Un Ritmo Alto, otro Rebufo, una Bandera Roja, una Bandera a Cuadros o una Vuelta Rápida. Si va acompañado, manda el valor más alto de la combinación.', rel: 'reb' }
+      { top: 'Turbo', sub: 'Solo', card: 'reb', can: 'Un Ritmo Alto, otro Turbo, una Bandera Roja, una Bandera a Cuadros o una Vuelta Rápida. Si va acompañado, manda el valor más alto de la combinación.', rel: 'reb' }
     ],
-    note: 'Después de una Bandera Roja, una Bandera a Cuadros o un Carril Lleno, el siguiente jugador tiene vía libre.'
+    note: 'Después de una Bandera Roja, una Bandera a Cuadros o un Carril Lleno, el siguiente jugador tiene pista libre.'
   };
 
   root.PintoTutorial = { groups: GROUPS, reference: REFERENCE };

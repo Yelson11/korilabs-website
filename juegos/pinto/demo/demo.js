@@ -26,12 +26,12 @@
 
   // What each special card does (shown once when you pick it)
   var INFO = {
-    reb: 'Sobre un Ritmo Bajo, otro Rebufo o con vía libre. Puedes acompañarlo con Ritmos Altos de uno o dos valores consecutivos (por ejemplo Rebufo + 6 + 7), jugarlo solo o con otros Rebufos. Si va acompañado, manda el valor más alto.',
-    roja: 'Sobre cualquier carta o con vía libre. Reinicia el ritmo sin descartar: la pila se queda en la mesa. Tu turno termina y el siguiente tiene vía libre.',
-    ama: 'Sobre un Ritmo Bajo, otra Bandera Amarilla o con vía libre. El siguiente solo puede responder con un Ritmo Bajo, otra Amarilla, una Bandera Roja o una Bandera a Cuadros.',
-    azul: 'Sobre una carta de Ritmo, otra Bandera Azul o con vía libre. El siguiente jugador en carrera pierde su turno y quien sigue responde a la carta que quedó debajo de la Azul.',
-    cuad: 'Sobre cualquier carta o con vía libre. Toda la pila se retira de la partida, tu turno termina y el siguiente tiene vía libre. Solo una por turno.',
-    vr: 'Sobre cualquier carta excepto una Bandera Amarilla, o con vía libre. Marca el ritmo más alto: solo se responde con otra Vuelta Rápida, una Bandera Roja o una Bandera a Cuadros.'
+    reb: 'Sobre un Ritmo Bajo, otro Turbo o con pista libre. Puedes acompañarlo con Ritmos Altos de uno o dos valores consecutivos (por ejemplo Turbo + 6 + 7), jugarlo solo o con otros Turbos. Si va acompañado, manda el valor más alto.',
+    roja: 'Sobre cualquier carta o con pista libre. Reinicia el ritmo sin descartar: la pila se queda en la mesa. Tu turno termina y el siguiente tiene pista libre.',
+    ama: 'Sobre un Ritmo Bajo, otra Bandera Amarilla o con pista libre. El siguiente solo puede responder con un Ritmo Bajo, otra Amarilla, una Bandera Roja o una Bandera a Cuadros.',
+    azul: 'Sobre una carta de Ritmo, otra Bandera Azul o con pista libre. El siguiente jugador en carrera pierde su turno y quien sigue responde a la carta que quedó debajo de la Azul.',
+    cuad: 'Sobre cualquier carta o con pista libre. Toda la pila se retira de la partida, tu turno termina y el siguiente tiene pista libre. Solo una por turno.',
+    vr: 'Sobre cualquier carta excepto una Bandera Amarilla, o con pista libre. Marca el ritmo más alto: solo se responde con otra Vuelta Rápida, una Bandera Roja o una Bandera a Cuadros.'
   };
 
   var s = null, dealing = false, fastForward = false, timer = null, chainTimer = null, interruptTimer = null, chainStart = 0, botSteps = 0;
@@ -80,7 +80,7 @@
   }
   function plural(n, one, many) { return n + ' ' + (n === 1 ? one : many); }
 
-  // "Jugador 1 juega 2× Ritmo 5 · vía libre…" → "jugó 2× Ritmo 5 · vía libre…"
+  // "Jugador 1 juega 2× Ritmo 5 · pista libre…" → "jugó 2× Ritmo 5 · pista libre…"
   var PAST = {
     juega: 'jugó', recoge: 'recogió', revela: 'reveló', toma: 'tomó', pierde: 'perdió', cruza: 'cruzó', se: 'se', no: 'no',
     juegas: 'jugaste', recoges: 'recogiste', revelas: 'revelaste', tomas: 'tomaste', pierdes: 'perdiste', cruzas: 'cruzaste', te: 'te'
@@ -208,7 +208,7 @@
       var r = ((c.id * 37) % 15) - 7;
       html += img(c, arriving[c.id] ? 'is-arriving' : '', ' data-id="' + c.id + '" style="transform:translateX(' + off * 16 + 'px) rotate(' + r + 'deg)"');
     });
-    if (!shown.length) html = '<div class="pd-pile__empty">Vía libre</div>';
+    if (!shown.length) html = '<div class="pd-pile__empty">Pista libre</div>';
     $('.pd-center').innerHTML =
       '<div class="pd-pile" aria-label="Pila central">' + html + '</div>' +
       '<p class="pd-pile__note" aria-live="polite">' + (pileNote || '&nbsp;') + '</p>';
@@ -438,7 +438,7 @@
     if (!card) return;
     var i = selected.indexOf(id);
     if (i >= 0) { selected.splice(i, 1); say(''); render(); return; }
-    // Picking a card of another kind starts a new selection, unless it builds a Rebufo combo
+    // Picking a card of another kind starts a new selection, unless it builds a Turbo combo
     if (!compatibleWith(selected, card)) selected = [];
     selected.push(id);
     if (card.k !== 'r' && !tipHidden(card.k)) infoCard = card;

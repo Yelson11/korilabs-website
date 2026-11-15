@@ -5,7 +5,7 @@
   'use strict';
 
   var NAMES = {
-    r: 'Ritmo', vr: 'Vuelta Rápida', reb: 'Rebufo', roja: 'Bandera Roja',
+    r: 'Ritmo', vr: 'Vuelta Rápida', reb: 'Turbo', roja: 'Bandera Roja',
     ama: 'Bandera Amarilla', azul: 'Bandera Azul', cuad: 'Bandera a Cuadros'
   };
   var FILES = {
@@ -57,7 +57,7 @@
   /* ---------- Pile state ---------- */
 
   // What the next play has to beat. Blue flags are transparent ("lo que valga
-  // contra el ritmo de abajo"); a Red flag or an empty pile means vía libre.
+  // contra el ritmo de abajo"); a Red flag or an empty pile means pista libre.
   function effectiveTop(pile) {
     for (var i = pile.length - 1; i >= 0; i--) {
       var c = pile[i];
@@ -73,11 +73,11 @@
     var eff = effectiveTop(pile);
     if (c.k === 'roja' || c.k === 'cuad') return true;
     if (c.k === 'azul') {
-      // Leaflet: on a Ritmo card, on another Bandera Azul or with vía libre
+      // Leaflet: on a Ritmo card, on another Bandera Azul or with pista libre
       if (top && top.k === 'azul') return true;
       return !eff || eff.k === 'r';
     }
-    if (!eff) return true; // vía libre
+    if (!eff) return true; // pista libre
     switch (eff.k) {
       case 'r':
         if (c.k === 'r') return c.v >= eff.v;
@@ -103,13 +103,13 @@
       if (!canPlayKind(cards[0], pile)) return { error: reasonFor(cards[0], pile) };
       return { cards: cards.slice() };
     }
-    // Rebufo: one or more Rebufos plus up to two consecutive high rhythm values
+    // Turbo: one or more Turbos plus up to two consecutive high rhythm values
     var rebs = cards.filter(function (c) { return c.k === 'reb'; });
     var rest = cards.filter(function (c) { return c.k !== 'reb'; });
-    if (!rebs.length) return { error: 'Solo puedes jugar juntas cartas del mismo valor (o un Rebufo con ritmos altos).' };
-    if (!rest.every(function (c) { return c.k === 'r' && c.v >= 5; })) return { error: 'Con el Rebufo solo puedes sumar ritmos de 5 o más.' };
+    if (!rebs.length) return { error: 'Solo puedes jugar juntas cartas del mismo valor (o un Turbo con ritmos altos).' };
+    if (!rest.every(function (c) { return c.k === 'r' && c.v >= 5; })) return { error: 'Con el Turbo solo puedes sumar ritmos de 5 o más.' };
     var vals = rest.map(function (c) { return c.v; }).filter(function (v, i, a) { return a.indexOf(v) === i; }).sort();
-    if (vals.length > 2 || (vals.length === 2 && vals[1] - vals[0] !== 1)) return { error: 'El Rebufo permite como máximo dos valores consecutivos (por ejemplo 6 y 7).' };
+    if (vals.length > 2 || (vals.length === 2 && vals[1] - vals[0] !== 1)) return { error: 'El Turbo permite como máximo dos valores consecutivos (por ejemplo 6 y 7).' };
     if (!canPlayKind(rebs[0], pile)) return { error: reasonFor(rebs[0], pile) };
     return { cards: rebs.concat(rest.sort(function (a, b) { return a.v - b.v; })) };
   }
@@ -119,10 +119,10 @@
     if (!eff) return 'Esa carta no se puede jugar ahora.';
     if (eff.k === 'ama') return 'Después de una Bandera Amarilla solo valen ritmos del 1 al 4, otra Amarilla, Roja o a Cuadros.';
     if (eff.k === 'vr') return 'Sobre la Vuelta Rápida solo valen otra Vuelta Rápida, Roja o a Cuadros.';
-    if (eff.k === 'reb') return 'Sobre un Rebufo solo valen otro Rebufo, ritmos de 5 o más, Vuelta Rápida, Roja o a Cuadros.';
+    if (eff.k === 'reb') return 'Sobre un Turbo solo valen otro Turbo, ritmos de 5 o más, Vuelta Rápida, Roja o a Cuadros.';
     if (c.k === 'r') return 'Necesitas un ritmo de ' + eff.v + ' o más.';
     if (c.k === 'ama' || c.k === 'reb') return 'Esa carta solo entra sobre ritmos bajos (1 a 4).';
-    if (c.k === 'azul') return 'La Bandera Azul no entra sobre Amarilla, Rebufo ni Vuelta Rápida.';
+    if (c.k === 'azul') return 'La Bandera Azul no entra sobre Amarilla, Turbo ni Vuelta Rápida.';
     return 'Esa carta no se puede jugar ahora.';
   }
 
@@ -130,10 +130,10 @@
   function pileHint(pile, opening) {
     if (opening) return 'Arranca quien tenga el Ritmo ' + opening;
     var eff = effectiveTop(pile);
-    if (!eff) return 'Vía libre: cualquier carta';
+    if (!eff) return 'Pista libre: cualquier carta';
     if (eff.k === 'r') return eff.v <= 4 ? 'Juega ' + eff.v + ' o más, o una especial' : 'Juega ' + eff.v + ' o más, Vuelta Rápida, Roja, Azul o a Cuadros';
     if (eff.k === 'ama') return 'Bandera Amarilla: ritmos del 1 al 4';
-    if (eff.k === 'reb') return 'Rebufo: ritmo de 5 o más o especial alta';
+    if (eff.k === 'reb') return 'Turbo: ritmo de 5 o más o especial alta';
     if (eff.k === 'vr') return 'Vuelta Rápida: solo Vuelta Rápida, Roja o a Cuadros';
     return '';
   }
@@ -271,9 +271,9 @@
     return putOnPile(s, p, res.cards);
   }
 
-  /* A Rebufo played during your open turn can be completed afterwards: more
-     Rebufos (before any rhythm) or rhythms of 5+ with at most two consecutive
-     values in total, e.g. Rebufo → 5 → 6 → 6. */
+  /* A Turbo played during your open turn can be completed afterwards: more
+     Turbos (before any rhythm) or rhythms of 5+ with at most two consecutive
+     values in total, e.g. Turbo → 5 → 6 → 6. */
   function comboFits(s, cards) {
     if (!s.combo) return false;
     var vals = s.combo.vals.slice();
@@ -287,7 +287,7 @@
     return ok && vals.length <= 2 && (vals.length < 2 || vals[1] - vals[0] === 1);
   }
 
-  // Everything a play has to satisfy, including the open-turn rules (same value, or completing a Rebufo)
+  // Everything a play has to satisfy, including the open-turn rules (same value, or completing a Turbo)
   function checkTurnPlay(s, cards) {
     if (s.chain) {
       var same = cards.every(function (c) { return sameKind(c, s.chain); });
@@ -298,7 +298,7 @@
       }
       if (!same) {
         return { error: s.combo
-          ? 'Después del Rebufo puedes seguir con ritmos de 5 o más, hasta dos valores seguidos (por ejemplo 5 y 6).'
+          ? 'Después del Turbo puedes seguir con ritmos de 5 o más, hasta dos valores seguidos (por ejemplo 5 y 6).'
           : 'Para seguir en este turno tienes que mantener el mismo valor (' + cardName(s.chain) + ').' };
       }
     }
@@ -308,7 +308,7 @@
   function putOnPile(s, p, cards, fromHidden) {
     var wasOpening = !!s.opening;
     s.opening = null;
-    // Check Carril Lleno after every card: 4 Rebufos in a combo also count.
+    // Check Carril Lleno after every card: 4 Turbos in a combo also count.
     // If it happens mid-play, the rest of that play is discarded with the pile.
     var full = false;
     cards.forEach(function (c) {
@@ -328,7 +328,7 @@
       // Chained Blue flags still skip only one player (the effect applies once)
       s.skipNext = true; special = ' · salta al siguiente';
     } else if (last.k === 'roja') {
-      special = ' · vía libre para el siguiente'; closes = true;
+      special = ' · pista libre para el siguiente'; closes = true;
     }
     log(s, p.name + (you(s, p) ? ' juegas ' : ' juega ') + label + special, p.id);
     s.moves.push({ type: 'play', pid: p.id, cards: cards.slice(), discarded: last.k === 'cuad' || full, fromHidden: fromHidden });
@@ -347,7 +347,7 @@
       canChain = true;
       endsTurn = false;
       s.chain = last;
-      // Keep track of an open Rebufo so it can still be completed with high rhythms
+      // Keep track of an open Turbo so it can still be completed with high rhythms
       var hasReb = cards.some(function (c) { return c.k === 'reb'; });
       if (hasReb || s.combo) {
         var vals = s.combo ? s.combo.vals.slice() : [];
@@ -518,7 +518,7 @@
       var cards = g[0].k === 'cuad' ? [g[0]] : g;
       if (!checkTurnPlay(s, cards).error) moves.push(cards);
     });
-    // Rebufo combos (best pair of consecutive high values)
+    // Turbo combos (best pair of consecutive high values)
     var rebs = p.hand.filter(function (c) { return c.k === 'reb'; });
     if (!s.opening && !s.chain && rebs.length && canPlayKind(rebs[0], s.pile)) {
       for (var v = 5; v <= 8; v++) {
