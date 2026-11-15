@@ -75,7 +75,7 @@ comments just to translate them — only translate what you are already touching
 │       ├── menu.js          Hamburger menu for the PINTO header (loaded on all six PINTO pages)
 │       ├── box3d.js         Auto-rotating, draggable CSS-3D box with per-face shading (no deps, respects reduced motion)
 │       ├── instrucciones/index.html  Welcome page for QR visitors (tutorial, resources) + quick rules guide (v1.5). Full rules PDF opens in a new tab, no `download` attr. TARGET OF THE PRINTED QR — never move
-│       ├── reglamento.pdf   Official rules PDF ("Instrucciones", phone version, 9 pages; replaced Nov 2026). Linked from instrucciones/ only
+│       ├── reglamento.pdf   Official rules PDF ("PINTO · Instrucciones", leaflet v2 phone version, 8 pages; replaced Nov 2026). Card names: Turbo (was Rebufo), Pista libre (was Vía libre); the Turbo card art lives in cartas/rebufo.webp (file name kept); ids/hashes/filenames keep the old names (#reb, #via-libre, rebufo.webp). Linked from instrucciones/ only
 │       ├── demo/            Playable web demo (you vs 1–5 bots; 2–6 players picked above the board, remembered as `pd-players`, default 6). Unlisted + noindex.
 │       │   ├── index.html   Page shell (board markup, help text); CSS: styles.css + pinto.css + pinto-demo.css
 │       │   ├── pinto-engine.js  Pure rules engine (no DOM, also runs in Node for simulations), rules from the printed leaflet (v1.5). Rules changes go here. Open turns + interruptions (`canInterrupt`/`interrupt`), seat sides per player count (`seatSides`: left/tl/top/tr/right)
@@ -209,7 +209,7 @@ on the same device/browser. If storage is blocked the page says progress won't s
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
   Current: `styles.css?v=2`, `home.css?v=10` (index, privacidad and taller/pinto),
-  `pinto.css?v=37`, card images `?v=5` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=18`, `pinto-engine.js?v=11`, `demo.js?v=17`, `multi.js?v=4`, `legal.css?v=1`, `pinto-tutorial.css?v=15`, `tutorial-data.js?v=18`, `tutorial.js?v=19`, `pinto-temporada.css?v=10`, `temporada.js?v=10`, PINTO favicons `?v=1`, `menu.js?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
+  `pinto.css?v=37`, card images `?v=6` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=18`, `pinto-engine.js?v=12`, `demo.js?v=18`, `multi.js?v=5`, `legal.css?v=1`, `pinto-tutorial.css?v=16`, `tutorial-data.js?v=19`, `tutorial.js?v=20`, `pinto-temporada.css?v=10`, `temporada.js?v=10`, PINTO favicons `?v=1`, `menu.js?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
 - **Sender (newsletter):** universal script in the `<head>` of `index.html`; form is
@@ -225,7 +225,7 @@ on the same device/browser. If storage is blocked the page says progress won't s
   external links with `target="_blank" rel="noopener noreferrer"` plus a visually-hidden "(se abre en una
   pestaña nueva)".
 - **Assets:** prefer `.webp` for images; keep files small (no build step will optimize them).
-- **Digital card art never shows the special-card description.** The printed special cards (Rebufo, Banderas,
+- **Digital card art never shows the special-card description.** The printed special cards (Turbo, Banderas,
   Vuelta Rápida) carry a description paragraph that is unreadable on screen, so every card image used on the
   site and in the demos must be the version **without** it. The rules text lives elsewhere: the special-card
   tips in the demos (`INFO` in `demo.js` / `multi.js`) and `juegos/pinto/instrucciones/`. When new card art
