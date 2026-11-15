@@ -109,7 +109,7 @@
             </a>
           </li>
           <li>
-            <a class="p-path" href="../reglamento.pdf" target="_blank" rel="noopener noreferrer">
+            <a class="p-path" href="../reglamento.pdf?v=3" target="_blank" rel="noopener noreferrer">
               <span class="p-path__n" aria-hidden="true">03</span>
               <span class="p-path__icon" aria-hidden="true"><svg><use href="#icon-doc"/></svg></span>
               <span class="p-path__title">Reglamento</span>
@@ -155,10 +155,6 @@
             <p>Según la cantidad de jugadores, retira las Banderas Azules y a Cuadros que no se usan (ver tabla) y baraja el resto.</p>
           </li>
           <li>
-            <h3>Define el sentido</h3>
-            <p>Acuerden si los turnos avanzan en sentido horario o antihorario. Se mantiene toda la partida.</p>
-          </li>
-          <li>
             <h3>Cartas ocultas</h3>
             <p>Cada jugador recibe 3 cartas boca abajo en fila (5 si juegan dos). Nadie puede mirarlas, ni siquiera su dueño.</p>
           </li>
@@ -172,7 +168,7 @@
           </li>
           <li>
             <h3>Banderazo de salida</h3>
-            <p>Tras la señal, todos revisan su mano. Comienza quien primero coloque un Ritmo 1 en el centro. Si nadie lo tiene, todos lo confirman y se repite con el Ritmo 2, y así sucesivamente. Solo cuentan las cartas de la mano.</p>
+            <p>Tras la señal, todos revisan su mano. Comienza quien primero coloque de su mano un Ritmo 1 en el centro. Si nadie lo tiene, se confirma y se repite con el Ritmo 2, y así sucesivamente. Después de esa primera carta, cualquiera de los dos jugadores de al lado puede jugar: quien coloque primero su carta define el sentido de la partida.</p>
           </li>
         </ol>
 
@@ -248,7 +244,7 @@
           <li class="p-rcard">
             <div class="p-rcard__art p-rcard__art--row" aria-hidden="true"><img src="../img/cartas/ritmo-2.webp?v=6" width="660" height="922" alt="" loading="lazy"><img src="../img/cartas/ritmo-2.webp?v=6" width="660" height="922" alt="" loading="lazy"><img src="../img/cartas/ritmo-2.webp?v=6" width="660" height="922" alt="" loading="lazy"><img src="../img/cartas/ritmo-2.webp?v=6" width="660" height="922" alt="" loading="lazy"></div>
             <h3>Carril Lleno</h3>
-            <p>Cuatro cartas iguales seguidas en la pila central, de uno o varios jugadores, forman un Carril Lleno: la pila se retira de la partida, el turno de quien colocó la cuarta termina y el siguiente jugador tiene pista libre. Una Bandera Azul corta la secuencia.</p>
+            <p>Cuatro cartas iguales seguidas en la pila central, de uno o varios jugadores, forman un Carril Lleno: la pila se retira de la partida, el turno de quien colocó la cuarta termina y el siguiente jugador tiene pista libre. Una Bandera Azul corta la secuencia. Lo mismo pasa si un solo jugador coloca cuatro o más cartas en el mismo turno (por ejemplo, con un Turbo).</p>
             <a class="p-rcard__tut" href="../tutorial/#carril"><span class="p-rcard__play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5Z" fill="currentColor"/></svg></span>Ver tutorial<span class="visually-hidden">: Carril Lleno</span></a>
           </li>
           <li class="p-rcard">
@@ -260,17 +256,13 @@
         </ul>
       </section>
 
-      <!-- Special cards (rules order) -->
+      <!-- Special cards, in the leaflet order: attack cards first, then defense -->
       <section class="p-section" id="especiales" aria-labelledby="especiales-title">
         <h2 class="p-h2" id="especiales-title">Cartas especiales</h2>
         <ul class="p-specials">
-          <li class="p-card" style="--c: #e8e2d6">
-            <img src="../img/cartas/bandera-a-cuadros.webp?v=6" width="660" height="922" alt="" loading="lazy">
-            <div><h3>Bandera a Cuadros</h3><p>Sobre cualquier carta o con pista libre. Retira toda la pila de la partida y el siguiente tiene pista libre. Solo una por turno y tu turno termina.</p><a class="p-rcard__tut" href="../tutorial/#cuad"><span class="p-rcard__play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5Z" fill="currentColor"/></svg></span>Ver tutorial<span class="visually-hidden">: Bandera a Cuadros</span></a></div>
-          </li>
-          <li class="p-card" style="--c: #e5463b">
-            <img src="../img/cartas/bandera-roja.webp?v=6" width="660" height="922" alt="" loading="lazy">
-            <div><h3>Bandera Roja</h3><p>Sobre cualquier carta o con pista libre. Reinicia el ritmo sin descartar: la pila se queda en la mesa. Tu turno termina y el siguiente tiene pista libre.</p><a class="p-rcard__tut" href="../tutorial/#roja"><span class="p-rcard__play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5Z" fill="currentColor"/></svg></span>Ver tutorial<span class="visually-hidden">: Bandera Roja</span></a></div>
+          <li class="p-card" style="--c: #9b4fd8">
+            <img src="../img/cartas/vuelta-rapida.webp?v=6" width="660" height="922" alt="" loading="lazy">
+            <div><h3>Vuelta Rápida</h3><p>Sobre cualquier carta excepto una Bandera Amarilla, o con pista libre. Marca el ritmo más alto: solo se responde con otra Vuelta Rápida, una Roja o una a Cuadros.</p><a class="p-rcard__tut" href="../tutorial/#vr"><span class="p-rcard__play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5Z" fill="currentColor"/></svg></span>Ver tutorial<span class="visually-hidden">: Vuelta Rápida</span></a></div>
           </li>
           <li class="p-card" style="--c: #f2bd23">
             <img src="../img/cartas/bandera-amarilla.webp?v=6" width="660" height="922" alt="" loading="lazy">
@@ -280,13 +272,17 @@
             <img src="../img/cartas/bandera-azul.webp?v=6" width="660" height="922" alt="" loading="lazy">
             <div><h3>Bandera Azul</h3><p>Sobre una carta de Ritmo, otra Azul o con pista libre. El siguiente jugador en carrera pierde su turno (si ya cruzó la meta, lo pierde el próximo en carrera). Quien sigue responde a la carta que quedó debajo de la Azul; si se jugó con pista libre, tiene pista libre.</p><a class="p-rcard__tut" href="../tutorial/#azul"><span class="p-rcard__play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5Z" fill="currentColor"/></svg></span>Ver tutorial<span class="visually-hidden">: Bandera Azul</span></a></div>
           </li>
-          <li class="p-card" style="--c: #9b4fd8">
-            <img src="../img/cartas/vuelta-rapida.webp?v=6" width="660" height="922" alt="" loading="lazy">
-            <div><h3>Vuelta Rápida</h3><p>Sobre cualquier carta excepto una Bandera Amarilla, o con pista libre. Marca el ritmo más alto: solo se responde con otra Vuelta Rápida, una Roja o una a Cuadros.</p><a class="p-rcard__tut" href="../tutorial/#vr"><span class="p-rcard__play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5Z" fill="currentColor"/></svg></span>Ver tutorial<span class="visually-hidden">: Vuelta Rápida</span></a></div>
-          </li>
           <li class="p-card" style="--c: #22b3c4">
             <img src="../img/cartas/rebufo.webp?v=6" width="660" height="922" alt="" loading="lazy">
             <div><h3>Turbo</h3><p>Sobre un Ritmo Bajo, otro Turbo o con pista libre. Puede ir solo, con otros Turbos o con Ritmos Altos (5–8) de uno o dos valores consecutivos, con varias copias de cada valor. Si va acompañado, manda el valor más alto.</p><a class="p-rcard__tut" href="../tutorial/#reb"><span class="p-rcard__play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5Z" fill="currentColor"/></svg></span>Ver tutorial<span class="visually-hidden">: Turbo</span></a></div>
+          </li>
+          <li class="p-card" style="--c: #e8e2d6">
+            <img src="../img/cartas/bandera-a-cuadros.webp?v=6" width="660" height="922" alt="" loading="lazy">
+            <div><h3>Bandera a Cuadros</h3><p>Sobre cualquier carta o con pista libre. Retira toda la pila de la partida y el siguiente tiene pista libre. Solo una por turno y tu turno termina.</p><a class="p-rcard__tut" href="../tutorial/#cuad"><span class="p-rcard__play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5Z" fill="currentColor"/></svg></span>Ver tutorial<span class="visually-hidden">: Bandera a Cuadros</span></a></div>
+          </li>
+          <li class="p-card" style="--c: #e5463b">
+            <img src="../img/cartas/bandera-roja.webp?v=6" width="660" height="922" alt="" loading="lazy">
+            <div><h3>Bandera Roja</h3><p>Sobre cualquier carta o con pista libre. Reinicia el ritmo sin descartar: la pila se queda en la mesa. Tu turno termina y el siguiente tiene pista libre.</p><a class="p-rcard__tut" href="../tutorial/#roja"><span class="p-rcard__play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5Z" fill="currentColor"/></svg></span>Ver tutorial<span class="visually-hidden">: Bandera Roja</span></a></div>
           </li>
         </ul>
       </section>

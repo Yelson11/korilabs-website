@@ -1,6 +1,8 @@
 /* PINTO rules engine for the web demo (2–6 players: you + bots) and the online mode.
    Pure logic, no DOM: the pages (demo.js, multi.js) and the Node simulator use it.
-   Source of truth: the printed leaflet "PINTO · Instrucciones" (rules v1.5). */
+   Source of truth: the printed leaflet "PINTO · Instrucciones" (phone version, 7 pages, Nov 2026).
+   Direction of play isn't agreed beforehand: after the first card, whichever neighbour of the
+   opener plays first sets it (s.dir: 1 = towards seat +1, -1 = towards seat -1, 0 = not decided yet). */
 (function (root) {
   'use strict';
 
@@ -158,6 +160,8 @@
 
     var s = {
       players: players, pile: [], discarded: 0, current: 0, opening: null,
+      dir: n > 2 ? 0 : 1, opener: null,
+      turnPid: null, turnCards: 0, // cards played by the current player in this turn ("Retirar la pila")
       skipNext: false, chain: null, finished: [], over: false, log: [], rng: rng,
       moves: [], // every play / pickup, so the page can animate cards between seats and the pile
       // players whose turn stays open after a play until the page ends it (the 5 s window)
@@ -307,13 +311,18 @@
 
   function putOnPile(s, p, cards, fromHidden) {
     var wasOpening = !!s.opening;
+    if (wasOpening) s.opener = p.id;
     s.opening = null;
-    // Check Carril Lleno after every card: 4 Turbos in a combo also count.
+    if (s.turnPid !== p.id) { s.turnPid = p.id; s.turnCards = 0; }
+    // "Retirar la pila" after every card: four equal cards in a row on the pile (4 Turbos in a
+    // combo also count) or four or more cards played by one player in the same turn.
     // If it happens mid-play, the rest of that play is discarded with the pile.
-    var full = false;
+    var full = false, byTurn = false;
     cards.forEach(function (c) {
       s.pile.push(c);
+      s.turnCards++;
       if (!full && carrilLleno(s.pile)) full = true;
+      else if (!full && s.turnCards >= 4) { full = true; byTurn = true; }
     });
     var label = describe(cards);
     // Only the Bandera Roja, the Bandera a Cuadros and a Carril Lleno close the turn (leaflet)
@@ -323,7 +332,7 @@
     if (last.k === 'cuad') {
       discardPile(s); special = ' · bandera a cuadros: se descarta la pila'; closes = true;
     } else if (full) {
-      discardPile(s); special = ' · ¡Carril Lleno! Se descarta la pila'; closes = true;
+      discardPile(s); special = byTurn ? ' · 4 cartas en el mismo turno: se descarta la pila' : ' · ¡Carril Lleno! Se descarta la pila'; closes = true;
     } else if (last.k === 'azul') {
       // Chained Blue flags still skip only one player (the effect applies once)
       s.skipNext = true; special = ' · salta al siguiente';
@@ -438,7 +447,9 @@
 
   function advance(s) {
     s.combo = null;
+    s.turnPid = null; s.turnCards = 0;
     if (s.over) return;
+    if (!s.dir) decideDirection(s);
     var i = nextAliveIndex(s, s.current);
     if (s.skipNext) {
       var skipped = s.players[i];
@@ -447,6 +458,33 @@
     }
     s.skipNext = false;
     s.current = i;
+  }
+
+  /* Start of the race: once the opener has played, both neighbours may answer and the first
+     one to play sets the direction. pid = the neighbour who answered (an interruption);
+     without it, a neighbour that has a valid play answers (a random one if both do). */
+  function neighbours(s) {
+    var n = s.players.length, o = s.opener;
+    return [(o + 1) % n, (o - 1 + n) % n];
+  }
+  function decideDirection(s, pid) {
+    if (s.dir || s.opener === null) return;
+    var nb = neighbours(s);
+    if (pid === undefined) {
+      var can = nb.filter(function (i) { return !s.players[i].place && movesFor(s, i).length; });
+      var pool = can.length ? can : nb;
+      pid = pool[Math.floor(s.rng() * pool.length)];
+    }
+    s.dir = pid === nb[0] ? 1 : -1;
+    var p = s.players[pid];
+    log(s, p.name + (you(s, p) ? ' respondes' : ' responde') + ' primero y define el sentido de la partida', p.id);
+  }
+  // Who may answer right now: both neighbours while the direction is still open, otherwise the next player
+  function responders(s) {
+    if (!s.dir && s.opener !== null && s.current === s.opener) {
+      return neighbours(s).filter(function (i, k, a) { return a.indexOf(i) === k && !s.players[i].place; });
+    }
+    return [nextPlayer(s)];
   }
 
   // Who plays next if the current turn ends now (a Blue flag skips one player)
@@ -470,16 +508,18 @@
      on top of the pile. The current turn ends and the interrupter's starts. */
   function canInterrupt(s, pid) {
     if (s.over || !s.chain || s.current === pid || s.players[pid].place) return false;
-    return nextPlayer(s) === pid && movesFor(s, pid).length > 0;
+    return responders(s).indexOf(pid) >= 0 && movesFor(s, pid).length > 0;
   }
   function interrupt(s, pid, ids) {
-    if (!s.chain || s.current === pid || nextPlayer(s) !== pid) return { error: 'Ahora no puedes interrumpir.' };
-    var saved = { current: s.current, chain: s.chain, combo: s.combo, skipNext: s.skipNext, log: s.log.length };
+    if (!s.chain || s.current === pid || responders(s).indexOf(pid) < 0) return { error: 'Ahora no puedes interrumpir.' };
+    var saved = { current: s.current, chain: s.chain, combo: s.combo, skipNext: s.skipNext, log: s.log.length, dir: s.dir, turnCards: s.turnCards };
     var who = s.players[s.current];
+    decideDirection(s, pid);
     endChain(s);
     var r = play(s, ids);
     if (r.error) {
       s.current = saved.current; s.chain = saved.chain; s.combo = saved.combo; s.skipNext = saved.skipNext;
+      s.dir = saved.dir; s.turnPid = who.id; s.turnCards = saved.turnCards;
       s.log.length = saved.log;
       return r;
     }
@@ -491,9 +531,9 @@
   }
 
   function nextAliveIndex(s, from) {
-    var n = s.players.length;
+    var n = s.players.length, step = s.dir || 1;
     for (var k = 1; k <= n; k++) {
-      var j = (from + k) % n;
+      var j = ((from + k * step) % n + n) % n;
       if (!s.players[j].place) return j;
     }
     return from;
@@ -573,7 +613,7 @@
   function nextAlive(s) {
     var n = s.players.length;
     for (var k = 1; k < n; k++) {
-      var p = s.players[(s.current + k) % n];
+      var p = s.players[((s.current + k * (s.dir || 1)) % n + n) % n];
       if (!p.place) return p;
     }
     return null;
@@ -595,7 +635,8 @@
     legalMoves: legalMoves, playableIds: playableIds, checkPlay: checkPlay, botStep: botStep,
     pileHint: pileHint, effectiveTop: effectiveTop, cardName: cardName, cardFile: cardFile,
     stageOf: stageOf, sameKind: sameKind, defaultNames: DEFAULT_NAMES, deckSize: function (n) { return makeDeck(n || 4).length; },
-    seatSides: seatSides, nextPlayer: nextPlayer, movesFor: movesFor, canInterrupt: canInterrupt, interrupt: interrupt
+    seatSides: seatSides, nextPlayer: nextPlayer, movesFor: movesFor, canInterrupt: canInterrupt, interrupt: interrupt,
+    responders: responders
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.PintoEngine = api;

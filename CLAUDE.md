@@ -74,15 +74,15 @@ comments just to translate them — only translate what you are already touching
 │       ├── index.html       PINTO page: hero with 3D box, "Cómo se juega", rhythm cards, special cards, CTA
 │       ├── menu.js          Hamburger menu for the PINTO header (loaded on all six PINTO pages)
 │       ├── box3d.js         Auto-rotating, draggable CSS-3D box with per-face shading (no deps, respects reduced motion)
-│       ├── instrucciones/index.html  Welcome page for QR visitors (tutorial, resources) + quick rules guide (v1.5). Full rules PDF opens in a new tab, no `download` attr. TARGET OF THE PRINTED QR — never move
-│       ├── reglamento.pdf   Official rules PDF ("PINTO · Instrucciones", leaflet v2 phone version, 8 pages; replaced Nov 2026). Card names: Turbo (was Rebufo), Pista libre (was Vía libre); the Turbo card art lives in cartas/rebufo.webp (file name kept); ids/hashes/filenames keep the old names (#reb, #via-libre, rebufo.webp). Linked from instrucciones/ only
+│       ├── instrucciones/index.html  Welcome page for QR visitors (tutorial, resources) + quick rules guide (leaflet phone version, Nov 2026). Full rules PDF opens in a new tab, no `download` attr. TARGET OF THE PRINTED QR — never move
+│       ├── reglamento.pdf   Official rules PDF ("PINTO · Instrucciones", leaflet phone version, 7 pages; replaced again 15 Nov 2026 — linked as `reglamento.pdf?v=3`). Rules change vs the 8-page version: no "Elige el sentido" setup step; after the first Ritmo 1, whichever neighbour plays first sets the direction; special cards listed attack first (Vuelta Rápida, Amarilla, Azul, Turbo), then defense (Cuadros, Roja). Card names: Turbo (was Rebufo), Pista libre (was Vía libre); the Turbo card art lives in cartas/rebufo.webp (file name kept); ids/hashes/filenames keep the old names (#reb, #via-libre, rebufo.webp). Linked from instrucciones/ only
 │       ├── demo/            Playable web demo (you vs 1–5 bots; 2–6 players picked above the board, remembered as `pd-players`, default 6). Unlisted + noindex.
 │       │   ├── index.html   Page shell (board markup, help text); CSS: styles.css + pinto.css + pinto-demo.css
-│       │   ├── pinto-engine.js  Pure rules engine (no DOM, also runs in Node for simulations), rules from the printed leaflet (v1.5). Rules changes go here. Open turns + interruptions (`canInterrupt`/`interrupt`), seat sides per player count (`seatSides`: left/tl/top/tr/right)
-│       │   ├── demo.js      Rendering, selection, bot pacing, result panel (uses window.PintoEngine). Your 5 s open turn has "Terminar mi turno"; the next bot may interrupt it (INTERRUPT_CHANCE). The race start is unchanged on purpose (you always open with a Ritmo 1)
-│       │   └── multijugador/ Online with friends, 2–6 players (unlisted + noindex); the next player can interrupt an open turn. index.html (lobby + board) and
-│       │                    multi.js: PeerJS rooms (4-char code, ?sala=CODE link); the room creator's browser runs
-│       │                    the engine and sends each player only their view. ?transporte=local = multi-tab test mode
+│       │   ├── pinto-engine.js  Pure rules engine (no DOM, also runs in Node for simulations), rules from the printed leaflet (Nov 2026 phone version). Rules changes go here. Open turns + interruptions (`canInterrupt`/`interrupt`), seat sides per player count (`seatSides`: left/tl/top/tr/right). Direction `s.dir` (0 until decided): after the opener's first card both neighbours may answer (`responders`), the first one sets it (`decideDirection`). "Retirar la pila" also triggers when one player puts 4+ cards in the same turn (`turnCards`, e.g. Turbo combos)
+│       │   ├── demo.js      Rendering, selection, bot pacing, result panel (uses window.PintoEngine). Your 5 s open turn has "Terminar mi turno"; the next bot may interrupt it (INTERRUPT_CHANCE). The race start is unchanged on purpose (you always open with a Ritmo 1); either neighbouring bot may then answer and set the direction
+│       │   └── multijugador/ DISABLED (Nov 2026, old direction rule): index.html is a noindex meta-refresh to the solo demo.
+│       │                    multi.js (PeerJS rooms, ?sala=CODE) is kept but not loaded and not updated to the new engine;
+│       │                    the full page is in git history (commit 10d0caa) if it comes back
 │       ├── tutorial/        Tutorial = rules finder (indexable; linked from instrucciones/). Content follows the printed
 │       │                    leaflet ("PINTO · Instrucciones"), without Objetivo/Contenido/Preparación/Quién comienza (owner's
 │       │                    choice). Four groups: En tu turno, Fases de la carrera, Combinaciones (Encadenar + Carril Lleno;
@@ -155,10 +155,10 @@ light **welcome page** and the rules summary sits below it. Keep the top short (
 Order: `.p-welcome` (centered "Cómo Jugar" title with the PINTO logo under it, short text, fan of 5 cards), `#recursos` (`.p-paths`: four
 numbered cards with a colored top bar and a dotted "track" line under them on desktop: Guía rápida → `#guia`,
 Tutoriales → `../tutorial/`, Reglamento → `../reglamento.pdf`, new tab (button label is just "Reglamento"); Modos de juego → `#modos`, marked `.p-path--new` with a "¡Nuevo!" tab on its top border and a
-"Con marcador de temporada" line), then `#guia` "Guía rápida" (intro + `.p-gnav` index: one tile per section with a colored icon, name and arrow) followed by the summary of the official rules (v1.5),
-not a copy — never add rules that aren't in the official text: `#preparacion` (6 steps incl. "Banderazo de salida" = who starts, + deck table as a rounded panel `.p-table--panel`),
+"Con marcador de temporada" line), then `#guia` "Guía rápida" (intro + `.p-gnav` index: one tile per section with a colored icon, name and arrow) followed by the summary of the official rules (Nov 2026 phone leaflet),
+not a copy — never add rules that aren't in the official text: `#preparacion` (5 steps incl. "Banderazo de salida" = who starts and how the direction is set, + deck table as a rounded panel `.p-table--panel`),
 `#desarrollo`, `#reglas` (rule cards `.p-rcard`: mini card illustration on the tutorial's wooden table + title + short
-text + "Ver tutorial" link; the art per rule is hand-picked in the HTML), `#especiales` (rules order), `#referencia` ("Qué carta puedo jugar": table with card images; same content as the tutorial's #que-jugar — keep in sync),
+text + "Ver tutorial" link; the art per rule is hand-picked in the HTML), `#especiales` (leaflet order: attack cards, then defense), `#referencia` ("Qué carta puedo jugar": table with card images; same content as the tutorial's #que-jugar — keep in sync),
 `#modos` (stacked, same order and layout as the PINTO page); every rule and special card links to its tutorial subsection ("Ver tutorial").
 Minimal closing `.p-finish` ("¡Que comience la carrera!" · "PINTO · Un juego de Kori Labs" · "Conoce más de PINTO").
 The score sheet gift is never linked directly (only via the home `#suscribete` form). There are no real videos yet
@@ -188,7 +188,7 @@ then straight to the podium reveal (no "bandera a cuadros" step)
 replays). Reopening a finished season by code shows the podium without the reveal. **No server:** each season is saved in localStorage as
 `pinto-temporada:<CODE>` (4 chars, no 0/O/1/I/L) and the URL hash `#CODE` reopens it after a reload. If storage is blocked the page says progress won't survive a reload.
 **Live spectators:** while a season is open, the creator's browser broadcasts it through PeerJS 1.5.4 (lazy-loaded from jsDelivr,
-same approved exception as `demo/multijugador/`; peer id `korilabs-pinto-temporada-<code>`). `?ver=CODE` (or typing a code that
+same library the disabled `demo/multijugador/` used; peer id `korilabs-pinto-temporada-<code>`). `?ver=CODE` (or typing a code that
 isn't saved on this device into "Retomar o seguir una temporada") opens a read-only live view: no result entry, no undo, no
 rematch, nothing saved locally; it plays the same race/podium overlays when a result arrives and keeps reconnecting while the
 creator's page is closed or asleep ("En pausa"). The creator gets an "Espectadores" pill in the top bar (viewer count) that opens a
@@ -219,7 +219,7 @@ container's real width (`drawChart`, redrawn on resize); colors are the player/t
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
   Current: `styles.css?v=2`, `home.css?v=10` (index, privacidad and taller/pinto),
-  `pinto.css?v=37`, card images `?v=6` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=18`, `pinto-engine.js?v=12`, `demo.js?v=18`, `multi.js?v=5`, `legal.css?v=1`, `pinto-tutorial.css?v=16`, `tutorial-data.js?v=19`, `tutorial.js?v=20`, `pinto-temporada.css?v=12`, `temporada.js?v=12`, PINTO favicons `?v=1`, `menu.js?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
+  `pinto.css?v=37`, card images `?v=6` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=18`, `pinto-engine.js?v=13`, `demo.js?v=19`, `multi.js?v=5`, `legal.css?v=1`, `pinto-tutorial.css?v=16`, `tutorial-data.js?v=20`, `tutorial.js?v=21`, `pinto-temporada.css?v=12`, `temporada.js?v=12`, PINTO favicons `?v=1`, `menu.js?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
 - **Sender (newsletter):** universal script in the `<head>` of `index.html`; form is
@@ -242,7 +242,7 @@ container's real width (`drawChart`, redrawn on resize); colors are the player/t
   arrives from Figma, remove the description layer (in the SVG export it's the large text shape in the band
   y≈708–800 of the 744×1039 card) before converting to WebP, and check the result visually.
 - No dependencies to install. Don't add a framework, bundler or package.json without being asked.
-  Only exception (approved by the owner): `demo/multijugador/` loads PeerJS 1.5.4 from jsDelivr for online rooms.
+  Only exception (approved by the owner): PeerJS 1.5.4 from jsDelivr, lazy-loaded by the Modo Temporada live spectators (it was first approved for the now-disabled `demo/multijugador/`).
 
 ## Before opening a PR
 
