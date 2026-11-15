@@ -402,8 +402,10 @@
   }
   function botInterrupts() {
     if (!s || !s.chain || s.current !== 0 || drag) return;
-    var nx = E.nextPlayer(s);
-    if (nx === 0 || !E.canInterrupt(s, nx)) return;
+    // At the start both neighbours may answer (the first one sets the direction), later only the next player
+    var can = E.responders(s).filter(function (pid) { return pid !== 0 && E.canInterrupt(s, pid); });
+    if (!can.length) return;
+    var nx = can[Math.floor(Math.random() * can.length)];
     // Lowest Ritmo first, specials last (same taste as the bots' normal play)
     var moves = E.movesFor(s, nx).sort(function (a, b) { return rank(a) - rank(b); });
     var before = s.log.length;

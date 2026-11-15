@@ -1,6 +1,7 @@
-/* PINTO tutorial: content, in four groups that follow the order of the printed leaflet
+/* PINTO tutorial: content, in four groups that follow the order of the printed leaflet (phone version, Nov 2026;
+   special cards in its order: attack cards first, then defense)
    ("PINTO · Instrucciones"): En tu turno, Fases de la carrera, Combinaciones (Encadenar
-   cartas + Carril Lleno; the leaflet has no group title for these) and Cartas especiales.
+   cartas + Retirar la pila; the leaflet has no group title for these) and Cartas especiales.
    Rule text comes from the leaflet; don't add rules that aren't in it.
    Card codes: r1–r8 (Ritmo), cuad, roja, ama, azul, vr (Vuelta Rápida), reb (Turbo), back.
 
@@ -73,7 +74,7 @@
           keys: 'interrumpir interrupcion cortar terminar acabar turno cuantas cartas varias seguidas siguiente jugador empieza cortaron cortan corto interrumpieron interrumpen siguiente',
           text: '<p>Tu turno empieza al colocar tu primera carta. Puedes jugar <strong>tantas cartas</strong> como permitan las reglas, juntas o una tras otra.</p>' +
             '<p>Cuando ya jugaste al menos una, el siguiente jugador puede <strong>interrumpirte</strong> con una carta o combinación válida sobre el tope: tu turno termina y empieza el suyo. Si nadie te interrumpe, puedes seguir jugando o terminar tu turno.</p>',
-          note: 'La Bandera Roja, la Bandera a Cuadros y el Carril Lleno terminan el turno de inmediato.',
+          note: 'La Bandera Roja, la Bandera a Cuadros y retirar la pila terminan el turno de inmediato.',
           rel: ['encadenar', 'carril', 'roja', 'cuad'],
           pile: ['r1'], hand: ['r2', 'r2', 'r3', 'r6', 'vr'],
           script: [
@@ -134,6 +135,12 @@
             '<li>Las Cartas Especiales encadenadas aplican su efecto una sola vez.</li>' +
             '<li>No puedes mezclar valores o tipos distintos, salvo con el Turbo.</li>' +
             '<li>La Bandera a Cuadros no se puede encadenar.</li></ul>',
+          // Leaflet examples (same three as the printed "Encadenar cartas" strip)
+          examples: [
+            { ok: true, cards: ['r3', 'r3', 'r3'], label: 'Tres Ritmo 3' },
+            { ok: true, cards: ['roja', 'roja'], label: 'Dos Banderas Rojas' },
+            { ok: false, cards: ['r5', 'r6'], bad: 1, why: 'Diferentes', label: 'Ritmo 5 y Ritmo 6' }
+          ],
           rel: ['carril', 'reb', 'turno'],
           pile: ['r2'], hand: ['r4', 'r1', 'r4'],
           script: [
@@ -142,10 +149,14 @@
           ]
         },
         {
-          id: 'carril', title: 'Carril Lleno', q: '¿Qué pasa con 4 cartas iguales seguidas?', mini: 'r3',
-          keys: '4 cuatro iguales seguidas descartar retirar quemar pila',
-          text: 'Cuatro cartas iguales seguidas en la pila central, de uno o varios jugadores, forman un <strong>Carril Lleno</strong>: la pila se retira de la partida, el turno de quien colocó la cuarta termina y el siguiente jugador tiene pista libre.',
-          note: 'La Bandera Azul corta la secuencia de un Carril Lleno.',
+          id: 'carril', title: 'Retirar la pila', q: '¿Cuándo se retira la pila?', mini: 'r3',
+          keys: 'carril lleno 4 cuatro iguales seguidas descartar retirar quemar pila mas cartas mismo jugador turno combinacion turbo',
+          text: '<p>La pila central se retira por completo de la partida cuando se juegan:</p><ul>' +
+            '<li><strong>Cuatro cartas iguales seguidas</strong>, de uno o varios jugadores.</li>' +
+            '<li><strong>Cuatro o más cartas de un solo jugador</strong> en el mismo turno, por ejemplo con una combinación de Turbo.</li>' +
+            '<li>Una <strong>Bandera a Cuadros</strong>.</li></ul>' +
+            '<p>El turno de quien colocó la última carta termina y el siguiente jugador tiene pista libre.</p>',
+          note: 'La Bandera Azul corta una secuencia de cartas iguales.',
           rel: ['encadenar', 'azul', 'via-libre'],
           pile: ['r3'], hand: ['r5', 'r8', 'r2'],
           script: [
@@ -163,30 +174,16 @@
       id: 'especiales', title: 'Cartas especiales', color: 'var(--g4)', special: true,
       rules: [
         {
-          id: 'cuad', card: 'cuad', title: 'Bandera a Cuadros', q: '¿Qué hace la Bandera a Cuadros?',
-          keys: 'cuadros cerrar etapa descartar retirar quemar pila terminar',
-          on: 'cualquier carta o con pista libre.',
-          text: '<strong>Cierra la etapa:</strong> toda la pila, incluida la Bandera a Cuadros, se retira de la partida. Tu turno termina y solo puedes jugar una por turno.',
-          then: 'pista libre para el siguiente.',
-          rel: ['roja', 'carril', 'via-libre'],
-          pile: ['r3', 'r6', 'r8'], hand: ['cuad', 'r2', 'r4'],
+          id: 'vr', card: 'vr', title: 'Vuelta Rápida', q: '¿Qué hace la Vuelta Rápida?',
+          keys: 'vuelta rapida ritmo mas alto nadie supera cronometro alta alto maxima maximo mas',
+          on: 'cualquier carta excepto una Bandera Amarilla, o con pista libre.',
+          text: '<strong>Marca el ritmo más alto:</strong> nadie puede superarlo.',
+          then: 'solo se responde con otra Vuelta Rápida, una Bandera Roja o una Bandera a Cuadros.',
+          rel: ['ama', 'roja', 'cuad'],
+          pile: ['r6', 'r8'], hand: ['vr', 'r4', 'r7'],
           script: [
-            { turn: 'you', wait: 800 }, { play: 'cuad', wait: 800 },
-            { clear: true },
-            { turn: 1 }
-          ]
-        },
-        {
-          id: 'roja', card: 'roja', title: 'Bandera Roja', q: '¿Qué hace la Bandera Roja?',
-          keys: 'roja reiniciar bajar el ritmo empezar de cero',
-          on: 'cualquier carta o con pista libre.',
-          text: '<strong>Reinicia el ritmo sin descartar:</strong> la pila se queda en la mesa. Tu turno termina.',
-          then: 'pista libre para el siguiente.',
-          rel: ['cuad', 'via-libre'],
-          pile: ['r4', 'r7'], hand: ['roja', 'r2', 'r3'],
-          script: [
-            { turn: 'you', wait: 800 }, { play: 'roja' },
-            { turn: 1, wait: 500 }, { bot: 1, card: 'r2' }
+            { turn: 'you', wait: 800 }, { play: 'vr' },
+            { turn: 1, wait: 500 }, { bot: 1, card: 'roja' }
           ]
         },
         {
@@ -206,7 +203,7 @@
           id: 'azul', card: 'azul', title: 'Bandera Azul', q: '¿Qué hace la Bandera Azul?',
           keys: 'azul saltar brincar pierde turno siguiente jugador meta',
           on: 'una carta de Ritmo, otra Bandera Azul o con pista libre.',
-          text: 'El siguiente jugador en carrera <strong>pierde su turno</strong> (si ya cruzó la meta, lo pierde el próximo en carrera). La pila queda intacta y la Azul corta la secuencia de un Carril Lleno.',
+          text: 'El siguiente jugador en carrera <strong>pierde su turno</strong> (si ya cruzó la meta, lo pierde el próximo en carrera). La pila queda intacta y la Azul corta una secuencia de cartas iguales.',
           then: 'quien sigue responde a la carta que quedó debajo de la Azul; si se jugó con pista libre, tiene pista libre.',
           rel: ['carril', 'via-libre'],
           pile: ['r5'], hand: ['azul', 'r2', 'r3'],
@@ -214,19 +211,6 @@
             { turn: 'you', wait: 800 }, { play: 'azul' },
             { skip: 1, wait: 1400 },
             { turn: 2, wait: 500 }, { bot: 2, card: 'r6' }
-          ]
-        },
-        {
-          id: 'vr', card: 'vr', title: 'Vuelta Rápida', q: '¿Qué hace la Vuelta Rápida?',
-          keys: 'vuelta rapida ritmo mas alto nadie supera cronometro alta alto maxima maximo mas',
-          on: 'cualquier carta excepto una Bandera Amarilla, o con pista libre.',
-          text: '<strong>Marca el ritmo más alto:</strong> nadie puede superarlo.',
-          then: 'solo se responde con otra Vuelta Rápida, una Bandera Roja o una Bandera a Cuadros.',
-          rel: ['ama', 'roja', 'cuad'],
-          pile: ['r6', 'r8'], hand: ['vr', 'r4', 'r7'],
-          script: [
-            { turn: 'you', wait: 800 }, { play: 'vr' },
-            { turn: 1, wait: 500 }, { bot: 1, card: 'roja' }
           ]
         },
         {
@@ -255,6 +239,33 @@
             { play: 'reb', wait: 600 }, { play: 'r6', wait: 600 }, { play: 'r6', wait: 600 }, { play: 'r7', wait: 900 },
             { no: ['r8'], wait: 1800 }
           ]
+        },
+        {
+          id: 'cuad', card: 'cuad', title: 'Bandera a Cuadros', q: '¿Qué hace la Bandera a Cuadros?',
+          keys: 'cuadros cerrar etapa descartar retirar quemar pila terminar',
+          on: 'cualquier carta o con pista libre.',
+          text: '<strong>Cierra la etapa:</strong> toda la pila, incluida la Bandera a Cuadros, se retira de la partida. Tu turno termina y solo puedes jugar una por turno.',
+          then: 'pista libre para el siguiente.',
+          rel: ['roja', 'carril', 'via-libre'],
+          pile: ['r3', 'r6', 'r8'], hand: ['cuad', 'r2', 'r4'],
+          script: [
+            { turn: 'you', wait: 800 }, { play: 'cuad', wait: 800 },
+            { clear: true },
+            { turn: 1 }
+          ]
+        },
+        {
+          id: 'roja', card: 'roja', title: 'Bandera Roja', q: '¿Qué hace la Bandera Roja?',
+          keys: 'roja reiniciar bajar el ritmo empezar de cero',
+          on: 'cualquier carta o con pista libre.',
+          text: '<strong>Reinicia el ritmo sin descartar:</strong> la pila se queda en la mesa. Tu turno termina.',
+          then: 'pista libre para el siguiente.',
+          rel: ['cuad', 'via-libre'],
+          pile: ['r4', 'r7'], hand: ['roja', 'r2', 'r3'],
+          script: [
+            { turn: 'you', wait: 800 }, { play: 'roja' },
+            { turn: 1, wait: 500 }, { bot: 1, card: 'r2' }
+          ]
         }
       ]
     }
@@ -277,7 +288,7 @@
       { top: 'Vuelta Rápida', card: 'vr', can: 'Otra Vuelta Rápida, una Bandera Roja o una Bandera a Cuadros.', rel: 'vr' },
       { top: 'Turbo', sub: 'Solo', card: 'reb', can: 'Un Ritmo Alto, otro Turbo, una Bandera Roja, una Bandera a Cuadros o una Vuelta Rápida. Si va acompañado, manda el valor más alto de la combinación.', rel: 'reb' }
     ],
-    note: 'Después de una Bandera Roja, una Bandera a Cuadros o un Carril Lleno, el siguiente jugador tiene pista libre.'
+    note: 'Después de una Bandera Roja, una Bandera a Cuadros o de retirar la pila, el siguiente jugador tiene pista libre.'
   };
 
   root.PintoTutorial = { groups: GROUPS, reference: REFERENCE };
