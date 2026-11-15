@@ -1,7 +1,7 @@
 /* PINTO tutorial: content, in four groups that follow the order of the printed leaflet (phone version, Nov 2026;
    special cards in its order: attack cards first, then defense)
    ("PINTO · Instrucciones"): En tu turno, Fases de la carrera, Combinaciones (Encadenar
-   cartas + Carril Lleno; the leaflet has no group title for these) and Cartas especiales.
+   cartas + Retirar la pila; the leaflet has no group title for these) and Cartas especiales.
    Rule text comes from the leaflet; don't add rules that aren't in it.
    Card codes: r1–r8 (Ritmo), cuad, roja, ama, azul, vr (Vuelta Rápida), reb (Turbo), back.
 
@@ -74,7 +74,7 @@
           keys: 'interrumpir interrupcion cortar terminar acabar turno cuantas cartas varias seguidas siguiente jugador empieza cortaron cortan corto interrumpieron interrumpen siguiente',
           text: '<p>Tu turno empieza al colocar tu primera carta. Puedes jugar <strong>tantas cartas</strong> como permitan las reglas, juntas o una tras otra.</p>' +
             '<p>Cuando ya jugaste al menos una, el siguiente jugador puede <strong>interrumpirte</strong> con una carta o combinación válida sobre el tope: tu turno termina y empieza el suyo. Si nadie te interrumpe, puedes seguir jugando o terminar tu turno.</p>',
-          note: 'La Bandera Roja, la Bandera a Cuadros y el Carril Lleno terminan el turno de inmediato.',
+          note: 'La Bandera Roja, la Bandera a Cuadros y retirar la pila terminan el turno de inmediato.',
           rel: ['encadenar', 'carril', 'roja', 'cuad'],
           pile: ['r1'], hand: ['r2', 'r2', 'r3', 'r6', 'vr'],
           script: [
@@ -149,11 +149,14 @@
           ]
         },
         {
-          id: 'carril', title: 'Carril Lleno', q: '¿Qué pasa con 4 cartas iguales seguidas?', mini: 'r3',
-          keys: '4 cuatro iguales seguidas descartar retirar quemar pila mas cartas mismo jugador turno combinacion turbo',
-          text: '<p>Cuatro cartas iguales seguidas en la pila central, de uno o varios jugadores, forman un <strong>Carril Lleno</strong>: la pila se retira de la partida, el turno de quien colocó la cuarta termina y el siguiente jugador tiene pista libre.</p>' +
-            '<p>Lo mismo pasa si <strong>un solo jugador coloca cuatro o más cartas</strong> en el mismo turno, por ejemplo con una combinación de Turbo.</p>',
-          note: 'La Bandera Azul corta la secuencia de un Carril Lleno.',
+          id: 'carril', title: 'Retirar la pila', q: '¿Cuándo se retira la pila?', mini: 'r3',
+          keys: 'carril lleno 4 cuatro iguales seguidas descartar retirar quemar pila mas cartas mismo jugador turno combinacion turbo',
+          text: '<p>La pila central se retira por completo de la partida cuando se juegan:</p><ul>' +
+            '<li><strong>Cuatro cartas iguales seguidas</strong>, de uno o varios jugadores.</li>' +
+            '<li><strong>Cuatro o más cartas de un solo jugador</strong> en el mismo turno, por ejemplo con una combinación de Turbo.</li>' +
+            '<li>Una <strong>Bandera a Cuadros</strong>.</li></ul>' +
+            '<p>El turno de quien colocó la última carta termina y el siguiente jugador tiene pista libre.</p>',
+          note: 'La Bandera Azul corta una secuencia de cartas iguales.',
           rel: ['encadenar', 'azul', 'via-libre'],
           pile: ['r3'], hand: ['r5', 'r8', 'r2'],
           script: [
@@ -200,7 +203,7 @@
           id: 'azul', card: 'azul', title: 'Bandera Azul', q: '¿Qué hace la Bandera Azul?',
           keys: 'azul saltar brincar pierde turno siguiente jugador meta',
           on: 'una carta de Ritmo, otra Bandera Azul o con pista libre.',
-          text: 'El siguiente jugador en carrera <strong>pierde su turno</strong> (si ya cruzó la meta, lo pierde el próximo en carrera). La pila queda intacta y la Azul corta la secuencia de un Carril Lleno.',
+          text: 'El siguiente jugador en carrera <strong>pierde su turno</strong> (si ya cruzó la meta, lo pierde el próximo en carrera). La pila queda intacta y la Azul corta una secuencia de cartas iguales.',
           then: 'quien sigue responde a la carta que quedó debajo de la Azul; si se jugó con pista libre, tiene pista libre.',
           rel: ['carril', 'via-libre'],
           pile: ['r5'], hand: ['azul', 'r2', 'r3'],
@@ -285,7 +288,7 @@
       { top: 'Vuelta Rápida', card: 'vr', can: 'Otra Vuelta Rápida, una Bandera Roja o una Bandera a Cuadros.', rel: 'vr' },
       { top: 'Turbo', sub: 'Solo', card: 'reb', can: 'Un Ritmo Alto, otro Turbo, una Bandera Roja, una Bandera a Cuadros o una Vuelta Rápida. Si va acompañado, manda el valor más alto de la combinación.', rel: 'reb' }
     ],
-    note: 'Después de una Bandera Roja, una Bandera a Cuadros o un Carril Lleno, el siguiente jugador tiene pista libre.'
+    note: 'Después de una Bandera Roja, una Bandera a Cuadros o de retirar la pila, el siguiente jugador tiene pista libre.'
   };
 
   root.PintoTutorial = { groups: GROUPS, reference: REFERENCE };

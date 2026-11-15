@@ -325,14 +325,14 @@
       else if (!full && s.turnCards >= 4) { full = true; byTurn = true; }
     });
     var label = describe(cards);
-    // Only the Bandera Roja, the Bandera a Cuadros and a Carril Lleno close the turn (leaflet)
+    // Only the Bandera Roja, the Bandera a Cuadros and clearing the pile close the turn (leaflet)
     var endsTurn = true, special = '', closes = false;
     var last = cards[cards.length - 1];
 
     if (last.k === 'cuad') {
       discardPile(s); special = ' · bandera a cuadros: se descarta la pila'; closes = true;
     } else if (full) {
-      discardPile(s); special = byTurn ? ' · 4 cartas en el mismo turno: se descarta la pila' : ' · ¡Carril Lleno! Se descarta la pila'; closes = true;
+      discardPile(s); special = byTurn ? ' · 4 cartas en el mismo turno: se retira la pila' : ' · 4 cartas iguales: se retira la pila'; closes = true;
     } else if (last.k === 'azul') {
       // Chained Blue flags still skip only one player (the effect applies once)
       s.skipNext = true; special = ' · salta al siguiente';
