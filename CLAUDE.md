@@ -186,8 +186,18 @@ each race = winner of that race, then the next race with a big static flag (no w
 then straight to the podium reveal (no "bandera a cuadros" step)
 (3rd, 2nd, "Y el campeón de la temporada es…", then 1st with confetti; "Ver resultado" skips; "Ver el podio otra vez"
 replays). Reopening a finished season by code shows the podium without the reveal. **No server:** each season is saved in localStorage as
-`pinto-temporada:<CODE>` (4 chars, no 0/O/1/I/L) and the URL hash `#CODE` reopens it after a reload; codes only work
-on the same device/browser. If storage is blocked the page says progress won't survive a reload.
+`pinto-temporada:<CODE>` (4 chars, no 0/O/1/I/L) and the URL hash `#CODE` reopens it after a reload. If storage is blocked the page says progress won't survive a reload.
+**Live spectators:** while a season is open, the creator's browser broadcasts it through PeerJS 1.5.4 (lazy-loaded from jsDelivr,
+same approved exception as `demo/multijugador/`; peer id `korilabs-pinto-temporada-<code>`). `?ver=CODE` (or typing a code that
+isn't saved on this device into "Retomar o seguir una temporada") opens a read-only live view: no result entry, no undo, no
+rematch, nothing saved locally; it plays the same race/podium overlays when a result arrives and keeps reconnecting while the
+creator's page is closed or asleep ("En pausa"). The creator gets an "Espectadores" pill in the top bar (viewer count) that opens a
+panel with the link (Copiar / Compartir). Data received from peers is validated (`cleanSeason`). `?transporte=local` = multi-tab
+test mode (BroadcastChannel; tabs always watch with `?ver=`). **Evolution charts** (`.ps-evo`, after standings + races on the race,
+final and spectator screens, from the first result): "Puntos" (cumulative points line chart from "Inicio") and "Posiciones" (bump chart
+of the standings after each race, same tiebreakers), Escuderías/Pilotos switch in Modo escudería, "Carreras como líder" summary,
+legend + end-of-line labels, crosshair tooltip (pointer and arrow keys); no table view (owner removed it). Inline SVG drawn at the
+container's real width (`drawChart`, redrawn on resize); colors are the player/team colors.
 
 ### Privacy — `privacidad/index.html` (CSS: `styles.css` + `home.css` + `legal.css`)
 
@@ -209,7 +219,7 @@ on the same device/browser. If storage is blocked the page says progress won't s
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
   Current: `styles.css?v=2`, `home.css?v=10` (index, privacidad and taller/pinto),
-  `pinto.css?v=37`, card images `?v=6` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=18`, `pinto-engine.js?v=12`, `demo.js?v=18`, `multi.js?v=5`, `legal.css?v=1`, `pinto-tutorial.css?v=16`, `tutorial-data.js?v=19`, `tutorial.js?v=20`, `pinto-temporada.css?v=10`, `temporada.js?v=10`, PINTO favicons `?v=1`, `menu.js?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
+  `pinto.css?v=37`, card images `?v=6` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=18`, `pinto-engine.js?v=12`, `demo.js?v=18`, `multi.js?v=5`, `legal.css?v=1`, `pinto-tutorial.css?v=16`, `tutorial-data.js?v=19`, `tutorial.js?v=20`, `pinto-temporada.css?v=12`, `temporada.js?v=12`, PINTO favicons `?v=1`, `menu.js?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
 - **Sender (newsletter):** universal script in the `<head>` of `index.html`; form is
