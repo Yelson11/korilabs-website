@@ -487,14 +487,6 @@
 .ps-tip__n { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ps-tip small { width: 1.9rem; color: var(--cream-dim); text-align: right; }
 .ps-tip .ps-flag { width: 1.1rem; height: auto; border-radius: 2px; }
-.ps-evo__table summary { color: var(--cream-dim); font: 600 0.85rem/1.2 var(--display); cursor: pointer; }
-.ps-evo__table summary:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; border-radius: 0.3rem; }
-.ps-scroll { margin-top: 0.7rem; overflow-x: auto; }
-.ps-evo table { border-collapse: collapse; font-size: 0.82rem; white-space: nowrap; }
-.ps-evo th, .ps-evo td { padding: 0.35rem 0.55rem; border-bottom: 1px solid var(--line); text-align: right; }
-.ps-evo th[scope="row"], .ps-evo thead th:first-child { position: sticky; left: 0; background: #17181c; text-align: left; }
-.ps-evo td small { color: var(--cream-dim); }
-.ps-evo thead th { color: var(--cream-dim); font-weight: 700; }
 
 @media (prefers-reduced-motion: reduce) {
   [data-live-state="on"] .ps-live-dot, .ps-live-btn[data-live-state="on"] .ps-live-dot { animation: none; }

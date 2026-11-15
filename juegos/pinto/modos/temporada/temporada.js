@@ -424,7 +424,7 @@
      "Puntos": cumulative points after each race (line chart, starts at 0 before race 1).
      "Posiciones": standings position after each race (bump chart, 1st on top), same tiebreakers as the table.
      Drawn as inline SVG at the container's real width (redrawn on resize), with a crosshair tooltip, end-of-line
-     name labels, a legend and a table view, so identity never depends on color alone. */
+     name labels and a legend, so identity never depends on color alone. */
   function evolution(s, byTeam) {
     var teams = byTeam && hasTeams(s), ents = standings(s, teams), pts = {}, rank = {};
     ents.forEach(function (e) { pts[e.i] = [0]; rank[e.i] = []; });
@@ -462,20 +462,11 @@
     var legend = '<ul class="ps-legend">' + ev.ents.map(function (e) {
       return '<li><i class="ps-dot' + (ev.teams ? ' ps-dot--team' : '') + '" style="--pc:' + ev.color(e.i) + '"></i>' + esc(e.name) + '</li>';
     }).join('') + '</ul>';
-    var head = '<th scope="col">' + (ev.teams ? 'Escudería' : 'Piloto') + '</th>' + races(s).slice(0, ev.G).map(function (gp, g) {
-      return '<th scope="col" title="' + gp + '">' + (g + 1) + '</th>';
-    }).join('');
-    var body = ev.ents.map(function (e) {
-      return '<tr><th scope="row">' + esc(e.name) + '</th>' + ev.pts[e.i].slice(1).map(function (v, g) {
-        return '<td>' + v + ' <small>' + ord(ev.rank[e.i][g]) + '</small></td>';
-      }).join('') + '</tr>';
-    }).join('');
     return '<div class="ps-card ps-evo">' +
       '<div class="ps-evo__head"><h2 class="ps-h3">Evolución de la temporada</h2>' +
         '<div class="ps-tabs" role="group" aria-label="Gráfico">' + tab('points', 'Puntos') + tab('rank', 'Posiciones') + '</div>' + who + '</div>' +
       leadSummary(s, ev) + legend +
       '<div class="ps-chart" data-chart></div>' +
-      '<details class="ps-evo__table"><summary>Ver datos en tabla</summary><div class="ps-scroll"><table><thead><tr>' + head + '</tr></thead><tbody>' + body + '</tbody></table></div></details>' +
     '</div>';
   }
 
@@ -541,7 +532,7 @@
       svg += '<text class="ps-ch__label" x="' + (X(ev.G) + 10) + '" y="' + l.y.toFixed(1) + '" dy="0.35em">' + esc(short(l.e.name)) + '<tspan class="ps-ch__val">' + tag + '</tspan></text>';
     });
     svg += '<rect class="ps-ch__hit" x="' + (M.l - 12) + '" y="0" width="' + (pw + 24) + '" height="' + H + '"/>';
-    box.innerHTML = '<svg class="ps-ch" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" tabindex="0" role="img" aria-label="' + (byRank ? 'Posición' : 'Puntos acumulados') + ' de cada ' + (ev.teams ? 'escudería' : 'piloto') + ' después de cada carrera. Usa las flechas para recorrer las carreras; los datos también están en la tabla de abajo.">' + svg + '</svg><div class="ps-tip" hidden></div>';
+    box.innerHTML = '<svg class="ps-ch" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" tabindex="0" role="img" aria-label="' + (byRank ? 'Posición' : 'Puntos acumulados') + ' de cada ' + (ev.teams ? 'escudería' : 'piloto') + ' después de cada carrera. Usa las flechas para recorrer las carreras.">' + svg + '</svg><div class="ps-tip" hidden></div>';
 
     var svgEl = box.querySelector('svg'), tip = box.querySelector('.ps-tip'), cross = box.querySelector('[data-cross]'), cur = null;
     function show(k) {
@@ -1149,9 +1140,7 @@
   function refreshChart() {
     var old = app.querySelector('.ps-evo'); if (!old || !state) return;
     var tmp = document.createElement('div'); tmp.innerHTML = chartCard(state);
-    var wasOpen = old.querySelector('details') && old.querySelector('details').open;
     old.replaceWith(tmp.firstChild);
-    if (wasOpen) app.querySelector('.ps-evo details').open = true;
     drawChart();
   }
 

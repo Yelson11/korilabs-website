@@ -196,7 +196,7 @@ panel with the link (Copiar / Compartir). Data received from peers is validated 
 test mode (BroadcastChannel; tabs always watch with `?ver=`). **Evolution charts** (`.ps-evo`, after standings + races on the race,
 final and spectator screens, from the first result): "Puntos" (cumulative points line chart from "Inicio") and "Posiciones" (bump chart
 of the standings after each race, same tiebreakers), Escuderías/Pilotos switch in Modo escudería, "Carreras como líder" summary,
-legend + end-of-line labels, crosshair tooltip (pointer and arrow keys), "Ver datos en tabla". Inline SVG drawn at the
+legend + end-of-line labels, crosshair tooltip (pointer and arrow keys); no table view (owner removed it). Inline SVG drawn at the
 container's real width (`drawChart`, redrawn on resize); colors are the player/team colors.
 
 ### Privacy — `privacidad/index.html` (CSS: `styles.css` + `home.css` + `legal.css`)
@@ -219,7 +219,7 @@ container's real width (`drawChart`, redrawn on resize); colors are the player/t
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
   Current: `styles.css?v=2`, `home.css?v=10` (index, privacidad and taller/pinto),
-  `pinto.css?v=37`, card images `?v=6` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=18`, `pinto-engine.js?v=12`, `demo.js?v=18`, `multi.js?v=5`, `legal.css?v=1`, `pinto-tutorial.css?v=16`, `tutorial-data.js?v=19`, `tutorial.js?v=20`, `pinto-temporada.css?v=11`, `temporada.js?v=11`, PINTO favicons `?v=1`, `menu.js?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
+  `pinto.css?v=37`, card images `?v=6` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=18`, `pinto-engine.js?v=12`, `demo.js?v=18`, `multi.js?v=5`, `legal.css?v=1`, `pinto-tutorial.css?v=16`, `tutorial-data.js?v=19`, `tutorial.js?v=20`, `pinto-temporada.css?v=12`, `temporada.js?v=12`, PINTO favicons `?v=1`, `menu.js?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
 - **Sender (newsletter):** universal script in the `<head>` of `index.html`; form is
