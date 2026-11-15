@@ -6,7 +6,10 @@
    Options (owner's house rules):
    - Modo escudería: with 4 or 6 players everyone races on their own, but pairs (players 1+2, 3+4, 5+6) add up points.
    - Puntos dobles: GP 5, 10 and 15 are worth double (tiebreak position counts are not doubled).
-   State lives in localStorage under a 4-character season code (same device only, no server). */
+   State lives in localStorage under a 4-character season code (same device only, no server).
+   Live spectators: while a season is open, this browser also "broadcasts" it through PeerJS (WebRTC, free public
+   broker, same library as demo/multijugador/). Anyone opening ?ver=CODE gets a read-only, live view; they never
+   write to their own storage. ?transporte=local swaps PeerJS for BroadcastChannel (multi-tab testing). */
 (function () {
   'use strict';
 
@@ -53,6 +56,10 @@
   var state = null;          // current season
   var order = [];            // finishing order being entered for the current GP (player indexes)
   var draft = { count: 4, names: ['', '', '', '', '', ''], season: 'clasica', teams: false, double: false };
+  var chart = { view: 'points', teams: true };   // which evolution chart is showing
+  var params = new URLSearchParams(location.search);
+  var LOCAL = params.get('transporte') === 'local';
+  var spectating = false;    // true = read-only live view of someone else's season (?ver=CODE)
 
   /* ---------- storage (may be unavailable: private mode, blocked cookies) ---------- */
   var canStore = (function () {
@@ -60,8 +67,9 @@
     catch (e) { return false; }
   })();
   function save() {
-    if (!state) return;
+    if (!state || spectating) return;
     state.updated = Date.now();
+    broadcast();
     if (!canStore) return;
     try { localStorage.setItem(KEY + state.code, JSON.stringify(state)); } catch (e) { /* storage full */ }
   }
@@ -96,6 +104,244 @@
     return code;
   }
 
+  /* ---------- live spectators ----------
+     Host (the device that created the season): registers the peer id LIVE_PREFIX + code and sends the whole
+     season to every spectator on connect and after every change. Spectator: connects to that id, renders what it
+     receives and keeps retrying while the host is away (screen off, page closed). */
+  var LIVE_PREFIX = 'korilabs-pinto-temporada-';
+  var PEER_SRC = 'https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js';
+  var live = { code: null, t: null, status: 'off', viewers: 0, open: false };   // host side
+  var watch = { code: null, t: null, status: 'connecting', got: false };       // spectator side
+
+  var peerWaiters = null;
+  function withPeer(cb) {
+    if (window.Peer) return cb(true);
+    if (peerWaiters) { peerWaiters.push(cb); return; }
+    peerWaiters = [cb];
+    var sc = document.createElement('script');
+    sc.src = PEER_SRC; sc.async = true;
+    sc.onload = function () { var w = peerWaiters; peerWaiters = null; w.forEach(function (f) { f(!!window.Peer); }); };
+    sc.onerror = function () { var w = peerWaiters; peerWaiters = null; sc.remove(); w.forEach(function (f) { f(false); }); };
+    document.head.appendChild(sc);
+  }
+  function liveLink(code) {
+    return location.origin + location.pathname + '?ver=' + code + (LOCAL ? '&transporte=local' : '');
+  }
+
+  /* Host transports: h.status(status, viewers) and h.snapshot() → message; return { send(msg), stop() } */
+  function localHost(code, h) {
+    var ch = new BroadcastChannel('pinto-temporada-' + code), seen = {};
+    ch.onmessage = function (e) {
+      var m = e.data || {};
+      if (m.sys === 'knock') { seen[m.from] = 1; ch.postMessage(h.snapshot()); }
+      if (m.sys === 'bye') delete seen[m.from];
+      h.status('on', Object.keys(seen).length);
+    };
+    h.status('on', 0);
+    ch.postMessage(h.snapshot());
+    return { send: function (d) { ch.postMessage(d); }, stop: function () { ch.postMessage({ t: 'gone' }); ch.close(); } };
+  }
+  function peerHost(code, h) {
+    var conns = [], peer = null, dead = false, timer = null, tries = 0;
+    function report(st) { h.status(st, conns.length); }
+    function retry(ms) { clearTimeout(timer); timer = setTimeout(start, ms); }
+    function start() {
+      if (dead) return;
+      report('connecting');
+      withPeer(function (ok) {
+        if (dead) return;
+        if (!ok) { report('error'); retry(10000); return; }
+        if (peer) { try { peer.destroy(); } catch (e) { /* ignore */ } }
+        var p = peer = new window.Peer(LIVE_PREFIX + code.toLowerCase());
+        p.on('open', function () { tries = 0; report('on'); });
+        p.on('connection', function (c) {
+          c.on('open', function () { conns.push(c); try { c.send(h.snapshot()); } catch (e) { /* ignore */ } report('on'); });
+          var drop = function () { var i = conns.indexOf(c); if (i > -1) { conns.splice(i, 1); report(peer && peer.open ? 'on' : 'connecting'); } };
+          c.on('close', drop); c.on('error', drop);
+          c.on('data', function () { /* spectators are read-only */ });
+        });
+        p.on('disconnected', function () {
+          if (dead || p !== peer) return;
+          report('connecting');
+          setTimeout(function () { if (!dead && p === peer && !p.destroyed && p.disconnected) p.reconnect(); }, 1500);
+        });
+        p.on('error', function (err) {
+          if (dead || p !== peer) return;
+          var type = err && err.type;
+          if (type === 'peer-unavailable') return;
+          // After a reload the old id can stay registered for a little while: keep trying before giving up
+          if (type === 'unavailable-id') { tries++; report(tries > 8 ? 'taken' : 'connecting'); retry(tries > 8 ? 30000 : 5000); return; }
+          if (type === 'browser-incompatible') { report('error'); return; }
+          report('error'); retry(6000);
+        });
+      });
+    }
+    function onVisible() {
+      if (document.visibilityState !== 'visible' || dead || !peer) return;
+      if (peer.destroyed) start(); else if (peer.disconnected) peer.reconnect();
+    }
+    document.addEventListener('visibilitychange', onVisible);
+    start();
+    return {
+      send: function (d) { conns.forEach(function (c) { if (c.open) { try { c.send(d); } catch (e) { /* ignore */ } } }); },
+      stop: function () {
+        dead = true; clearTimeout(timer);
+        document.removeEventListener('visibilitychange', onVisible);
+        if (peer) { try { peer.destroy(); } catch (e) { /* ignore */ } }
+      }
+    };
+  }
+
+  /* Spectator transports: h.state(season), h.status(status), h.gone(); return { stop() } */
+  function localViewer(code, h) {
+    var ch = new BroadcastChannel('pinto-temporada-' + code), me = 'v' + Math.random().toString(36).slice(2, 8);
+    ch.onmessage = function (e) {
+      var m = e.data || {};
+      if (m.t === 'state') { h.status('on'); h.state(m.s); }
+      if (m.t === 'gone') h.status('waiting');
+    };
+    var knock = function () { ch.postMessage({ sys: 'knock', from: me }); };
+    knock(); var iv = setInterval(function () { if (!watch.got) knock(); }, 3000);
+    var bye = function () { ch.postMessage({ sys: 'bye', from: me }); };
+    window.addEventListener('pagehide', bye);
+    return { stop: function () { clearInterval(iv); bye(); window.removeEventListener('pagehide', bye); ch.close(); } };
+  }
+  function peerViewer(code, h) {
+    var peer = null, conn = null, dead = false, timer = null, guard = null;
+    function retry(ms) { clearTimeout(timer); timer = setTimeout(connect, ms); }
+    function connect() {
+      if (dead) return;
+      clearTimeout(timer);
+      withPeer(function (ok) {
+        if (dead) return;
+        if (!ok) { h.status('offline'); retry(8000); return; }
+        if (!peer || peer.destroyed) {
+          var p = peer = new window.Peer();
+          p.on('open', dial);
+          p.on('disconnected', function () { if (!dead && p === peer && !p.destroyed) setTimeout(function () { if (!dead && p.disconnected && !p.destroyed) p.reconnect(); }, 1500); });
+          p.on('error', function (err) {
+            if (dead || p !== peer) return;
+            if (err && err.type === 'peer-unavailable') { h.status('waiting'); retry(4000); return; }
+            h.status('offline');
+            try { p.destroy(); } catch (e) { /* ignore */ }
+            peer = null; retry(5000);
+          });
+        } else if (peer.disconnected) peer.reconnect();
+        else dial();
+      });
+    }
+    function dial() {
+      if (dead || !peer || !peer.open) return;
+      if (conn) { try { conn.close(); } catch (e) { /* ignore */ } }
+      var c = conn = peer.connect(LIVE_PREFIX + code.toLowerCase(), { reliable: true });
+      clearTimeout(guard);
+      guard = setTimeout(function () { if (!dead && c === conn && !c.open) { h.status('waiting'); retry(100); } }, 10000);
+      c.on('open', function () { clearTimeout(guard); h.status('on'); });
+      c.on('data', function (d) { if (d && d.t === 'state') h.state(d.s); });
+      var lost = function () { if (!dead && c === conn) { h.status('waiting'); retry(3000); } };
+      c.on('close', lost); c.on('error', lost);
+    }
+    function onVisible() { if (document.visibilityState === 'visible' && !dead && !(conn && conn.open)) connect(); }
+    document.addEventListener('visibilitychange', onVisible);
+    connect();
+    return {
+      stop: function () {
+        dead = true; clearTimeout(timer); clearTimeout(guard);
+        document.removeEventListener('visibilitychange', onVisible);
+        if (peer) { try { peer.destroy(); } catch (e) { /* ignore */ } }
+      }
+    };
+  }
+
+  /* Host lifecycle: on whenever a season is open on the device that owns it */
+  function startHosting() {
+    if (spectating || !state) return;
+    if (live.code === state.code && live.t) return;
+    stopHosting();
+    live.code = state.code; live.status = 'connecting'; live.viewers = 0;
+    var h = {
+      snapshot: function () { return { t: 'state', s: state }; },
+      status: function (st, n) { live.status = st; live.viewers = n || 0; paintLive(); }
+    };
+    live.t = LOCAL ? localHost(live.code, h) : peerHost(live.code, h);
+  }
+  function stopHosting() {
+    if (live.t) live.t.stop();
+    live.t = null; live.code = null; live.status = 'off'; live.viewers = 0;
+  }
+  function broadcast() { if (live.t && state && live.code === state.code) live.t.send({ t: 'state', s: state }); }
+
+  /* Data from the network is untrusted: accept only a well-formed season */
+  function cleanSeason(s) {
+    if (!s || typeof s !== 'object' || !SEASONS[s.season] || !Array.isArray(s.players) || !Array.isArray(s.results)) return null;
+    var n = s.players.length;
+    if (n < 2 || n > 6 || !s.players.every(function (p) { return typeof p === 'string' && p.length <= 40; })) return null;
+    if (s.results.length > SEASONS[s.season].races) return null;
+    var okRes = s.results.every(function (r) {
+      if (!Array.isArray(r) || r.length !== n) return false;
+      return r.slice().sort().every(function (v, i) { return v === i; });
+    });
+    if (!okRes || typeof s.code !== 'string' || !/^[A-Z0-9]{4}$/.test(s.code)) return null;
+    return { v: 1, code: s.code, season: s.season, players: s.players.slice(), results: s.results.map(function (r) { return r.slice(); }),
+      teams: !!s.teams, double: !!s.double, created: +s.created || 0, updated: +s.updated || 0,
+      teamNames: Array.isArray(s.teamNames) ? s.teamNames.filter(function (t) { return typeof t === 'string'; }).slice(0, 3) : [] };
+  }
+
+  function startWatching(code) {
+    stopHosting(); stopWatching();
+    spectating = true; state = null; order = [];
+    watch.code = code; watch.status = 'connecting'; watch.got = false;
+    try { history.replaceState(null, '', location.pathname + '?ver=' + code + (LOCAL ? '&transporte=local' : '')); } catch (e) { /* ignore */ }
+    renderWatchWait();
+    var h = {
+      status: function (st) { watch.status = st; paintWatch(); },
+      state: function (raw) {
+        var s = cleanSeason(raw); if (!s || s.code !== watch.code) return;
+        var prev = state, first = !watch.got;
+        if (!first && prev && JSON.stringify(prev.results) === JSON.stringify(s.results) && prev.players.join('|') === s.players.join('|')) return;
+        state = s; watch.got = true;
+        var g = s.results.length - 1, total = races(s).length;
+        // A new race result arrived while watching: play the same overlays as on the host
+        if (!first && prev && prev.players.join('|') === s.players.join('|') && s.results.length === prev.results.length + 1) {
+          if (s.results.length >= total) { playRace2(s, g, function () { if (state === s) { render(true); window.scrollTo(0, 0); } }); }
+          else { render(); playRace(s, g); }
+          say(s.players[s.results[g][0]] + ' gana la carrera de ' + GPS[g] + '.');
+        } else render();
+      }
+    };
+    watch.t = LOCAL ? localViewer(code, h) : peerViewer(code, h);
+  }
+  function stopWatching() {
+    if (watch.t) watch.t.stop();
+    watch.t = null; watch.code = null; watch.got = false;
+    spectating = false;
+  }
+
+  var LIVE_TEXT = {
+    connecting: 'Conectando la transmisión…',
+    on: 'En vivo',
+    error: 'Sin conexión a internet: la transmisión se reanuda sola cuando vuelva.',
+    taken: 'Esta temporada ya se está transmitiendo desde otra pestaña o dispositivo.'
+  };
+  /* Update the host's live badge/panel in place (no full re-render) */
+  function paintLive() {
+    var st = live.status, n = live.viewers;
+    var txt = st === 'on' ? (n ? 'En vivo · ' + n + (n === 1 ? ' espectador' : ' espectadores') : 'En vivo · nadie mirando aún') : (LIVE_TEXT[st] || '');
+    app.querySelectorAll('[data-live-status]').forEach(function (el) { el.textContent = txt; });
+    app.querySelectorAll('[data-live-state]').forEach(function (el) { el.setAttribute('data-live-state', st); });
+    app.querySelectorAll('[data-live-count]').forEach(function (el) { el.textContent = st === 'on' && n ? n : ''; });
+  }
+  var WATCH_TEXT = {
+    connecting: 'Conectando…',
+    on: 'En vivo',
+    waiting: 'En pausa: el dispositivo que lleva la temporada no está conectado. Seguimos intentando…',
+    offline: 'Sin conexión. Seguimos intentando…'
+  };
+  function paintWatch() {
+    app.querySelectorAll('[data-watch-status]').forEach(function (el) { el.textContent = WATCH_TEXT[watch.status] || ''; });
+    app.querySelectorAll('[data-live-state]').forEach(function (el) { el.setAttribute('data-live-state', watch.status); });
+  }
+
   /* ---------- helpers ---------- */
   function esc(t) {
     return String(t).replace(/[&<>"']/g, function (c) {
@@ -114,6 +360,7 @@
   function teamOf(i) { return Math.floor(i / 2); }
   function teamName(s, t) { return (s.teamNames && s.teamNames[t]) || TEAMS[t]; }
   function setHash(code) {
+    if (spectating) return;
     try { history.replaceState(null, '', code ? '#' + code : location.pathname + location.search); }
     catch (e) { location.hash = code || ''; }
   }
@@ -173,14 +420,175 @@
     return '';
   }
 
+  /* ---------- evolution charts ----------
+     "Puntos": cumulative points after each race (line chart, starts at 0 before race 1).
+     "Posiciones": standings position after each race (bump chart, 1st on top), same tiebreakers as the table.
+     Drawn as inline SVG at the container's real width (redrawn on resize), with a crosshair tooltip, end-of-line
+     name labels, a legend and a table view, so identity never depends on color alone. */
+  function evolution(s, byTeam) {
+    var teams = byTeam && hasTeams(s), ents = standings(s, teams), pts = {}, rank = {};
+    ents.forEach(function (e) { pts[e.i] = [0]; rank[e.i] = []; });
+    for (var g = 0; g < s.results.length; g++) {
+      var part = Object.assign({}, s, { results: s.results.slice(0, g + 1) });
+      standings(part, teams).forEach(function (r) { pts[r.i].push(r.points); rank[r.i].push(r.rank); });
+    }
+    return { teams: teams, ents: ents, pts: pts, rank: rank, G: s.results.length,
+      color: function (i) { return teams ? TEAM_COLORS[i] : PLAYER_COLORS[i]; } };
+  }
+  function leadSummary(s, ev) {
+    var led = {}, changes = 0, prev = '';
+    for (var g = 0; g < ev.G; g++) {
+      var now = ev.ents.filter(function (e) { return ev.rank[e.i][g] === 1; }).map(function (e) { return e.i; });
+      now.forEach(function (i) { led[i] = (led[i] || 0) + 1; });
+      var key = now.join(',');
+      if (g > 0 && key !== prev) changes++;
+      prev = key;
+    }
+    var parts = ev.ents.filter(function (e) { return led[e.i]; })
+      .sort(function (a, b) { return led[b.i] - led[a.i]; })
+      .map(function (e) { return '<span><i class="ps-dot' + (ev.teams ? ' ps-dot--team' : '') + '" style="--pc:' + ev.color(e.i) + '"></i>' + esc(e.name) + ' <b>' + led[e.i] + '</b></span>'; });
+    return '<p class="ps-lead-sum"><span class="ps-lead-sum__t">Carreras como líder</span>' + parts.join('') +
+      '<span class="ps-lead-sum__n">' + (changes === 0 ? 'Sin cambios de líder' : changes + (changes === 1 ? ' cambio de líder' : ' cambios de líder')) + '</span></p>';
+  }
+  function chartCard(s) {
+    if (!s.results.length) return '';
+    var teamsOk = hasTeams(s), ev = evolution(s, chart.teams);
+    var tab = function (key, label) { return '<button type="button" class="ps-tab" data-chart-view="' + key + '" aria-pressed="' + (chart.view === key) + '">' + label + '</button>'; };
+    var who = teamsOk
+      ? '<div class="ps-tabs ps-tabs--small" role="group" aria-label="Mostrar">' +
+          '<button type="button" class="ps-tab" data-chart-teams="1" aria-pressed="' + chart.teams + '">Escuderías</button>' +
+          '<button type="button" class="ps-tab" data-chart-teams="0" aria-pressed="' + !chart.teams + '">Pilotos</button></div>'
+      : '';
+    var legend = '<ul class="ps-legend">' + ev.ents.map(function (e) {
+      return '<li><i class="ps-dot' + (ev.teams ? ' ps-dot--team' : '') + '" style="--pc:' + ev.color(e.i) + '"></i>' + esc(e.name) + '</li>';
+    }).join('') + '</ul>';
+    var head = '<th scope="col">' + (ev.teams ? 'Escudería' : 'Piloto') + '</th>' + races(s).slice(0, ev.G).map(function (gp, g) {
+      return '<th scope="col" title="' + gp + '">' + (g + 1) + '</th>';
+    }).join('');
+    var body = ev.ents.map(function (e) {
+      return '<tr><th scope="row">' + esc(e.name) + '</th>' + ev.pts[e.i].slice(1).map(function (v, g) {
+        return '<td>' + v + ' <small>' + ord(ev.rank[e.i][g]) + '</small></td>';
+      }).join('') + '</tr>';
+    }).join('');
+    return '<div class="ps-card ps-evo">' +
+      '<div class="ps-evo__head"><h2 class="ps-h3">Evolución de la temporada</h2>' +
+        '<div class="ps-tabs" role="group" aria-label="Gráfico">' + tab('points', 'Puntos') + tab('rank', 'Posiciones') + '</div>' + who + '</div>' +
+      leadSummary(s, ev) + legend +
+      '<div class="ps-chart" data-chart></div>' +
+      '<details class="ps-evo__table"><summary>Ver datos en tabla</summary><div class="ps-scroll"><table><thead><tr>' + head + '</tr></thead><tbody>' + body + '</tbody></table></div></details>' +
+    '</div>';
+  }
+
+  function drawChart() {
+    var box = app.querySelector('[data-chart]'); if (!box || !state || !state.results.length) return;
+    var s = state, ev = evolution(s, chart.teams), byRank = chart.view === 'rank', n = ev.ents.length;
+    var W = Math.max(280, box.clientWidth), narrow = W < 480;
+    var H = byRank ? Math.max(170, 40 + n * (narrow ? 30 : 36)) : (narrow ? 220 : 280);
+    var maxLabel = narrow ? 9 : 14;
+    var short = function (t) { return t.length > maxLabel ? t.slice(0, maxLabel - 1) + '…' : t; };
+    var M = { l: byRank ? 30 : 34, r: narrow ? 84 : 120, t: 14, b: 30 };
+    // Points chart starts at "race 0" (everyone on 0); the bump chart starts at race 1
+    var x0 = byRank ? 1 : 0, cols = byRank ? ev.G : ev.G + 1;
+    var pw = W - M.l - M.r, ph = H - M.t - M.b;
+    var step = cols > 1 ? pw / (cols - 1) : 0;
+    var X = function (k) { return M.l + (cols > 1 ? (k - x0) * step : pw / 2); };
+    var maxPts = 0;
+    ev.ents.forEach(function (e) { maxPts = Math.max(maxPts, ev.pts[e.i][ev.G]); });
+    var tickStep = [1, 2, 5, 10, 20, 25, 50, 100].filter(function (t) { return maxPts / t <= 5; })[0] || 100;
+    var yMax = Math.max(tickStep, Math.ceil(maxPts / tickStep) * tickStep);
+    var maxRank = n;
+    var Y = byRank
+      ? function (r) { return M.t + (maxRank > 1 ? (r - 1) * ph / (maxRank - 1) : ph / 2); }
+      : function (v) { return M.t + ph - v / yMax * ph; };
+    var val = function (e, k) { return byRank ? ev.rank[e.i][k - 1] : ev.pts[e.i][k]; };
+    var svg = '';
+    // recessive grid + axis labels
+    if (byRank) {
+      for (var r = 1; r <= maxRank; r++) svg += '<line class="ps-ch__grid" x1="' + M.l + '" x2="' + (W - M.r) + '" y1="' + Y(r) + '" y2="' + Y(r) + '"/><text class="ps-ch__axis" x="' + (M.l - 10) + '" y="' + Y(r) + '" text-anchor="end" dy="0.35em">' + r + '.º</text>';
+    } else {
+      for (var v = 0; v <= yMax; v += tickStep) svg += '<line class="ps-ch__grid" x1="' + M.l + '" x2="' + (W - M.r) + '" y1="' + Y(v) + '" y2="' + Y(v) + '"/><text class="ps-ch__axis" x="' + (M.l - 8) + '" y="' + Y(v) + '" text-anchor="end" dy="0.35em">' + v + '</text>';
+    }
+    var every = step && step < 22 ? Math.ceil(22 / step) : 1;
+    for (var k = x0; k <= ev.G; k++) {
+      if (k === 0) { svg += '<text class="ps-ch__axis" x="' + X(0) + '" y="' + (H - 8) + '" text-anchor="middle">Inicio</text>'; continue; }
+      if ((k - 1) % every && k !== ev.G) continue;
+      svg += '<text class="ps-ch__axis" x="' + X(k) + '" y="' + (H - 8) + '" text-anchor="middle">' + k + '</text>';
+    }
+    svg += '<line class="ps-ch__cross" data-cross x1="0" x2="0" y1="' + M.t + '" y2="' + (M.t + ph) + '" visibility="hidden"/>';
+    // lines (leader drawn last so it sits on top), each over a surface-colored ring so crossings stay readable
+    var drawOrder = ev.ents.slice().reverse();
+    drawOrder.forEach(function (e) {
+      var d = '';
+      for (var k = x0; k <= ev.G; k++) d += (k === x0 ? 'M' : 'L') + X(k).toFixed(1) + ' ' + Y(val(e, k)).toFixed(1);
+      svg += '<path class="ps-ch__ring" d="' + d + '"/><path class="ps-ch__line" d="' + d + '" style="--pc:' + ev.color(e.i) + '"/>';
+    });
+    drawOrder.forEach(function (e) {
+      var dots = '';
+      for (var k = Math.max(x0, 1); k <= ev.G; k++) {
+        if (cols > 12 && k !== ev.G) continue;
+        dots += '<circle class="ps-ch__dot" cx="' + X(k).toFixed(1) + '" cy="' + Y(val(e, k)).toFixed(1) + '" r="4" style="--pc:' + ev.color(e.i) + '"/>';
+      }
+      svg += dots;
+    });
+    // end labels: colored dot at the point, name in text ink, nudged apart so they never overlap
+    var labels = ev.ents.map(function (e) { return { e: e, y: Y(val(e, ev.G)) }; }).sort(function (a, b) { return a.y - b.y; });
+    var gap = 15;
+    for (var i = 1; i < labels.length; i++) if (labels[i].y - labels[i - 1].y < gap) labels[i].y = labels[i - 1].y + gap;
+    var over = labels.length ? labels[labels.length - 1].y - (H - M.b + 4) : 0;
+    if (over > 0) labels.forEach(function (l) { l.y -= over; });
+    labels.forEach(function (l) {
+      var tag = byRank ? '' : ' ' + ev.pts[l.e.i][ev.G];
+      svg += '<text class="ps-ch__label" x="' + (X(ev.G) + 10) + '" y="' + l.y.toFixed(1) + '" dy="0.35em">' + esc(short(l.e.name)) + '<tspan class="ps-ch__val">' + tag + '</tspan></text>';
+    });
+    svg += '<rect class="ps-ch__hit" x="' + (M.l - 12) + '" y="0" width="' + (pw + 24) + '" height="' + H + '"/>';
+    box.innerHTML = '<svg class="ps-ch" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" tabindex="0" role="img" aria-label="' + (byRank ? 'Posición' : 'Puntos acumulados') + ' de cada ' + (ev.teams ? 'escudería' : 'piloto') + ' después de cada carrera. Usa las flechas para recorrer las carreras; los datos también están en la tabla de abajo.">' + svg + '</svg><div class="ps-tip" hidden></div>';
+
+    var svgEl = box.querySelector('svg'), tip = box.querySelector('.ps-tip'), cross = box.querySelector('[data-cross]'), cur = null;
+    function show(k) {
+      k = Math.max(Math.max(x0, 1), Math.min(ev.G, k)); cur = k;
+      cross.setAttribute('x1', X(k)); cross.setAttribute('x2', X(k)); cross.setAttribute('visibility', 'visible');
+      var rows = ev.ents.map(function (e) { return { e: e, rank: ev.rank[e.i][k - 1], pts: ev.pts[e.i][k], gain: ev.pts[e.i][k] - ev.pts[e.i][k - 1] }; })
+        .sort(function (a, b) { return a.rank - b.rank; });
+      tip.innerHTML = '<p class="ps-tip__t">' + flag(GPS[k - 1]) + 'Carrera ' + k + ' · ' + GPS[k - 1] + '</p><ol>' + rows.map(function (r) {
+        return '<li><span class="ps-tip__r">' + r.rank + '.º</span><i class="ps-dot' + (ev.teams ? ' ps-dot--team' : '') + '" style="--pc:' + ev.color(r.e.i) + '"></i>' +
+          '<span class="ps-tip__n">' + esc(r.e.name) + '</span><b>' + r.pts + '</b><small>+' + r.gain + '</small></li>';
+      }).join('') + '</ol>';
+      tip.hidden = false;
+      var tw = tip.offsetWidth, left = X(k) + 14;
+      if (left + tw > W) left = X(k) - tw - 14;
+      tip.style.left = Math.max(0, left) + 'px';
+    }
+    function hide() { cur = null; tip.hidden = true; cross.setAttribute('visibility', 'hidden'); }
+    function pick(ev2) {
+      var rect = svgEl.getBoundingClientRect(), x = (ev2.clientX - rect.left) * (W / rect.width);
+      show(cols > 1 ? Math.round((x - M.l) / step) + x0 : ev.G);
+    }
+    svgEl.addEventListener('pointermove', pick);
+    svgEl.addEventListener('pointerdown', pick);
+    svgEl.addEventListener('pointerleave', function (e2) { if (e2.pointerType === 'mouse') hide(); });
+    svgEl.addEventListener('focus', function () { show(ev.G); });
+    svgEl.addEventListener('blur', hide);
+    svgEl.addEventListener('keydown', function (e2) {
+      if (e2.key === 'ArrowLeft' || e2.key === 'ArrowRight') { e2.preventDefault(); show((cur || ev.G) + (e2.key === 'ArrowLeft' ? -1 : 1)); }
+      if (e2.key === 'Escape') hide();
+    });
+  }
+  var resizeT = null, lastW = 0;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeT);
+    resizeT = setTimeout(function () { var b = app.querySelector('[data-chart]'); if (b && b.clientWidth !== lastW) { lastW = b.clientWidth; drawChart(); } }, 150);
+  });
+
   /* ---------- screens ---------- */
   function render(reveal) {
+    if (spectating && !state) return renderWatchWait();
     if (!state) return renderHome();
     if (state.results.length >= races(state).length) return renderFinal(reveal);
     return renderRace();
   }
 
   function renderHome() {
+    stopHosting();
     setHash('');
     var saved = savedSeasons();
     var list = saved.map(function (s) {
@@ -207,13 +615,13 @@
         '<div class="ps-actions"><button type="button" class="p-button" data-act="new">Nueva temporada <span aria-hidden="true">→</span></button></div>' +
       '</section>' +
       '<section class="ps-card ps-resume" aria-labelledby="ps-resume-t">' +
-        '<h2 class="ps-h3" id="ps-resume-t">Retomar una temporada</h2>' +
-        (canStore
-          ? '<form class="ps-code-form" data-form="code"><label class="visually-hidden" for="ps-code-in">Código de temporada</label>' +
-            '<input id="ps-code-in" class="ps-input ps-input--code" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Código, ej. K7Q2">' +
-            '<button class="p-button p-button--cream p-button--small" type="submit">Retomar</button></form>' +
-            '<p class="ps-hint" id="ps-code-msg">El código se guarda en este dispositivo. Si se recarga la página, la temporada sigue donde iba.</p>'
-          : '<p class="ps-hint">Tu navegador no permite guardar datos, así que la temporada se pierde si recargas la página.</p>') +
+        '<h2 class="ps-h3" id="ps-resume-t">Retomar o seguir una temporada</h2>' +
+        '<form class="ps-code-form" data-form="code"><label class="visually-hidden" for="ps-code-in">Código de temporada</label>' +
+          '<input id="ps-code-in" class="ps-input ps-input--code" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Código, ej. K7Q2">' +
+          '<button class="p-button p-button--cream p-button--small" type="submit">Abrir</button></form>' +
+        '<p class="ps-hint" id="ps-code-msg">' + (canStore
+          ? 'Si la temporada se creó en este dispositivo, sigue donde iba. Si se creó en otro, la verás en vivo como espectador.'
+          : 'Tu navegador no permite guardar datos: puedes seguir temporadas en vivo con su código, pero una temporada nueva se pierde si recargas la página.') + '</p>' +
         (saved.length ? '<h3 class="ps-h4">Guardadas en este dispositivo</h3><ul class="ps-saved">' + list + '</ul>' : '') +
       '</section>';
   }
@@ -319,14 +727,38 @@
         '<ol class="ps-history__detail">' + detail + '</ol></details></li>';
     }).reverse().join('');
     return '<ol class="ps-history">' + items + '</ol>' +
-      '<button type="button" class="ps-link-btn" data-act="undo">↶ Corregir la última carrera</button>';
+      (spectating ? '' : '<button type="button" class="ps-link-btn" data-act="undo">↶ Corregir la última carrera</button>');
   }
 
   function topBar(s, done) {
+    if (spectating) {
+      return '<div class="ps-bar">' +
+        '<button type="button" class="ps-back" data-act="home">← Salir</button>' +
+        '<span class="ps-bar__season" style="--sc:' + SEASONS[s.season].color + '">' + seasonTag(s) + (done ? ' · terminada' : '') + '</span>' +
+        '<span class="ps-bar__code">Código <b class="ps-code">' + s.code + '</b></span>' +
+      '</div>' +
+      '<p class="ps-watching" data-live-state="' + watch.status + '"><i class="ps-live-dot" aria-hidden="true"></i>' +
+        '<span><b>Modo espectador</b> · <span data-watch-status>' + (WATCH_TEXT[watch.status] || '') + '</span></span></p>';
+    }
     return '<div class="ps-bar">' +
       '<button type="button" class="ps-back" data-act="home">← Temporadas</button>' +
       '<span class="ps-bar__season" style="--sc:' + SEASONS[s.season].color + '">' + seasonTag(s) + (done ? ' · terminada' : '') + '</span>' +
       '<span class="ps-bar__code">Código <b class="ps-code">' + s.code + '</b></span>' +
+      '<button type="button" class="ps-live-btn" data-act="live" aria-expanded="' + live.open + '" aria-controls="ps-live" data-live-state="' + live.status + '">' +
+        '<i class="ps-live-dot" aria-hidden="true"></i>Espectadores<span class="ps-live-btn__n" data-live-count></span></button>' +
+    '</div>' + livePanel(s);
+  }
+  function livePanel(s) {
+    var url = liveLink(s.code);
+    return '<div class="ps-card ps-live" id="ps-live"' + (live.open ? '' : ' hidden') + '>' +
+      '<p class="ps-live__status" data-live-state="' + live.status + '"><i class="ps-live-dot" aria-hidden="true"></i><span data-live-status></span></p>' +
+      '<p class="ps-live__txt">Cualquiera con este enlace o el código <b>' + s.code + '</b> puede seguir la temporada en vivo desde su teléfono: tabla, carreras y gráficos. Solo mira, no puede cambiar nada.</p>' +
+      '<div class="ps-live__link"><label class="visually-hidden" for="ps-live-url">Enlace para espectadores</label>' +
+        '<input id="ps-live-url" class="ps-input" readonly value="' + esc(url) + '">' +
+        '<button type="button" class="p-button p-button--cream p-button--small" data-act="copy">Copiar</button>' +
+        (navigator.share ? '<button type="button" class="p-button p-button--small" data-act="share">Compartir</button>' : '') +
+      '</div>' +
+      '<p class="ps-hint">Mantén esta página abierta en este dispositivo: si se cierra o se apaga la pantalla, los espectadores quedan en pausa y se reconectan solos al volver.</p>' +
     '</div>';
   }
 
@@ -354,19 +786,42 @@
           (isDouble(s, g) ? '<p class="ps-gp__x2"><b>×2</b> Puntos dobles en esta carrera</p>' : '') +
           '<div class="ps-gp__pts">' + pointsStrip(p, true) + '</div>' +
         '</div>' +
-        '<div class="ps-card ps-entry">' +
-          '<p class="ps-entry__prompt">' + prompt + '</p>' +
-          '<div class="ps-racers">' + btns + '</div>' +
-          '<div class="ps-entry__foot">' +
-            '<button type="button" class="ps-link-btn" data-act="clear"' + (order.length ? '' : ' disabled') + '>Borrar orden</button>' +
-            '<button type="button" class="p-button" data-act="save"' + (order.length === n ? '' : ' disabled') + '>Guardar resultado</button>' +
-          '</div>' +
-        '</div>' +
+        (spectating
+          ? '<div class="ps-card ps-await"><span class="ps-await__flag" aria-hidden="true"></span><p>Carrera en curso… El resultado aparece aquí apenas se guarde.</p></div>'
+          : '<div class="ps-card ps-entry">' +
+              '<p class="ps-entry__prompt">' + prompt + '</p>' +
+              '<div class="ps-racers">' + btns + '</div>' +
+              '<div class="ps-entry__foot">' +
+                '<button type="button" class="ps-link-btn" data-act="clear"' + (order.length ? '' : ' disabled') + '>Borrar orden</button>' +
+                '<button type="button" class="p-button" data-act="save"' + (order.length === n ? '' : ' disabled') + '>Guardar resultado</button>' +
+              '</div>' +
+            '</div>') +
         '<div class="ps-cols">' +
           '<div class="ps-card">' + standingsBlock(s, false) + '</div>' +
           '<div class="ps-card"><h2 class="ps-h3">Carreras</h2>' + historyList(s) + '</div>' +
         '</div>' +
+        chartCard(s) +
       '</section>';
+    afterRender();
+  }
+  /* Common work after a season screen is drawn: charts and the live badge */
+  function afterRender() {
+    drawChart();
+    var b = app.querySelector('[data-chart]'); lastW = b ? b.clientWidth : 0;
+    if (spectating) paintWatch(); else { startHosting(); paintLive(); }
+  }
+  function renderWatchWait() {
+    var code = watch.code;
+    app.innerHTML =
+      '<section class="ps-hero ps-wait">' +
+        '<img class="ps-hero__icon" src="../../img/icono-trofeo.svg" width="512" height="512" alt="">' +
+        '<p class="p-eyebrow">Modo espectador</p>' +
+        '<h1 class="p-h2 p-h1">Temporada <span class="ps-code">' + esc(code) + '</span></h1>' +
+        '<p class="ps-watching" data-live-state="' + watch.status + '"><i class="ps-live-dot" aria-hidden="true"></i><span data-watch-status>' + (WATCH_TEXT[watch.status] || '') + '</span></p>' +
+        '<p class="ps-lead">Si tarda, pídele a quien creó la temporada que tenga abierta la página de Modo Temporada en su dispositivo. Esta página se conecta sola apenas esté disponible.</p>' +
+        '<div class="ps-actions"><button type="button" class="p-button p-button--cream" data-act="home">← Volver</button></div>' +
+      '</section>';
+    paintWatch();
   }
 
   function renderFinal(reveal) {
@@ -396,12 +851,15 @@
           '<div class="ps-card">' + standingsBlock(s, true) + '</div>' +
           '<div class="ps-card"><h2 class="ps-h3">Carreras</h2>' + historyList(s) + '</div>' +
         '</div>' +
+        chartCard(s) +
         '<div class="ps-actions ps-actions--center">' +
           '<button type="button" class="p-button p-button--cream" data-act="replay">↻ Ver el podio otra vez</button>' +
+          (spectating ? '' :
           '<button type="button" class="p-button" data-act="rematch">Otra temporada con los mismos pilotos</button>' +
-          '<button type="button" class="p-button p-button--cream" data-act="new">Nueva temporada</button>' +
+          '<button type="button" class="p-button p-button--cream" data-act="new">Nueva temporada</button>') +
         '</div>' +
       '</section>';
+    afterRender();
     var winnerText = champs.map(function (r) { return r.name; }).join(' y ') + ' gana la temporada.';
     if (reveal) revealPodium(winnerText); else say(winnerText);
   }
@@ -575,7 +1033,30 @@
     var t = e.target.closest('button'); if (!t || t.disabled) return;
     var act = t.getAttribute('data-act');
     if (act === 'new') { state = null; renderSetup(); window.scrollTo(0, 0); return; }
-    if (act === 'home') { clearFx(); state = null; order = []; renderHome(); window.scrollTo(0, 0); return; }
+    if (act === 'home') {
+      clearFx();
+      if (spectating) { stopWatching(); try { history.replaceState(null, '', location.pathname); } catch (e2) { /* ignore */ } }
+      state = null; order = []; renderHome(); window.scrollTo(0, 0); return;
+    }
+    if (act === 'live') {
+      live.open = !live.open;
+      var panel = app.querySelector('#ps-live'); if (panel) panel.hidden = !live.open;
+      t.setAttribute('aria-expanded', live.open);
+      return;
+    }
+    if (act === 'copy') {
+      var inp = app.querySelector('#ps-live-url'), done = function () { t.textContent = '¡Copiado!'; setTimeout(function () { t.textContent = 'Copiar'; }, 1800); };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(inp.value).then(done, function () { inp.select(); });
+      else { inp.select(); try { document.execCommand('copy'); done(); } catch (e3) { /* user can copy by hand */ } }
+      return;
+    }
+    if (act === 'share') {
+      navigator.share({ title: 'Temporada de PINTO', text: 'Sigue nuestra temporada de PINTO en vivo (código ' + state.code + ')', url: liveLink(state.code) }).catch(function () { /* cancelled */ });
+      return;
+    }
+    if (t.hasAttribute('data-chart-view')) { chart.view = t.getAttribute('data-chart-view'); refreshChart(); return; }
+    if (t.hasAttribute('data-chart-teams')) { chart.teams = t.getAttribute('data-chart-teams') === '1'; refreshChart(); return; }
+    if (spectating) return;
     if (t.hasAttribute('data-open')) { open(t.getAttribute('data-open')); return; }
     if (t.hasAttribute('data-del')) {
       var c = t.getAttribute('data-del');
@@ -664,16 +1145,31 @@
     }
   });
 
+  /* Swap only the evolution card (keeps scroll position and the rest of the screen) */
+  function refreshChart() {
+    var old = app.querySelector('.ps-evo'); if (!old || !state) return;
+    var tmp = document.createElement('div'); tmp.innerHTML = chartCard(state);
+    var wasOpen = old.querySelector('details') && old.querySelector('details').open;
+    old.replaceWith(tmp.firstChild);
+    if (wasOpen) app.querySelector('.ps-evo details').open = true;
+    drawChart();
+  }
+
   app.addEventListener('submit', function (e) {
     e.preventDefault();
     var input = document.getElementById('ps-code-in'), msg = document.getElementById('ps-code-msg');
-    if (!open(input.value)) {
-      msg.textContent = 'No encontramos la temporada ' + (input.value || '') + ' en este dispositivo. Revisa el código.';
-      msg.classList.add('is-error'); input.focus();
-    }
+    var code = (input.value || '').toUpperCase();
+    if (open(code)) return;
+    if (/^[A-Z0-9]{4}$/.test(code)) { startWatching(code); window.scrollTo(0, 0); return; }
+    msg.textContent = 'El código tiene 4 letras o números, por ejemplo K7Q2.';
+    msg.classList.add('is-error'); input.focus();
   });
 
-  /* Open the season in the URL (#K7Q2) after a reload, otherwise the home screen */
+  /* ?ver=CODE = live spectator view; #CODE = reopen a season saved on this device; otherwise the home screen */
+  var watchCode = (params.get('ver') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
   var fromHash = (location.hash || '').replace('#', '');
-  if (!(fromHash && open(fromHash))) renderHome();
+  // (in ?transporte=local test mode every tab shares storage, so always watch)
+  if (watchCode.length === 4 && (LOCAL || !load(watchCode))) startWatching(watchCode);
+  else if (watchCode.length === 4) { try { history.replaceState(null, '', location.pathname); } catch (e) { /* ignore */ } open(watchCode); }
+  else if (!(fromHash && open(fromHash))) renderHome();
 })();
