@@ -128,7 +128,8 @@ comments just to translate them — only translate what you are already touching
    buttons via inline script, hidden when nothing overflows). Cards: `.h-lab__item` with logo + name + type line
    (`.h-lab__type`), or `.h-lab__item--locked`. First card: PINTO (logo on the PINTO rhombus background, red
    "Próximamente" badge, no hover effect on the logo, no extra text) linking to `taller/pinto/`. Other cards: (striped dark art, corner lock, name "???"). Keep cards minimal:
-   name and game type only — no project numbers or development stages. To add a game, copy an item and put its
+   name and game type, plus an optional status tag (`.h-lab__status`, peach pill with a slowly turning gear —
+   Last of the Wilds shows "En desarrollo"); no project numbers. To add a game, copy an item and put its
    logo in `assets/taller/`.
 6. `section#suscribete.h-join` — Sender newsletter form (see below).
 7. `section.h-values` — Imaginar / Crear / Compartir.
@@ -218,8 +219,8 @@ container's real width (`drawChart`, redrawn on resize); colors are the player/t
 
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
-  Current: `styles.css?v=2`, `home.css?v=10` (index, privacidad and taller/pinto),
-  `pinto.css?v=37`, card images `?v=6` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=18`, `pinto-engine.js?v=14`, `demo.js?v=19`, `multi.js?v=5`, `legal.css?v=1`, `pinto-tutorial.css?v=16`, `tutorial-data.js?v=21`, `tutorial.js?v=21`, `pinto-temporada.css?v=12`, `temporada.js?v=12`, PINTO favicons `?v=1`, `menu.js?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, box faces `?v=3`.
+  Current: `styles.css?v=2`, `home.css?v=11` (index, privacidad and taller/pinto),
+  `pinto.css?v=37`, card images `?v=6` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=18`, `pinto-engine.js?v=14`, `demo.js?v=19`, `multi.js?v=5`, `legal.css?v=1`, `pinto-tutorial.css?v=16`, `tutorial-data.js?v=21`, `tutorial.js?v=21`, `pinto-temporada.css?v=12`, `temporada.js?v=12`, PINTO favicons `?v=1`, `menu.js?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, `sello-hecho-en-costa-rica.svg?v=3`, box faces `?v=3`.
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
 - **Sender (newsletter):** universal script in the `<head>` of `index.html`; form is
