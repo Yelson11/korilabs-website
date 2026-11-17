@@ -527,6 +527,26 @@ html { scroll-behavior: smooth; }
 }
 
 .h-lab__name { margin: 0; font-size: 1.2rem; line-height: 1.2; }
+/* Status tag ("En desarrollo") under the game type, in the normal flow so it never covers the art */
+.h-lab__status {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.35rem 0 0;
+  padding: 0.28rem 0.7rem 0.28rem 0.5rem;
+  border: 1px solid rgb(254 228 193 / 0.35);
+  border-radius: 999px;
+  background: rgb(254 228 193 / 0.08);
+  color: var(--peach);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.h-lab__status svg { flex: none; width: 0.95rem; height: 0.95rem; animation: h-gear 6s linear infinite; }
+@keyframes h-gear { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .h-lab__status svg { animation: none; } }
 .h-lab__item--locked .h-lab__name { color: rgb(245 240 232 / 0.55); }
 
 .h-lab__stage {
