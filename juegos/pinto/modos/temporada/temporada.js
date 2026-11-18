@@ -174,7 +174,11 @@
         var p = peer = new window.Peer(LIVE_PREFIX + code.toLowerCase());
         p.on('open', function () { tries = 0; report('on'); });
         p.on('connection', function (c) {
-          c.on('open', function () { conns.push(c); try { c.send(h.snapshot()); } catch (e) { /* ignore */ } report('on'); });
+          c.on('open', function () {
+            // drop links that died without a 'close' event, so the viewer count stays right
+            conns = conns.filter(function (x) { return x.open; });
+            conns.push(c); try { c.send(h.snapshot()); } catch (e) { /* ignore */ } report('on');
+          });
           var drop = function () { var i = conns.indexOf(c); if (i > -1) { conns.splice(i, 1); report(peer && peer.open ? 'on' : 'connecting'); } };
           c.on('close', drop); c.on('error', drop);
           c.on('data', function () { /* spectators are read-only */ });
@@ -187,11 +191,20 @@
         p.on('error', function (err) {
           if (dead || p !== peer) return;
           var type = err && err.type;
-          if (type === 'peer-unavailable') return;
           // After a reload the old id can stay registered for a little while: keep trying before giving up
           if (type === 'unavailable-id') { tries++; report(tries > 8 ? 'taken' : 'connecting'); retry(tries > 8 ? 30000 : 5000); return; }
           if (type === 'browser-incompatible') { report('error'); return; }
-          report('error'); retry(6000);
+          // Lost the broker (signaling) only: reconnect without destroying the peer, so spectators already
+          // connected keep their direct link.
+          if (type === 'network' || type === 'disconnected' || type === 'socket-error' || type === 'socket-closed') {
+            report('connecting');
+            setTimeout(function () { if (!dead && p === peer && !p.destroyed && p.disconnected) p.reconnect(); }, 2000);
+            return;
+          }
+          if (type === 'server-error' || type === 'ssl-unavailable') { report('error'); retry(6000); return; }
+          // Anything else ('webrtc', 'peer-unavailable', 'negotiation-failed'…) belongs to ONE spectator's link
+          // (often a phone on mobile data). Before Nov 2026 this restarted the whole broadcast and dropped
+          // every spectator; now only that link is lost and the spectator retries on its own.
         });
       });
     }
@@ -254,7 +267,8 @@
       if (conn) { try { conn.close(); } catch (e) { /* ignore */ } }
       var c = conn = peer.connect(LIVE_PREFIX + code.toLowerCase(), { reliable: true });
       clearTimeout(guard);
-      guard = setTimeout(function () { if (!dead && c === conn && !c.open) { h.status('waiting'); retry(100); } }, 10000);
+      // Phones on mobile data may need a relay (TURN), which is slower: give the link 20 s before trying again
+      guard = setTimeout(function () { if (!dead && c === conn && !c.open) { h.status('waiting'); retry(100); } }, 20000);
       c.on('open', function () { clearTimeout(guard); h.status('on'); });
       c.on('data', function (d) { if (d && d.t === 'state') h.state(d.s); });
       var lost = function () { if (!dead && c === conn) { h.status('waiting'); retry(3000); } };

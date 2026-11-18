@@ -196,7 +196,7 @@ same library the disabled `demo/multijugador/` used; peer id `korilabs-pinto-tem
 isn't saved on this device into "Retomar o seguir una temporada") opens a read-only live view: no result entry, no undo, no
 rematch, nothing saved locally; it plays the same race/podium overlays when a result arrives and keeps reconnecting while the
 creator's page is closed or asleep ("En pausa"). The creator gets an "Espectadores" pill in the top bar (viewer count) that opens a
-panel with the link (Copiar / Compartir). Data received from peers is validated (`cleanSeason`). `?transporte=local` = multi-tab
+panel with the link (Copiar / Compartir). Data received from peers is validated (`cleanSeason`). Host error handling (Nov 2026 fix): only broker/server errors reconnect or restart the host peer; per-spectator errors (`webrtc`, `peer-unavailable`…) are ignored so one failing phone can't drop everyone; viewers wait 20 s for a link to open before retrying. `?transporte=local` = multi-tab
 test mode (BroadcastChannel; tabs always watch with `?ver=`). **Evolution charts** (`.ps-evo`, after standings + races on the race,
 final and spectator screens, from the first result): "Puntos" (cumulative points line chart from "Inicio") and "Posiciones" (bump chart
 of the standings after each race, same tiebreakers), Escuderías/Pilotos switch in Modo escudería, "Carreras como líder" summary,
