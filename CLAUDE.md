@@ -131,7 +131,7 @@ comments just to translate them — only translate what you are already touching
    name and game type, plus an optional status tag (`.h-lab__status`, peach pill with a slowly turning gear —
    Last of the Wilds shows "En desarrollo"); no project numbers. To add a game, copy an item and put its
    logo in `assets/taller/`.
-6. `section#contacto.h-contact` — "Contacto" (Nov 2026, replaced the Sender newsletter form): forest card, "Hablemos de juegos." + two tiles (Correo → mailto:info@korilabscr.com, Instagram). The "Taller" note button "Escríbenos" → `#contacto`.
+6. `section#contacto.h-contact` — "Contacto" (Nov 2026, replaced the Sender newsletter form): forest card, "Hablemos de juegos." + three tiles (Correo → mailto:info@korilabscr.com, WhatsApp → wa.me/50670206822 (+506 7020 6822, generic chat icon, not the WhatsApp logo), Instagram). The "Taller" note button "Escríbenos" → `#contacto`.
 7. `section.h-values` — Imaginar / Crear / Compartir.
 8. `footer.site-footer.h-footer` — includes link to `/privacidad/`.
 9. Inline `<script>` at the end: workshop carousel arrows.
