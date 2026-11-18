@@ -222,7 +222,7 @@ container's real width (`drawChart`, redrawn on resize); colors are the player/t
 
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
-  Current: `styles.css?v=2`, `home.css?v=14` (index, privacidad and taller/pinto),
+  Current: `styles.css?v=2`, `home.css?v=15` (index, privacidad and taller/pinto),
   `pinto.css?v=38`, card images `?v=7` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=18`, `pinto-engine.js?v=14`, `demo.js?v=21`, `multi.js?v=5`, `legal.css?v=1`, `pinto-tutorial.css?v=16`, `tutorial-data.js?v=21`, `tutorial.js?v=23`, `pinto-temporada.css?v=13`, `temporada.js?v=13`, PINTO favicons `?v=1`, `menu.js?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, `sello-hecho-en-costa-rica.svg?v=3`, box faces `?v=3` (caja-reverso `?v=4`, re-cut from the owner's Pinto_caja_ARTE.svg: back panel x 1282, y 430, 757×1057 at 1 unit = 1 px).
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
