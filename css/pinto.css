@@ -136,8 +136,9 @@
 .is-open .p-menu-btn__bars::before { transform: translateY(6px) rotate(45deg); }
 .is-open .p-menu-btn__bars::after { transform: translateY(-6px) rotate(-45deg); }
 
-.p-footer-link { color: inherit; text-decoration: underline; text-decoration-color: var(--red); text-underline-offset: 3px; }
-.p-footer-link:hover { color: var(--cream); }
+/* No red underline (it read like a spell-check mark): bold cream text, underline only on hover */
+.p-footer-link { color: var(--cream); font-weight: 700; text-decoration: none; }
+.p-footer-link:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
 .p-footer-link:focus-visible { outline: 3px solid var(--red); outline-offset: 3px; border-radius: 2px; }
 
 @media (min-width: 56.01rem) {
