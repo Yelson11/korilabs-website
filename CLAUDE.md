@@ -168,20 +168,23 @@ The score sheet gift is never linked directly (it was only sent to newsletter su
 ### PINTO season scorekeeper — `juegos/pinto/modos/temporada/` (CSS: `styles.css` + `pinto.css` + `pinto-temporada.css`)
 Single-page vanilla JS app (`temporada.js`, renders into `#ps-app`). Hero: trophy icon + title (no "PINTO" eyebrow — the header already carries the PINTO logo), "Modo Temporada" (not "Campeonato de Grandes Premios"). Visitor text says **"carrera"**, never "Gran Premio"/"GP" (owner's choice); points per position are shown as tiles (`.ps-pts`) in setup and on each race screen. Each country has a simplified inline SVG flag (`FLAGS` in `temporada.js`, 30×20; no emoji flags, they don't render on Windows) on the race screen, in the race history and in the saved-seasons list. Screens: home (new season, resume by code, list of
 seasons saved on this device) → setup (2–6 players, Modo escudería toggle right under the player count, names — required and unique, compared
-ignoring case/accents/extra spaces; inline error + aria-invalid —, Temporada Corta 5 / Regular 10 /
-Completa 15 carreras — owner's names, not the rulebook's; no country list on the cards — then Puntos dobles) → one screen per Gran
+ignoring case/accents/extra spaces; inline error + aria-invalid —, Temporada Flash 3 / Corta 5 / Regular 8 / Larga 12 / Completa 15 carreras — owner's names, not the rulebook's; no country list on the cards — then "Carreras especiales": Normal / Puntos dobles / Puntos extra) → one screen per Gran
 Premio (tap players in finishing order; the last one is filled in automatically; standings + GP history; "Corregir el último
-Gran Premio") → final podium. Data comes from the official rules ("Campeonato de Grandes Premios" / "Puntuación"): GP list
-Australia, Estados Unidos, Arabia Saudita, Italia, Brasil, España, Países Bajos, Singapur, Canadá, Bélgica, China, Japón,
-México, Inglaterra, Qatar (longer seasons include the shorter ones, same order); points 2 players 3/1 · 3 → 5/3/1 ·
+Gran Premio") → final podium. Race pool (Nov 2026, owner's list): Australia, Estados Unidos, Arabia Saudita, Italia, Brasil, España, Mónaco, Singapur,
+Canadá, Bélgica, China, Japón, México, Gran Bretaña, Qatar — shown by host city (`CITY`: Melbourne, Las Vegas, Yeda, Monza,
+São Paulo, Madrid, Montecarlo, Singapur, Montreal, Spa, Shanghái, Suzuka, Ciudad de México, Silverstone, Lusail), country under
+the city on the race screen. Each new season draws its races at random (`drawRaces`) and stores the country keys in `s.gps`.
+Seasons saved before Nov 2026 have no `s.gps`: they keep `LEGACY_GPS` (old fixed order with Países Bajos/Inglaterra), the old
+10-race `clasica` season (hidden in setup) and special races every 5th race — don't break them. Points (official rules) 2 players 3/1 · 3 → 5/3/1 ·
 4 → 5/3/1/0 · 5 → 7/4/3/2/1 · 6 → 7/4/3/2/1/0. End-of-season ties (owner's rule): most 1st places, then most 2nd, 3rd…,
 then best result in the last GP; still tied = shared place. Optional house rules picked in setup (owner's
 rules, not in the rulebook): **Modo escudería** (only 4 or 6 players; everyone races alone but players 1+2, 3+4, 5+6
 form a team that adds up points; teams default to "Escudería Pura Sangre" (red), "Silver Team" (silver) and "Nitro Racing"
 (blue) — a wink at real F1 teams without their names or brands, keep it that way. Team names are fixed (with 4 players
 only the first two); players just type their names into a team; standings show teams + drivers; team tiebreak uses the members'
-positions and the best member result in the last GP) and **Puntos dobles** (GP 5, 10 and 15 score double; tiebreak
-position counts are not doubled). **Animations** (skipped entirely with prefers-reduced-motion; every overlay `.ps-fx` can be skipped by tap, Esc or
+positions and the best member result in the last GP) and **Carreras especiales** (`SEASONS[k].special`: Flash 3 · Corta 5 · Regular 4, 8 · Larga 4, 8, 12 · Completa 3, 6, 9, 12, 15),
+either **Puntos dobles** (`s.double`, everyone ×2) or **Puntos extra** (`s.extra`, the winner adds `BONUS` = 5); tiebreak
+position counts are not affected. **Animations** (skipped entirely with prefers-reduced-motion; every overlay `.ps-fx` can be skipped by tap, Esc or
 "Saltar"): season start = five red start lights then "¡Comienza la temporada!" + first race (owner dislikes "¡Arrancan!"); after
 each race = winner of that race, then the next race with a big static flag (no waving); after the last race = winner,
 then straight to the podium reveal (no "bandera a cuadros" step)
@@ -193,7 +196,7 @@ same library the disabled `demo/multijugador/` used; peer id `korilabs-pinto-tem
 isn't saved on this device into "Retomar o seguir una temporada") opens a read-only live view: no result entry, no undo, no
 rematch, nothing saved locally; it plays the same race/podium overlays when a result arrives and keeps reconnecting while the
 creator's page is closed or asleep ("En pausa"). The creator gets an "Espectadores" pill in the top bar (viewer count) that opens a
-panel with the link (Copiar / Compartir). Data received from peers is validated (`cleanSeason`). `?transporte=local` = multi-tab
+panel with the link (Copiar / Compartir). Data received from peers is validated (`cleanSeason`). Host error handling (Nov 2026 fix): only broker/server errors reconnect or restart the host peer; per-spectator errors (`webrtc`, `peer-unavailable`…) are ignored so one failing phone can't drop everyone; viewers wait 20 s for a link to open before retrying. `?transporte=local` = multi-tab
 test mode (BroadcastChannel; tabs always watch with `?ver=`). **Evolution charts** (`.ps-evo`, after standings + races on the race,
 final and spectator screens, from the first result): "Puntos" (cumulative points line chart from "Inicio") and "Posiciones" (bump chart
 of the standings after each race, same tiebreakers), Escuderías/Pilotos switch in Modo escudería, "Carreras como líder" summary,
@@ -220,7 +223,7 @@ container's real width (`drawChart`, redrawn on resize); colors are the player/t
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
   Current: `styles.css?v=2`, `home.css?v=12` (index, privacidad and taller/pinto),
-  `pinto.css?v=38`, card images `?v=7` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=18`, `pinto-engine.js?v=14`, `demo.js?v=21`, `multi.js?v=5`, `legal.css?v=1`, `pinto-tutorial.css?v=16`, `tutorial-data.js?v=21`, `tutorial.js?v=23`, `pinto-temporada.css?v=12`, `temporada.js?v=12`, PINTO favicons `?v=1`, `menu.js?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, `sello-hecho-en-costa-rica.svg?v=3`, box faces `?v=3` (caja-reverso `?v=4`, re-cut from the owner's Pinto_caja_ARTE.svg: back panel x 1282, y 430, 757×1057 at 1 unit = 1 px).
+  `pinto.css?v=38`, card images `?v=7` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=18`, `pinto-engine.js?v=14`, `demo.js?v=21`, `multi.js?v=5`, `legal.css?v=1`, `pinto-tutorial.css?v=16`, `tutorial-data.js?v=21`, `tutorial.js?v=23`, `pinto-temporada.css?v=13`, `temporada.js?v=13`, PINTO favicons `?v=1`, `menu.js?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, `sello-hecho-en-costa-rica.svg?v=3`, box faces `?v=3` (caja-reverso `?v=4`, re-cut from the owner's Pinto_caja_ARTE.svg: back panel x 1282, y 430, 757×1057 at 1 unit = 1 px).
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
 - **Sender (newsletter):** removed from the site in Nov 2026 (no script, no form). The account and form `dNk3wL` still exist in Sender; the old markup is in git history.

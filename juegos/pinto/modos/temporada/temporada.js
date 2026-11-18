@@ -1,11 +1,13 @@
 /* PINTO · Modo Temporada scorekeeper.
    Rules from the official rulebook ("Campeonato de Grandes Premios" + "Puntuación y reglas del campeonato"):
-   - Seasons: 5, 10 or 15 GP (shown as Corta / Regular / Completa, owner's names); longer seasons include the shorter ones.
+   - Seasons (owner's names, Nov 2026): Flash 3, Corta 5, Regular 8, Larga 12, Completa 15 races. Each new season draws
+     its races at random from the 15-race pool (stored in s.gps); seasons saved earlier have no s.gps and keep LEGACY_GPS.
    - Points per GP by finishing order: 2 players 3/1 · 3–4 players 5/3/1/0 · 5–6 players 7/4/3/2/1/0.
    - Ties at the end (owner's rule): most 1st places, then most 2nd, 3rd…; then best result in the last GP.
    Options (owner's house rules):
    - Modo escudería: with 4 or 6 players everyone races on their own, but pairs (players 1+2, 3+4, 5+6) add up points.
-   - Puntos dobles: GP 5, 10 and 15 are worth double (tiebreak position counts are not doubled).
+   - Carreras especiales (SEASONS[k].special): either Puntos dobles (s.double: everyone scores ×2) or Puntos extra
+     (s.extra: the winner gets +5). Tiebreak position counts are not affected. Older seasons: every 5th race.
    State lives in localStorage under a 4-character season code (same device only, no server).
    Live spectators: while a season is open, this browser also "broadcasts" it through PeerJS (WebRTC, free public
    broker, same library as demo/multijugador/). Anyone opening ?ver=CODE gets a read-only, live view; they never
@@ -13,13 +15,28 @@
 (function () {
   'use strict';
 
-  var GPS = ['Australia', 'Estados Unidos', 'Arabia Saudita', 'Italia', 'Brasil', 'España', 'Países Bajos',
+  /* Race pool: countries (keys for flags and saved seasons) shown by their host city */
+  var GPS = ['Australia', 'Estados Unidos', 'Arabia Saudita', 'Italia', 'Brasil', 'España', 'Mónaco',
+    'Singapur', 'Canadá', 'Bélgica', 'China', 'Japón', 'México', 'Gran Bretaña', 'Qatar'];
+  var CITY = {
+    'Australia': 'Melbourne', 'Estados Unidos': 'Las Vegas', 'Arabia Saudita': 'Yeda', 'Italia': 'Monza',
+    'Brasil': 'São Paulo', 'España': 'Madrid', 'Mónaco': 'Montecarlo', 'Singapur': 'Singapur', 'Canadá': 'Montreal',
+    'Bélgica': 'Spa', 'China': 'Shanghái', 'Japón': 'Suzuka', 'México': 'Ciudad de México', 'Gran Bretaña': 'Silverstone',
+    'Qatar': 'Lusail', 'Países Bajos': 'Zandvoort', 'Inglaterra': 'Silverstone'
+  };
+  /* Fixed order used by seasons saved before Nov 2026 (no s.gps) */
+  var LEGACY_GPS = ['Australia', 'Estados Unidos', 'Arabia Saudita', 'Italia', 'Brasil', 'España', 'Países Bajos',
     'Singapur', 'Canadá', 'Bélgica', 'China', 'Japón', 'México', 'Inglaterra', 'Qatar'];
   var SEASONS = {
-    sprint:   { name: 'Temporada Corta',    races: 5,  color: '#e63c3c' },
-    clasica:  { name: 'Temporada Regular',  races: 10, color: '#22b3c4' },
-    completa: { name: 'Temporada Completa', races: 15, color: '#9b51e0' }
+    flash:    { name: 'Temporada Flash',    races: 3,  special: [3],              color: '#f2c230' },
+    sprint:   { name: 'Temporada Corta',    races: 5,  special: [5],              color: '#e63c3c' },
+    regular:  { name: 'Temporada Regular',  races: 8,  special: [4, 8],           color: '#22b3c4' },
+    larga:    { name: 'Temporada Larga',    races: 12, special: [4, 8, 12],       color: '#3dba6a' },
+    completa: { name: 'Temporada Completa', races: 15, special: [3, 6, 9, 12, 15], color: '#9b51e0' },
+    // old 10-race "Regular", only to reopen seasons saved before Nov 2026 (not offered in setup)
+    clasica:  { name: 'Temporada Regular',  races: 10, special: [5, 10],          color: '#22b3c4', legacy: true }
   };
+  var BONUS = 5;   // Puntos extra: the winner of a special race adds this
   /* Simplified national flags (public-domain designs), 30×20, drawn inline so they look the same on every
      device (emoji flags don't render on Windows). Keyed by the GPS names. */
   var FLAGS = {
@@ -34,6 +51,8 @@
     'Canadá': '<rect width="30" height="20" fill="#fff"/><rect width="7.5" height="20" fill="#d80621"/><rect x="22.5" width="7.5" height="20" fill="#d80621"/><path d="M15 4l1 2 1.4-.6-.5 3.3 1.8-1.7.4 1.1 1.8-.3-.6 1.9.8.4-3.2 2.5.4 1.2-2.6-.4v2.9h-.6v-2.9l-2.6.4.4-1.2-3.2-2.5.8-.4-.6-1.9 1.8.3.4-1.1 1.8 1.7-.5-3.3L14 6z" fill="#d80621"/>',
     'Bélgica': '<rect width="10" height="20" fill="#000"/><rect x="10" width="10" height="20" fill="#fdda24"/><rect x="20" width="10" height="20" fill="#ef3340"/>',
     'China': '<rect width="30" height="20" fill="#de2910"/><g fill="#ffde00"><path d="M5 2.2l.9 2.6h2.8L6.5 6.4l.8 2.6L5 7.4 2.7 9l.8-2.6-2.2-1.6h2.8z"/><circle cx="10" cy="2" r=".7"/><circle cx="12" cy="4" r=".7"/><circle cx="12" cy="7" r=".7"/><circle cx="10" cy="9" r=".7"/></g>',
+    'Mónaco': '<rect width="30" height="10" fill="#ce1126"/><rect y="10" width="30" height="10" fill="#fff"/>',
+    'Gran Bretaña': '<rect width="30" height="20" fill="#012169"/><path d="M0 0l30 20M30 0L0 20" stroke="#fff" stroke-width="4"/><path d="M0 0l30 20M30 0L0 20" stroke="#c8102e" stroke-width="1.4"/><path d="M15 0v20M0 10h30" stroke="#fff" stroke-width="6"/><path d="M15 0v20M0 10h30" stroke="#c8102e" stroke-width="3.4"/>',
     'Japón': '<rect width="30" height="20" fill="#fff"/><circle cx="15" cy="10" r="6" fill="#bc002d"/>',
     'México': '<rect width="10" height="20" fill="#006847"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ce1126"/><circle cx="15" cy="10" r="2.6" fill="#8c5a2b"/><path d="M12.6 11.6c1.4 1.4 3.4 1.4 4.8 0" stroke="#006847" stroke-width=".7" fill="none"/>',
     'Inglaterra': '<rect width="30" height="20" fill="#fff"/><path d="M15 0v20M0 10h30" stroke="#ce1124" stroke-width="4"/>',
@@ -55,7 +74,7 @@
   var announcer = document.getElementById('ps-announce');
   var state = null;          // current season
   var order = [];            // finishing order being entered for the current GP (player indexes)
-  var draft = { count: 4, names: ['', '', '', '', '', ''], season: 'clasica', teams: false, double: false };
+  var draft = { count: 4, names: ['', '', '', '', '', ''], season: 'regular', teams: false, special: '' };
   var chart = { view: 'points', teams: true };   // which evolution chart is showing
   var params = new URLSearchParams(location.search);
   var LOCAL = params.get('transporte') === 'local';
@@ -155,7 +174,11 @@
         var p = peer = new window.Peer(LIVE_PREFIX + code.toLowerCase());
         p.on('open', function () { tries = 0; report('on'); });
         p.on('connection', function (c) {
-          c.on('open', function () { conns.push(c); try { c.send(h.snapshot()); } catch (e) { /* ignore */ } report('on'); });
+          c.on('open', function () {
+            // drop links that died without a 'close' event, so the viewer count stays right
+            conns = conns.filter(function (x) { return x.open; });
+            conns.push(c); try { c.send(h.snapshot()); } catch (e) { /* ignore */ } report('on');
+          });
           var drop = function () { var i = conns.indexOf(c); if (i > -1) { conns.splice(i, 1); report(peer && peer.open ? 'on' : 'connecting'); } };
           c.on('close', drop); c.on('error', drop);
           c.on('data', function () { /* spectators are read-only */ });
@@ -168,11 +191,20 @@
         p.on('error', function (err) {
           if (dead || p !== peer) return;
           var type = err && err.type;
-          if (type === 'peer-unavailable') return;
           // After a reload the old id can stay registered for a little while: keep trying before giving up
           if (type === 'unavailable-id') { tries++; report(tries > 8 ? 'taken' : 'connecting'); retry(tries > 8 ? 30000 : 5000); return; }
           if (type === 'browser-incompatible') { report('error'); return; }
-          report('error'); retry(6000);
+          // Lost the broker (signaling) only: reconnect without destroying the peer, so spectators already
+          // connected keep their direct link.
+          if (type === 'network' || type === 'disconnected' || type === 'socket-error' || type === 'socket-closed') {
+            report('connecting');
+            setTimeout(function () { if (!dead && p === peer && !p.destroyed && p.disconnected) p.reconnect(); }, 2000);
+            return;
+          }
+          if (type === 'server-error' || type === 'ssl-unavailable') { report('error'); retry(6000); return; }
+          // Anything else ('webrtc', 'peer-unavailable', 'negotiation-failed'…) belongs to ONE spectator's link
+          // (often a phone on mobile data). Before Nov 2026 this restarted the whole broadcast and dropped
+          // every spectator; now only that link is lost and the spectator retries on its own.
         });
       });
     }
@@ -235,7 +267,8 @@
       if (conn) { try { conn.close(); } catch (e) { /* ignore */ } }
       var c = conn = peer.connect(LIVE_PREFIX + code.toLowerCase(), { reliable: true });
       clearTimeout(guard);
-      guard = setTimeout(function () { if (!dead && c === conn && !c.open) { h.status('waiting'); retry(100); } }, 10000);
+      // Phones on mobile data may need a relay (TURN), which is slower: give the link 20 s before trying again
+      guard = setTimeout(function () { if (!dead && c === conn && !c.open) { h.status('waiting'); retry(100); } }, 20000);
       c.on('open', function () { clearTimeout(guard); h.status('on'); });
       c.on('data', function (d) { if (d && d.t === 'state') h.state(d.s); });
       var lost = function () { if (!dead && c === conn) { h.status('waiting'); retry(3000); } };
@@ -277,14 +310,21 @@
     var n = s.players.length;
     if (n < 2 || n > 6 || !s.players.every(function (p) { return typeof p === 'string' && p.length <= 40; })) return null;
     if (s.results.length > SEASONS[s.season].races) return null;
+    var gps = null;
+    if (s.gps != null) {
+      if (!Array.isArray(s.gps) || s.gps.length !== SEASONS[s.season].races) return null;
+      if (!s.gps.every(function (c, i) { return GPS.indexOf(c) > -1 && s.gps.indexOf(c) === i; })) return null;
+      gps = s.gps.slice();
+    }
     var okRes = s.results.every(function (r) {
       if (!Array.isArray(r) || r.length !== n) return false;
       return r.slice().sort().every(function (v, i) { return v === i; });
     });
     if (!okRes || typeof s.code !== 'string' || !/^[A-Z0-9]{4}$/.test(s.code)) return null;
     return { v: 1, code: s.code, season: s.season, players: s.players.slice(), results: s.results.map(function (r) { return r.slice(); }),
-      teams: !!s.teams, double: !!s.double, created: +s.created || 0, updated: +s.updated || 0,
-      teamNames: Array.isArray(s.teamNames) ? s.teamNames.filter(function (t) { return typeof t === 'string'; }).slice(0, 3) : [] };
+      teams: !!s.teams, double: !!s.double, extra: !s.double && !!s.extra, created: +s.created || 0, updated: +s.updated || 0,
+      teamNames: Array.isArray(s.teamNames) ? s.teamNames.filter(function (t) { return typeof t === 'string'; }).slice(0, 3) : [],
+      gps: gps || undefined };
   }
 
   function startWatching(code) {
@@ -305,7 +345,7 @@
         if (!first && prev && prev.players.join('|') === s.players.join('|') && s.results.length === prev.results.length + 1) {
           if (s.results.length >= total) { playRace2(s, g, function () { if (state === s) { render(true); window.scrollTo(0, 0); } }); }
           else { render(); playRace(s, g); }
-          say(s.players[s.results[g][0]] + ' gana la carrera de ' + GPS[g] + '.');
+          say(s.players[s.results[g][0]] + ' gana la carrera de ' + gpName(s, g) + '.');
         } else render();
       }
     };
@@ -350,11 +390,31 @@
   }
   function ord(n) { return n + '.º'; }
   function say(t) { announcer.textContent = ''; setTimeout(function () { announcer.textContent = t; }, 30); }
-  function races(s) { return GPS.slice(0, SEASONS[s.season].races); }
-  function isDouble(s, g) { return !!s.double && (g + 1) % 5 === 0; }
+  function gpKey(s, g) { return (s.gps || LEGACY_GPS)[g]; }
+  function gpName(s, g) { var k = gpKey(s, g); return CITY[k] || k || ''; }
+  function gpFlag(s, g, cls) { return flag(gpKey(s, g), cls); }
+  function races(s) {
+    return (s.gps || LEGACY_GPS).slice(0, SEASONS[s.season].races).map(function (k) { return CITY[k] || k; });
+  }
+  function drawRaces(n) {   // n different countries in random order (Fisher–Yates)
+    var a = GPS.slice();
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a.slice(0, n);
+  }
+  function andList(a) { return a.length < 2 ? String(a[0]) : a.slice(0, -1).join(', ') + ' y ' + a[a.length - 1]; }
+  function isSpecial(s, g) {
+    if (!s.double && !s.extra) return false;
+    if (!s.gps) return (g + 1) % 5 === 0;   // seasons saved before Nov 2026
+    return SEASONS[s.season].special.indexOf(g + 1) > -1;
+  }
+  function specialTag(s) { return s.double ? '×2' : '+' + BONUS; }
+  function specialLine(s) { return s.double ? 'Puntos dobles en esta carrera' : 'El ganador suma ' + BONUS + ' puntos extra'; }
   function gpPoints(s, g) {
-    var m = isDouble(s, g) ? 2 : 1;
-    return POINTS[s.players.length].map(function (v) { return v * m; });
+    var p = POINTS[s.players.length].slice();
+    if (!isSpecial(s, g)) return p;
+    if (s.double) return p.map(function (v) { return v * 2; });
+    p[0] += BONUS;
+    return p;
   }
   function hasTeams(s) { return !!s.teams && (s.players.length === 4 || s.players.length === 6); }
   function teamOf(i) { return Math.floor(i / 2); }
@@ -373,7 +433,7 @@
     }).join('') + '</ol>';
   }
   function seasonTag(s) {
-    return SEASONS[s.season].name + (hasTeams(s) ? ' · escuderías' : '') + (s.double ? ' · ×2' : '');
+    return SEASONS[s.season].name + (hasTeams(s) ? ' · escuderías' : '') + (s.double ? ' · ×2' : s.extra ? ' · +' + BONUS : '');
   }
 
   /* Standings with the tiebreakers. Entities are players, or teams (byTeam) in Modo escudería.
@@ -540,7 +600,7 @@
       cross.setAttribute('x1', X(k)); cross.setAttribute('x2', X(k)); cross.setAttribute('visibility', 'visible');
       var rows = ev.ents.map(function (e) { return { e: e, rank: ev.rank[e.i][k - 1], pts: ev.pts[e.i][k], gain: ev.pts[e.i][k] - ev.pts[e.i][k - 1] }; })
         .sort(function (a, b) { return a.rank - b.rank; });
-      tip.innerHTML = '<p class="ps-tip__t">' + flag(GPS[k - 1]) + 'Carrera ' + k + ' · ' + GPS[k - 1] + '</p><ol>' + rows.map(function (r) {
+      tip.innerHTML = '<p class="ps-tip__t">' + gpFlag(s, k - 1) + 'Carrera ' + k + ' · ' + gpName(s, k - 1) + '</p><ol>' + rows.map(function (r) {
         return '<li><span class="ps-tip__r">' + r.rank + '.º</span><i class="ps-dot' + (ev.teams ? ' ps-dot--team' : '') + '" style="--pc:' + ev.color(r.e.i) + '"></i>' +
           '<span class="ps-tip__n">' + esc(r.e.name) + '</span><b>' + r.pts + '</b><small>+' + r.gain + '</small></li>';
       }).join('') + '</ol>';
@@ -591,7 +651,7 @@
           '<span class="ps-saved__info"><b>' + seasonTag(s) + '</b>' +
           '<span>' + s.players.map(esc).join(', ') + '</span>' +
           '<span class="ps-saved__meta">' + (done ? '🏆 Terminada · ganó ' + esc(leader.name)
-            : 'Carrera ' + (s.results.length + 1) + ' de ' + races(s).length + ' · ' + flag(GPS[s.results.length]) + GPS[s.results.length]) + '</span></span>' +
+            : 'Carrera ' + (s.results.length + 1) + ' de ' + races(s).length + ' · ' + gpFlag(s, s.results.length) + gpName(s, s.results.length)) + '</span></span>' +
           '<span class="ps-saved__go" aria-hidden="true">→</span>' +
         '</button>' +
         '<button type="button" class="ps-icon-btn" data-del="' + s.code + '" aria-label="Borrar temporada ' + s.code + '">✕</button>' +
@@ -637,7 +697,7 @@
     } else {
       for (var i = 0; i < count; i++) names += nameInput(i);
     }
-    var seasons = Object.keys(SEASONS).map(function (k) {
+    var seasons = Object.keys(SEASONS).filter(function (k) { return !SEASONS[k].legacy; }).map(function (k) {
       var s = SEASONS[k];
       return '<button type="button" class="ps-season" data-season="' + k + '" aria-pressed="' + (draft.season === k) + '" style="--sc:' + s.color + '">' +
         '<span class="ps-season__name">' + s.name.replace('Temporada ', '') + '</span>' +
@@ -652,8 +712,11 @@
       toggle('teams', 'Modo escudería', teamsOk
         ? 'Cada uno juega sus cartas individualmente, pero los puntos se suman en equipo. Gana la escudería con más puntos.'
         : 'Disponible con 4 o 6 jugadores: se arman parejas que suman sus puntos.', !teamsOk);
-    var options =
-      toggle('double', 'Puntos dobles', 'Las carreras 5, 10 y 15 reparten el doble de puntos.', false);
+    var specials = [['', 'Normal', 'Sin cambios'], ['double', 'Puntos dobles', '×2 para todos'], ['extra', 'Puntos extra', '+' + BONUS + ' al ganador']]
+      .map(function (o) {
+        return '<button type="button" class="ps-season ps-season--opt" data-special="' + o[0] + '" aria-pressed="' + (draft.special === o[0]) + '">' +
+          '<span class="ps-season__name">' + o[1] + '</span><span class="ps-season__n">' + o[2] + '</span></button>';
+      }).join('');
 
     app.innerHTML =
       '<section class="ps-setup">' +
@@ -668,20 +731,27 @@
         '</div>' +
         '<div class="ps-card"><h2 class="ps-h3"><span class="ps-step">2</span>Elige la temporada</h2>' +
           '<div class="ps-seasons" role="group" aria-label="Temporada">' + seasons + '</div>' +
-          '<p class="ps-hint">Cada temporada más larga incluye todas las carreras de la anterior, en el mismo orden.</p>' +
+          '<p class="ps-hint">Las carreras se sortean al azar entre 15 ciudades cada vez que creas una temporada.</p>' +
         '</div>' +
-        '<div class="ps-card"><h2 class="ps-h3"><span class="ps-step">3</span>Reglas extra <small class="ps-opt">opcional</small></h2>' +
-          '<div class="ps-toggles">' + options + '</div>' +
+        '<div class="ps-card"><h2 class="ps-h3"><span class="ps-step">3</span>Carreras especiales <small class="ps-opt">opcional</small></h2>' +
+          '<div class="ps-seasons ps-seasons--opts" role="group" aria-label="Carreras especiales">' + specials + '</div>' +
+          '<p class="ps-hint" id="ps-special-hint">' + specialHint() + '</p>' +
         '</div>' +
         '<div class="ps-actions"><button type="button" class="p-button" data-act="start">¡Arrancar temporada! <span aria-hidden="true">→</span></button></div>' +
       '</section>';
   }
 
+  function specialHint() {
+    if (!draft.special) return 'Todas las carreras reparten los puntos de siempre.';
+    var at = SEASONS[draft.season].special, which = (at.length > 1 ? 'En las carreras ' : 'En la carrera ') + andList(at);
+    return which + (draft.special === 'double' ? ', todos ganan el doble de puntos.' : ', quien gana suma ' + BONUS + ' puntos extra.');
+  }
+
   function progressBar(s) {
     return '<ol class="ps-track" aria-label="Carreras">' + races(s).map(function (gp, i) {
-      var cls = (i < s.results.length ? 'is-done' : (i === s.results.length ? 'is-now' : '')) + (isDouble(s, i) ? ' is-x2' : '');
+      var cls = (i < s.results.length ? 'is-done' : (i === s.results.length ? 'is-now' : '')) + (isSpecial(s, i) ? ' is-x2' : '');
       var winner = i < s.results.length ? s.players[s.results[i][0]] : '';
-      return '<li class="' + cls + '" title="Carrera ' + (i + 1) + ': ' + gp + (isDouble(s, i) ? ' (×2)' : '') + (winner ? ' · ganó ' + esc(winner) : '') + '">' +
+      return '<li class="' + cls + '" title="Carrera ' + (i + 1) + ': ' + gp + (isSpecial(s, i) ? ' (' + specialTag(s) + ')' : '') + (winner ? ' · ganó ' + esc(winner) : '') + '">' +
         '<span class="visually-hidden">Carrera ' + (i + 1) + ' ' + gp + (winner ? ', ganó ' + esc(winner) : '') + '</span></li>';
     }).join('') + '</ol>';
   }
@@ -713,7 +783,7 @@
           (hasTeams(s) ? ' <em>' + esc(teamName(s, teamOf(pi))) + '</em>' : '') + ' <span>+' + p[pos] + '</span></li>';
       }).join('');
       return '<li><details><summary><span class="ps-history__n">' + (g + 1) + '</span>' +
-        '<span class="ps-history__gp">' + flag(GPS[g]) + GPS[g] + (isDouble(s, g) ? ' <b class="ps-x2">×2</b>' : '') + '</span>' +
+        '<span class="ps-history__gp">' + gpFlag(s, g) + gpName(s, g) + (isSpecial(s, g) ? ' <b class="ps-x2">' + specialTag(s) + '</b>' : '') + '</span>' +
         '<span class="ps-history__win">🏁 ' + dot(res[0]) + esc(s.players[res[0]]) + '</span></summary>' +
         '<ol class="ps-history__detail">' + detail + '</ol></details></li>';
     }).reverse().join('');
@@ -773,8 +843,9 @@
         progressBar(s) +
         '<div class="ps-gp">' +
           '<p class="ps-gp__n">Carrera ' + (g + 1) + ' de ' + total + '</p>' +
-          '<h1 class="ps-gp__name">' + flag(GPS[g], 'ps-flag--big') + '<span>' + GPS[g] + '</span></h1>' +
-          (isDouble(s, g) ? '<p class="ps-gp__x2"><b>×2</b> Puntos dobles en esta carrera</p>' : '') +
+          '<h1 class="ps-gp__name">' + gpFlag(s, g, 'ps-flag--big') + '<span>' + gpName(s, g) + '</span></h1>' +
+          (gpName(s, g) !== gpKey(s, g) ? '<p class="ps-gp__country">' + gpKey(s, g) + '</p>' : '') +
+          (isSpecial(s, g) ? '<p class="ps-gp__x2"><b>' + specialTag(s) + '</b> ' + specialLine(s) + '</p>' : '') +
           '<div class="ps-gp__pts">' + pointsStrip(p, true) + '</div>' +
         '</div>' +
         (spectating
@@ -893,7 +964,7 @@
     var el = overlay(
       '<p class="ps-fx__eyebrow">' + seasonTag(s) + '</p>' + lights +
       '<p class="ps-fx__go">¡Comienza la temporada!</p>' +
-      '<p class="ps-fx__next">' + flag(GPS[0], 'ps-flag--fx') + 'Carrera 1 · ' + GPS[0] + '</p>',
+      '<p class="ps-fx__next">' + gpFlag(s, 0, 'ps-flag--fx') + 'Carrera 1 · ' + gpName(s, 0) + '</p>',
       'ps-fx--start', 4300, done);
     if (!el) return;
     var dots = el.querySelectorAll('.ps-lights i');
@@ -907,7 +978,7 @@
     var teamLine = hasTeams(s) ? '<p class="ps-fx__team">' + esc(teamName(s, teamOf(winner))) + '</p>' : '';
     var el = overlay(
       '<div class="ps-fx__frame ps-fx__frame--win">' +
-        '<p class="ps-fx__eyebrow">' + flag(GPS[g], 'ps-flag--fx') + 'Carrera ' + (g + 1) + ' · ' + GPS[g] + '</p>' +
+        '<p class="ps-fx__eyebrow">' + gpFlag(s, g, 'ps-flag--fx') + 'Carrera ' + (g + 1) + ' · ' + gpName(s, g) + '</p>' +
         '<p class="ps-fx__checker" aria-hidden="true"></p>' +
         '<p class="ps-fx__winner" style="--pc:' + PLAYER_COLORS[winner] + '">' + esc(s.players[winner]) + '</p>' +
         teamLine +
@@ -915,9 +986,9 @@
       '</div>' +
       '<div class="ps-fx__frame ps-fx__frame--next">' +
         '<p class="ps-fx__eyebrow">Próxima carrera · ' + (g + 2) + ' de ' + races(s).length + '</p>' +
-        flag(GPS[g + 1], 'ps-flag--hero') +
-        '<p class="ps-fx__country">' + GPS[g + 1] + '</p>' +
-        (isDouble(s, g + 1) ? '<p class="ps-gp__x2"><b>×2</b> Puntos dobles</p>' : '') +
+        gpFlag(s, g + 1, 'ps-flag--hero') +
+        '<p class="ps-fx__country">' + gpName(s, g + 1) + '</p>' +
+        (isSpecial(s, g + 1) ? '<p class="ps-gp__x2"><b>' + specialTag(s) + '</b> ' + (s.double ? 'Puntos dobles' : 'Puntos extra para el ganador') + '</p>' : '') +
       '</div>',
       'ps-fx--race', 4200, done);
     if (el) later(function () { el.classList.add('is-next'); }, 2100);
@@ -928,7 +999,7 @@
     var winner = s.results[g][0];
     overlay(
       '<div class="ps-fx__frame ps-fx__frame--win">' +
-        '<p class="ps-fx__eyebrow">' + flag(GPS[g], 'ps-flag--fx') + 'Última carrera · ' + GPS[g] + '</p>' +
+        '<p class="ps-fx__eyebrow">' + gpFlag(s, g, 'ps-flag--fx') + 'Última carrera · ' + gpName(s, g) + '</p>' +
         '<p class="ps-fx__checker" aria-hidden="true"></p>' +
         '<p class="ps-fx__winner" style="--pc:' + PLAYER_COLORS[winner] + '">' + esc(s.players[winner]) + '</p>' +
         (hasTeams(s) ? '<p class="ps-fx__team">' + esc(teamName(s, teamOf(winner))) + '</p>' : '') +
@@ -1007,7 +1078,8 @@
   function startSeason(players, season, opts) {
     opts = opts || {};
     state = { v: 1, code: newCode(), created: Date.now(), updated: Date.now(), season: season, players: players, results: [],
-      teams: !!opts.teams && (players.length === 4 || players.length === 6), teamNames: opts.teamNames || [], double: !!opts.double };
+      teams: !!opts.teams && (players.length === 4 || players.length === 6), teamNames: opts.teamNames || [],
+      double: opts.special === 'double', extra: opts.special === 'extra', gps: drawRaces(SEASONS[season].races) };
     order = [];
     save(); render(); window.scrollTo(0, 0);
     say('Temporada creada. Código ' + state.code.split('').join(' '));
@@ -1059,6 +1131,13 @@
     if (t.hasAttribute('data-season')) {
       draft.season = t.getAttribute('data-season');
       app.querySelectorAll('[data-season]').forEach(function (b) { b.setAttribute('aria-pressed', b === t); });
+      var hint = app.querySelector('#ps-special-hint'); if (hint) hint.textContent = specialHint();
+      return;
+    }
+    if (t.hasAttribute('data-special')) {
+      draft.special = t.getAttribute('data-special');
+      app.querySelectorAll('[data-special]').forEach(function (b) { b.setAttribute('aria-pressed', b === t); });
+      app.querySelector('#ps-special-hint').textContent = specialHint();
       return;
     }
     if (act === 'start') {
@@ -1066,12 +1145,14 @@
       if (!validNames()) return;
       for (var i = 0; i < draft.count; i++) players.push(draft.names[i].trim());
       for (var k = 0; k < draft.count / 2; k++) teamNames.push(TEAMS[k]);
-      startSeason(players, draft.season, { teams: draft.teams, teamNames: teamNames, double: draft.double });
+      startSeason(players, draft.season, { teams: draft.teams, teamNames: teamNames, special: draft.special });
       return;
     }
     if (act === 'replay') { render(true); window.scrollTo(0, 0); return; }
     if (act === 'rematch') {
-      startSeason(state.players.slice(), state.season, { teams: state.teams, teamNames: (state.teamNames || []).slice(), double: state.double });
+      var again = SEASONS[state.season].legacy ? 'regular' : state.season;   // old 10-race seasons restart as Regular
+      startSeason(state.players.slice(), again, { teams: state.teams, teamNames: (state.teamNames || []).slice(),
+        special: state.double ? 'double' : state.extra ? 'extra' : '' });
       return;
     }
     if (t.hasAttribute('data-racer')) {
@@ -1089,7 +1170,7 @@
     }
     if (act === 'clear') { order = []; renderRace(); return; }
     if (act === 'save') {
-      var g = state.results.length, gp = GPS[g], winner = state.players[order[0]];
+      var g = state.results.length, gp = gpName(state, g), winner = state.players[order[0]];
       state.results.push(order.slice()); order = []; save();
       say(winner + ' gana la carrera de ' + gp + '.');
       if (state.results.length >= races(state).length) {
@@ -1108,11 +1189,11 @@
       if (!state.results.length) return;
       if (!t.getAttribute('data-sure')) {
         t.setAttribute('data-sure', '1');
-        t.textContent = '¿Seguro? Toca de nuevo para corregir la carrera de ' + GPS[state.results.length - 1];
+        t.textContent = '¿Seguro? Toca de nuevo para corregir la carrera de ' + gpName(state, state.results.length - 1);
         return;
       }
       order = state.results.pop(); save(); renderRace(); window.scrollTo(0, 0);
-      say('Puedes corregir el orden de la carrera de ' + GPS[state.results.length] + '.');
+      say('Puedes corregir el orden de la carrera de ' + gpName(state, state.results.length) + '.');
     }
   });
 
