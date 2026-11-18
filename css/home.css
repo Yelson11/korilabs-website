@@ -597,12 +597,13 @@ html { scroll-behavior: smooth; }
 
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
-.h-join { padding-top: 0; scroll-margin-top: 1.5rem; }
+/* --- "Prueba PINTO ya" (replaced the newsletter, Nov 2026) ------------- */
 
-.h-join__card {
-  position: relative;
+.h-try { padding-top: 0; scroll-margin-top: 1.5rem; }
+
+.h-try__card {
   display: grid;
-  gap: 2rem;
+  gap: 1.75rem;
   padding: clamp(1.75rem, 5vw, 3rem) clamp(1.25rem, 5vw, 3rem);
   border: 1.5px solid rgb(254 228 193 / 0.35);
   border-radius: 1.5rem;
@@ -612,7 +613,7 @@ html { scroll-behavior: smooth; }
   box-shadow: 0 1.5rem 3rem rgb(10 30 20 / 0.35);
 }
 
-.h-join__lead {
+.h-try__lead {
   max-width: 28rem;
   margin: 1rem 0 0;
   color: var(--cream-dim);
@@ -620,64 +621,38 @@ html { scroll-behavior: smooth; }
   text-wrap: pretty;
 }
 
-.h-join__gift {
+.h-try__list { display: grid; gap: 0.75rem; margin: 0; padding: 0; list-style: none; align-content: center; }
+
+.h-try__item {
   display: flex;
   align-items: center;
   gap: 1rem;
-  max-width: 28rem;
-  margin-top: 1.5rem;
-  padding: 0.85rem 1rem;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid rgb(247 243 234 / 0.14);
   border-radius: 1rem;
-  background: rgb(247 243 234 / 0.07);
+  background: var(--asphalt);
+  color: var(--cream);
+  text-decoration: none;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.h-try__item:hover { transform: translateY(-2px); border-color: var(--peach); }
+.h-try__item:focus-visible { outline: 3px solid var(--peach); outline-offset: 3px; }
+.h-try__item--gold { border-color: rgb(242 194 48 / 0.6); background: linear-gradient(135deg, rgb(242 194 48 / 0.14), transparent 70%), var(--asphalt); }
+.h-try__item--gold:hover { border-color: #f2c230; }
+
+.h-try__icon { flex: none; width: 2.8rem; height: 2.8rem; object-fit: contain; }
+.h-try__icon--card { width: 2.1rem; height: auto; margin-inline: 0.35rem; border-radius: 7.5%/5.35%; transform: rotate(-8deg); box-shadow: 0 0.4rem 0.8rem rgb(0 0 0 / 0.4); }
+.h-try__txt { display: grid; gap: 0.15rem; flex: 1; min-width: 0; }
+.h-try__txt b { font-size: 1.05rem; }
+.h-try__txt span { color: var(--cream-dim); font-size: 0.9rem; line-height: 1.35; }
+.h-try__arrow { flex: none; color: var(--peach); font-weight: 700; }
+
+@media (min-width: 52rem) {
+  .h-try__card { grid-template-columns: 1fr 1.1fr; align-items: center; gap: 2.5rem; }
 }
 
-.h-join__gift img {
-  flex: none;
-  width: 2.6rem;
-  height: auto;
-  border-radius: 7.5%/5.35%;
-  transform: rotate(-8deg);
-  box-shadow: 0 0.4rem 0.8rem rgb(0 0 0 / 0.35);
-}
-
-.h-join__gift p { margin: 0; font-size: 0.95rem; }
-.h-join__gift strong { color: var(--peach); }
-
-.h-join__form {
-  display: grid;
-  align-content: center;
-  gap: 0.75rem;
-  min-width: 0;
-}
-
-/* El respaldo reserva el alto aproximado del formulario para que la nota no salte al cargar */
-.h-join__fallback {
-  display: grid;
-  justify-items: start;
-  align-content: center;
-  gap: 0.9rem;
-  min-height: 13rem;
-  padding: 1.5rem;
-  border: 1.5px dashed rgb(247 243 234 / 0.25);
-  border-radius: 1rem;
-  background: rgb(247 243 234 / 0.04);
-}
-
-.h-join__fallback p { margin: 0; }
-.h-join__fallback[hidden] { display: none; }
-.h-join__fallback-text { color: var(--cream-dim); }
-
-/* Sin JS: solo texto + enlace. Con JS: "Cargando…" primero; texto + enlace si falla. */
-.h-join__loading { display: none; color: var(--cream-dim); }
-.h-join__fallback.is-loading .h-join__loading { display: block; animation: h-pulse 1.6s ease-in-out infinite; }
-.h-join__fallback.is-loading .h-join__fallback-text,
-.h-join__fallback.is-loading .h-join__fallback-btn { display: none; }
-.h-join__fallback-btn[hidden] { display: none; }
-
-.h-join__note {
-  margin: 0;
-  color: var(--cream-dim);
-  font-size: 0.85rem;
+@media (prefers-reduced-motion: reduce) {
+  .h-try__item, .h-try__item:hover { transition: none; transform: none; }
 }
 
 @media (max-width: 30rem) {
@@ -768,18 +743,15 @@ html { scroll-behavior: smooth; }
 .h-footer__ig:hover { border-color: var(--peach); color: var(--peach); }
 .h-footer__ig:focus-visible { outline: 3px solid var(--peach); outline-offset: 3px; }
 
-.h-footer__link,
-.h-join__note a {
+.h-footer__link {
   color: var(--cream);
   text-decoration-color: var(--peach);
   text-underline-offset: 0.2em;
 }
 
-.h-footer__link:hover,
-.h-join__note a:hover { color: var(--peach); }
+.h-footer__link:hover { color: var(--peach); }
 
-.h-footer__link:focus-visible,
-.h-join__note a:focus-visible { outline: 3px solid var(--peach); outline-offset: 3px; border-radius: 2px; }
+.h-footer__link:focus-visible { outline: 3px solid var(--peach); outline-offset: 3px; border-radius: 2px; }
 
 /* --- Tablet ------------------------------------------------------------- */
 
@@ -813,12 +785,6 @@ html { scroll-behavior: smooth; }
   }
 
   .h-game__art { width: min(100%, 14rem); }
-
-  .h-join__card {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    align-items: center;
-    gap: clamp(2rem, 5vw, 4rem);
-  }
 }
 
 
