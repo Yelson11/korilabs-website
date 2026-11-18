@@ -136,8 +136,9 @@
 .is-open .p-menu-btn__bars::before { transform: translateY(6px) rotate(45deg); }
 .is-open .p-menu-btn__bars::after { transform: translateY(-6px) rotate(-45deg); }
 
-.p-footer-link { color: inherit; text-decoration: underline; text-decoration-color: var(--red); text-underline-offset: 3px; }
-.p-footer-link:hover { color: var(--cream); }
+/* No red underline (it read like a spell-check mark): bold cream text, underline only on hover */
+.p-footer-link { color: var(--cream); font-weight: 700; text-decoration: none; }
+.p-footer-link:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
 .p-footer-link:focus-visible { outline: 3px solid var(--red); outline-offset: 3px; border-radius: 2px; }
 
 @media (min-width: 56.01rem) {
@@ -882,7 +883,39 @@
 .p-welcome__art img:nth-child(4) { --x: 60%;   --y: 3%;  --r: 11deg; z-index: 1; }
 .p-welcome__art img:nth-child(5) { --x: 118%;  --y: 14%; --r: 22deg; }
 
-/* Three entry points: Guía rápida / Tutoriales / Reglamento oficial */
+/* Main call to action under the welcome text: the official PDF */
+.p-welcome__pdf { margin-top: 1.4rem; }
+
+/* "¿Qué carta puedo jugar encima?" shortcut, the most asked question (gold, like the tutorial's shortcut) */
+.p-faq {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  width: min(100%, 34rem);
+  margin-top: 1.6rem;
+  padding: 1rem 1.2rem 1rem 1rem;
+  border: 1px solid rgb(242 194 48 / 0.55);
+  border-radius: 1rem;
+  background: linear-gradient(135deg, rgb(242 194 48 / 0.16), rgb(242 194 48 / 0.04));
+  color: var(--cream);
+  text-align: left;
+  text-decoration: none;
+  transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+.p-faq:hover { transform: translateY(-2px); border-color: #f2c230; }
+.p-faq:focus-visible { outline: 3px solid #f2c230; outline-offset: 3px; }
+.p-faq__cards { position: relative; flex: none; width: 4.6rem; height: 4.4rem; }
+.p-faq__cards img { position: absolute; top: 50%; left: 50%; width: 2.6rem; height: auto; border-radius: 0.3rem; box-shadow: 0 6px 14px rgb(0 0 0 / 0.5); transform: translate(-50%, -50%) translateX(var(--x, 0)) rotate(var(--r, 0deg)); }
+.p-faq__cards img:nth-child(1) { --x: -0.9rem; --r: -12deg; }
+.p-faq__cards img:nth-child(2) { z-index: 1; }
+.p-faq__cards img:nth-child(3) { --x: 0.9rem; --r: 12deg; z-index: 2; }
+.p-faq__body { display: grid; gap: 0.2rem; }
+.p-faq__eyebrow { color: #f2c230; font: 700 0.7rem/1.2 var(--label-font); letter-spacing: 0.16em; text-transform: uppercase; }
+.p-faq__title { font: italic 800 1.15rem/1.15 var(--display); text-transform: uppercase; }
+.p-faq__text { color: var(--cream-dim); font-size: 0.92rem; line-height: 1.35; }
+.p-faq__go { margin-top: 0.2rem; color: #f2c230; font: 700 0.9rem/1.2 var(--display); }
+
+/* Entry points: Reglamento (recommended) / Tutoriales / Guía rápida / Modos de juego */
 .p-paths-wrap { border-top: 0; padding-top: clamp(1.5rem, 4vw, 2.5rem); }
 .p-paths {
   position: relative;
@@ -938,6 +971,8 @@
 /* "¡Nuevo!" tab hanging from the top border of a path card; the card gets extra top padding so the tab,
    the number and the icon never touch */
 .p-path.p-path--new { padding-top: 2.4rem; border-color: rgb(61 186 106 / 0.6); }
+.p-path.p-path--top { padding-top: 2.4rem; border-color: rgb(229 70 59 / 0.6); background: rgb(229 70 59 / 0.08); }
+.p-path--top .p-path__flag { color: #fff; }
 .p-path__flag {
   position: absolute;
   top: 0;
@@ -1377,6 +1412,7 @@
   .p-fan li:hover { transform: none; }
   .p-card:hover, .p-mode:hover, .p-card:hover img, .p-start__card:hover { transform: none; }
   .p-path, .p-path:hover { transition: none; transform: none; }
+  .p-faq, .p-faq:hover { transition: none; transform: none; }
   .p-rcard__play, .p-rcard__tut:hover .p-rcard__play { transition: none; transform: none; }
   .p-gnav a, .p-gnav a:hover, .p-gnav__arrow, .p-gnav a:hover .p-gnav__arrow { transition: none; transform: none; }
   .p-tut { transition: none; }

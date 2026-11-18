@@ -56,25 +56,13 @@ assets/pinto-caja.webp     Caja de PINTO para la tarjeta de la portada
 - Desactivada en noviembre de 2026 porque seguía las reglas anteriores (sentido acordado antes de empezar). Esa dirección ahora redirige a la demo de un jugador.
 - Para volver a activarla hay que recuperar la página desde el historial de git y actualizar `multi.js` a las reglas nuevas.
 
-## Suscripción (Sender)
+## Suscripción (Sender) — quitada
 
-La portada tiene una sección `#suscribete` (y un enlace "Suscríbete" en el menú). El formulario lo pone Sender:
+En noviembre de 2026 se quitó de la portada la sección `#suscribete`, el enlace "Suscríbete" del menú y el
+script de Sender. La cuenta y el formulario (`dNk3wL`) siguen en Sender por si se quiere volver a poner:
+la versión anterior de `index.html` está en el historial de git.
 
-- El `<script>` universal de la cuenta está en el `<head>` de `index.html`.
-- El formulario es el `<div class="sender-form-field" data-sender-form-id="dNk3wL">` de la sección `#suscribete`.
-- Su aspecto (colores, campos, mensaje de gracias) se cambia en el editor de Sender; al guardar allí, la página
-  muestra la versión nueva sola. Solo hay que tocar el código si se usa **otro** formulario (otro ID).
-
-**Respaldo del formulario.** Debajo del `div` de Sender hay un bloque `data-sender-fallback`. Mientras el
-formulario carga muestra "Cargando el formulario…"; si a los 8 s no apareció (bloqueador de anuncios, red
-lenta, sin JavaScript) muestra un botón al formulario hospedado de Sender. Ese enlace es el `href` del botón
-(`https://stats.sender.net/forms/dNk3wL/view`). Si cambias de formulario, copia la nueva en Sender →
-Formularios → engranaje → *Publishing settings* → form URL.
-
-El correo de bienvenida con el regalo se envía desde una automatización de Sender (no desde este sitio).
-`robots.txt` evita que `/regalos/` aparezca en buscadores, pero el archivo sigue siendo público para quien
-tenga el enlace. Para que sea solo de suscriptores, adjúntalo en el correo de Sender (o súbelo a su
-gestor de archivos) y luego borra la carpeta `regalos/` del repo.
+El regalo `regalos/pinto-modo-temporada.pdf` sigue en línea porque su enlace va en correos ya enviados.
 
 ## Imagen para compartir
 

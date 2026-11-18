@@ -231,10 +231,10 @@
     var title = me.place === 1 ? '¡Ganaste la carrera!' : me.place === s.players.length ? 'Te quedaste en la pista' : 'Llegaste en ' + me.place + '.º lugar';
     resultBox.innerHTML =
       '<h2>' + title + '</h2><ol>' + rows + '</ol>' +
-      '<p>¿Qué te pareció? Cuéntanos en Instagram o suscríbete para enterarte cuando PINTO salga a la venta.</p>' +
+      '<p>¿Qué te pareció? Cuéntanos en Instagram.</p>' +
       '<div class="pd-result__actions">' +
         '<button type="button" class="p-button" data-act="new">Otra carrera</button>' +
-        '<a class="p-button p-button--cream" href="' + (board.getAttribute('data-subscribe') || '../../../#suscribete') + '">Suscribirme</a>' +
+        '<a class="p-button p-button--cream" href="../">Conoce PINTO</a>' +
       '</div>';
     resultBox.hidden = false;
   }

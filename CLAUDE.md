@@ -50,7 +50,7 @@ comments just to translate them — only translate what you are already touching
 ├── .nojekyll                Disables Jekyll on Pages — don't delete
 ├── robots.txt               Disallows /regalos/
 ├── favicon.ico              Fallback favicon
-├── README.md                Owner how-to (Spanish): content edits, Sender, social links, OG image
+├── README.md                Owner how-to (Spanish): content edits, social links, OG image
 ├── assets/
 │   ├── favicon.svg          Cat favicon; switches color with prefers-color-scheme
 │   ├── apple-touch-icon.png
@@ -75,7 +75,7 @@ comments just to translate them — only translate what you are already touching
 │       ├── menu.js          Hamburger menu for the PINTO header (loaded on all six PINTO pages)
 │       ├── box3d.js         Auto-rotating, draggable CSS-3D box with per-face shading (no deps, respects reduced motion)
 │       ├── instrucciones/index.html  Welcome page for QR visitors (tutorial, resources) + quick rules guide (leaflet phone version, Nov 2026). Full rules PDF opens in a new tab, no `download` attr. TARGET OF THE PRINTED QR — never move
-│       ├── reglamento.pdf   Official rules PDF ("PINTO · Instrucciones", leaflet phone version, 7 pages; replaced again 15 Nov 2026 — linked as `reglamento.pdf?v=3`). Rules change vs the 8-page version: no "Elige el sentido" setup step; after the first Ritmo 1, whichever neighbour plays first sets the direction; special cards listed attack first (Vuelta Rápida, Amarilla, Azul, Turbo), then defense (Cuadros, Roja). Card names: Turbo (was Rebufo), Pista libre (was Vía libre); the Turbo card art lives in cartas/rebufo.webp (file name kept); ids/hashes/filenames keep the old names (#reb, #via-libre, rebufo.webp). Linked from instrucciones/ only
+│       ├── reglamento.pdf   Official rules PDF ("PINTO · Instrucciones", leaflet phone version, 7 pages; replaced again 18 Nov 2026 with reworded attack/defense intros — linked as `reglamento.pdf?v=4`). Rules change vs the 8-page version: no "Elige el sentido" setup step; after the first Ritmo 1, whichever neighbour plays first sets the direction; special cards listed attack first (Vuelta Rápida, Amarilla, Azul, Turbo), then defense (Cuadros, Roja). Card names: Turbo (was Rebufo), Pista libre (was Vía libre); the Turbo card art lives in cartas/rebufo.webp (file name kept); ids/hashes/filenames keep the old names (#reb, #via-libre, rebufo.webp). Linked from instrucciones/ only
 │       ├── demo/            Playable web demo (you vs 1–5 bots; 2–6 players picked above the board, remembered as `pd-players`, default 6). Unlisted + noindex.
 │       │   ├── index.html   Page shell (board markup, help text); CSS: styles.css + pinto.css + pinto-demo.css
 │       │   ├── pinto-engine.js  Pure rules engine (no DOM, also runs in Node for simulations), rules from the printed leaflet (Nov 2026 phone version). Rules changes go here. Open turns + interruptions (`canInterrupt`/`interrupt`), seat sides per player count (`seatSides`: left/tl/top/tr/right). Direction `s.dir` (0 until decided): after the opener's first card both neighbours may answer (`responders`), the first one sets it (`decideDirection`). "Retirar la pila" also triggers when one player puts 4+ cards in the same turn (`turnCards`, e.g. Turbo combos)
@@ -121,7 +121,7 @@ comments just to translate them — only translate what you are already touching
    `icon-age`, `icon-imaginar`, `icon-crear`, `icon-compartir`. Use via `<use href="#icon-…"/>`.
    The game-stat icons are duplicated in `juegos/pinto/index.html` — keep both in sync.
 2. `header.site-header` + `nav.site-nav` (shared pattern on every page; nav links are hard-coded per page).
-   Home nav: Juegos / Taller / Suscríbete (Suscríbete is hidden under 30rem so it fits on phones).
+   Home nav: Juegos / Taller / Contacto + Instagram icon (same links on /privacidad/ and /taller/pinto/). Under 30rem the Instagram icon is hidden and the links shrink so all three fit (≥320 px). The newsletter link and section were removed in Nov 2026.
 3. `section.h-hero` — `h1` "Estamos preparando la mesa…" (owner prefers this original copy), CTA to `#juegos`.
 4. `section#juegos.h-games` — "Nuestros juegos": released/upcoming games (PINTO card with a cream "Ver el juego" pill).
 5. `section#taller.h-lab` — "Otros proyectos / Taller": horizontal scroll-snap carousel (`.h-lab__track`, arrow
@@ -131,13 +131,13 @@ comments just to translate them — only translate what you are already touching
    name and game type, plus an optional status tag (`.h-lab__status`, peach pill with a slowly turning gear —
    Last of the Wilds shows "En desarrollo"); no project numbers. To add a game, copy an item and put its
    logo in `assets/taller/`.
-6. `section#suscribete.h-join` — Sender newsletter form (see below).
+6. `section#contacto.h-contact` — "Contacto" (Nov 2026, replaced the Sender newsletter form): forest card, "Hablemos de juegos." + three tiles (Correo → mailto:info@korilabscr.com, WhatsApp → wa.me/50670206822 (+506 7020 6822, generic chat icon, not the WhatsApp logo), Instagram). The "Taller" note button "Escríbenos" → `#contacto`.
 7. `section.h-values` — Imaginar / Crear / Compartir.
 8. `footer.site-footer.h-footer` — includes link to `/privacidad/`.
-9. Inline `<script>`s at the end: workshop carousel arrows, and the Sender form fallback ("Cargando…" → after 8 s shows a link to the hosted form).
+9. Inline `<script>` at the end: workshop carousel arrows.
 
 ### PINTO — `juegos/pinto/index.html` (`<html class="no-js">` → `js`, CSS: `styles.css` + `pinto.css`)
-Fonts: **Poppins** (display/headings) + **Saira** for body text on every PINTO page (`--font` is overridden in `.pinto`); Istok Web only for the small spaced labels (`.p-eyebrow`, `.p-soon`, `--label-font`). Every PINTO page has its **own header, not Kori Labs'**: PINTO logo on the left (`.home-link.p-brand` → `/juegos/pinto/`), nav (`.p-nav`) Inicio (→ `/juegos/pinto/`) / Instrucciones (→ instrucciones/) / Temporada (→ modos/temporada/) — each opens its own page, no same-page anchors (owner's choice) — then `.p-nav__extra` = a "Kori Labs" pill with the cat (`.p-kori`, → home page) + Instagram; `aria-current="page"` on the current one. Under 56rem the nav collapses behind a hamburger (`.p-menu-btn`, dropdown panel; `menu.js` adds `.p-header--js`, toggles `.is-open`, closes on link tap / Esc / outside tap; without JS the button stays hidden and the nav wraps); PINTO favicon set in `img/favicon/` (dark tile with the logo's "P" + red swoosh); Kori Labs appears only as the header pill and in the footer ("PINTO es un juego de Kori Labs", linked to the home page). Goal: PINTO should feel like its own site. The hero also has a gold "Jugar Modo Temporada" button (`.p-season-cta`, → `modos/temporada/`) between the facts and the seal. Section ids: `#cartas` (Cartas de ritmo), `#modos` (Modos de juego). Sections: `p-hero` (title + `#box-stage`/`#box3d` 3D box),
+Fonts: **Poppins** (display/headings) + **Saira** for body text on every PINTO page (`--font` is overridden in `.pinto`); Istok Web only for the small spaced labels (`.p-eyebrow`, `.p-soon`, `--label-font`). Every PINTO page has its **own header, not Kori Labs'**: PINTO logo on the left (`.home-link.p-brand` → `/juegos/pinto/`), nav (`.p-nav`) Inicio (→ `/juegos/pinto/`) / Instrucciones (→ instrucciones/) / Temporada (→ modos/temporada/) — each opens its own page, no same-page anchors (owner's choice) — then `.p-nav__extra` = a "Kori Labs" pill with the cat (`.p-kori`, → home page) + Instagram; `aria-current="page"` on the current one. Under 56rem the nav collapses behind a hamburger (`.p-menu-btn`, dropdown panel; `menu.js` adds `.p-header--js`, toggles `.is-open`, closes on link tap / Esc / outside tap; without JS the button stays hidden and the nav wraps); PINTO favicon set in `img/favicon/` (dark tile with the logo's "P" + red swoosh); Kori Labs appears only as the header pill and in the footer ("© 2026 · PINTO es un juego de Kori Labs", bold cream link to the home page, no underline until hover — the red underline looked like a spell-check mark). Goal: PINTO should feel like its own site. The hero also has a gold "Jugar Modo Temporada" button (`.p-season-cta`, → `modos/temporada/`) between the facts and the seal. Section ids: `#cartas` (Cartas de ritmo), `#modos` (Modos de juego). Sections: `p-hero` (title + `#box-stage`/`#box3d` 3D box),
 "Cómo se juega", "Cartas de ritmo" (ritmo-1…8), "Cartas especiales" (banderas, rebufo, vuelta rápida),
 `p-cta` "Muy pronto en la parrilla de salida". Script: `box3d.js` (deferred).
 After the hero: "Acerca de PINTO" (short text), "Cómo jugar" (`.p-how`: a Ritmo-card style speedometer SVG whose needle and
@@ -162,26 +162,29 @@ not a copy — never add rules that aren't in the official text: `#preparacion` 
 text + "Ver tutorial" link; the art per rule is hand-picked in the HTML), `#especiales` (leaflet order: attack cards, then defense), `#referencia` ("Qué carta puedo jugar": table with card images; same content as the tutorial's #que-jugar — keep in sync),
 `#modos` (stacked, same order and layout as the PINTO page); every rule and special card links to its tutorial subsection ("Ver tutorial").
 Minimal closing `.p-finish` ("¡Que comience la carrera!" · "PINTO · Un juego de Kori Labs" · "Conoce más de PINTO").
-The score sheet gift is never linked directly (only via the home `#suscribete` form). There are no real videos yet
+The score sheet gift is never linked directly (it was only sent to newsletter subscribers; the form is gone). There are no real videos yet
 (the "videos" are the tutorial animations); don't invent video links.
 
 ### PINTO season scorekeeper — `juegos/pinto/modos/temporada/` (CSS: `styles.css` + `pinto.css` + `pinto-temporada.css`)
 Single-page vanilla JS app (`temporada.js`, renders into `#ps-app`). Hero: trophy icon + title (no "PINTO" eyebrow — the header already carries the PINTO logo), "Modo Temporada" (not "Campeonato de Grandes Premios"). Visitor text says **"carrera"**, never "Gran Premio"/"GP" (owner's choice); points per position are shown as tiles (`.ps-pts`) in setup and on each race screen. Each country has a simplified inline SVG flag (`FLAGS` in `temporada.js`, 30×20; no emoji flags, they don't render on Windows) on the race screen, in the race history and in the saved-seasons list. Screens: home (new season, resume by code, list of
 seasons saved on this device) → setup (2–6 players, Modo escudería toggle right under the player count, names — required and unique, compared
-ignoring case/accents/extra spaces; inline error + aria-invalid —, Temporada Corta 5 / Regular 10 /
-Completa 15 carreras — owner's names, not the rulebook's; no country list on the cards — then Puntos dobles) → one screen per Gran
+ignoring case/accents/extra spaces; inline error + aria-invalid —, Temporada Flash 3 / Corta 5 / Regular 8 / Larga 12 / Completa 15 carreras — owner's names, not the rulebook's; no country list on the cards — then "Carreras especiales": Normal / Puntos dobles / Puntos extra) → one screen per Gran
 Premio (tap players in finishing order; the last one is filled in automatically; standings + GP history; "Corregir el último
-Gran Premio") → final podium. Data comes from the official rules ("Campeonato de Grandes Premios" / "Puntuación"): GP list
-Australia, Estados Unidos, Arabia Saudita, Italia, Brasil, España, Países Bajos, Singapur, Canadá, Bélgica, China, Japón,
-México, Inglaterra, Qatar (longer seasons include the shorter ones, same order); points 2 players 3/1 · 3 → 5/3/1 ·
+Gran Premio") → final podium. Race pool (Nov 2026, owner's list): Australia, Estados Unidos, Arabia Saudita, Italia, Brasil, España, Mónaco, Singapur,
+Canadá, Bélgica, China, Japón, México, Gran Bretaña, Qatar — shown by host city (`CITY`: Melbourne, Las Vegas, Yeda, Monza,
+São Paulo, Madrid, Montecarlo, Singapur, Montreal, Spa, Shanghái, Suzuka, Ciudad de México, Silverstone, Lusail), country under
+the city on the race screen. Each new season draws its races at random (`drawRaces`) and stores the country keys in `s.gps`.
+Seasons saved before Nov 2026 have no `s.gps`: they keep `LEGACY_GPS` (old fixed order with Países Bajos/Inglaterra), the old
+10-race `clasica` season (hidden in setup) and special races every 5th race — don't break them. Points (official rules) 2 players 3/1 · 3 → 5/3/1 ·
 4 → 5/3/1/0 · 5 → 7/4/3/2/1 · 6 → 7/4/3/2/1/0. End-of-season ties (owner's rule): most 1st places, then most 2nd, 3rd…,
 then best result in the last GP; still tied = shared place. Optional house rules picked in setup (owner's
 rules, not in the rulebook): **Modo escudería** (only 4 or 6 players; everyone races alone but players 1+2, 3+4, 5+6
 form a team that adds up points; teams default to "Escudería Pura Sangre" (red), "Silver Team" (silver) and "Nitro Racing"
 (blue) — a wink at real F1 teams without their names or brands, keep it that way. Team names are fixed (with 4 players
 only the first two); players just type their names into a team; standings show teams + drivers; team tiebreak uses the members'
-positions and the best member result in the last GP) and **Puntos dobles** (GP 5, 10 and 15 score double; tiebreak
-position counts are not doubled). **Animations** (skipped entirely with prefers-reduced-motion; every overlay `.ps-fx` can be skipped by tap, Esc or
+positions and the best member result in the last GP) and **Carreras especiales** (`SEASONS[k].special`: Flash 3 · Corta 5 · Regular 4, 8 · Larga 4, 8, 12 · Completa 3, 6, 9, 12, 15),
+either **Puntos dobles** (`s.double`, everyone ×2) or **Puntos extra** (`s.extra`, the winner adds `BONUS` = 5); tiebreak
+position counts are not affected. **Animations** (skipped entirely with prefers-reduced-motion; every overlay `.ps-fx` can be skipped by tap, Esc or
 "Saltar"): season start = five red start lights then "¡Comienza la temporada!" + first race (owner dislikes "¡Arrancan!"); after
 each race = winner of that race, then the next race with a big static flag (no waving); after the last race = winner,
 then straight to the podium reveal (no "bandera a cuadros" step)
@@ -193,7 +196,7 @@ same library the disabled `demo/multijugador/` used; peer id `korilabs-pinto-tem
 isn't saved on this device into "Retomar o seguir una temporada") opens a read-only live view: no result entry, no undo, no
 rematch, nothing saved locally; it plays the same race/podium overlays when a result arrives and keeps reconnecting while the
 creator's page is closed or asleep ("En pausa"). The creator gets an "Espectadores" pill in the top bar (viewer count) that opens a
-panel with the link (Copiar / Compartir). Data received from peers is validated (`cleanSeason`). `?transporte=local` = multi-tab
+panel with the link (Copiar / Compartir). Data received from peers is validated (`cleanSeason`). Host error handling (Nov 2026 fix): only broker/server errors reconnect or restart the host peer; per-spectator errors (`webrtc`, `peer-unavailable`…) are ignored so one failing phone can't drop everyone; viewers wait 20 s for a link to open before retrying. `?transporte=local` = multi-tab
 test mode (BroadcastChannel; tabs always watch with `?ver=`). **Evolution charts** (`.ps-evo`, after standings + races on the race,
 final and spectator screens, from the first result): "Puntos" (cumulative points line chart from "Inicio") and "Posiciones" (bump chart
 of the standings after each race, same tiebreakers), Escuderías/Pilotos switch in Modo escudería, "Carreras como líder" summary,
@@ -219,14 +222,11 @@ container's real width (`drawChart`, redrawn on resize); colors are the player/t
 
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
-  Current: `styles.css?v=2`, `home.css?v=11` (index, privacidad and taller/pinto),
-  `pinto.css?v=37`, card images `?v=7` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=18`, `pinto-engine.js?v=14`, `demo.js?v=20`, `multi.js?v=5`, `legal.css?v=1`, `pinto-tutorial.css?v=16`, `tutorial-data.js?v=21`, `tutorial.js?v=22`, `pinto-temporada.css?v=12`, `temporada.js?v=12`, PINTO favicons `?v=1`, `menu.js?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, `sello-hecho-en-costa-rica.svg?v=3`, box faces `?v=3` (caja-reverso `?v=4`, re-cut from the owner's Pinto_caja_ARTE.svg: back panel x 1282, y 430, 757×1057 at 1 unit = 1 px).
+  Current: `styles.css?v=2`, `home.css?v=15` (index, privacidad and taller/pinto),
+  `pinto.css?v=38`, card images `?v=7` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=18`, `pinto-engine.js?v=14`, `demo.js?v=21`, `multi.js?v=5`, `legal.css?v=1`, `pinto-tutorial.css?v=16`, `tutorial-data.js?v=21`, `tutorial.js?v=23`, `pinto-temporada.css?v=13`, `temporada.js?v=13`, PINTO favicons `?v=1`, `menu.js?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, `sello-hecho-en-costa-rica.svg?v=3`, box faces `?v=3` (caja-reverso `?v=4`, re-cut from the owner's Pinto_caja_ARTE.svg: back panel x 1282, y 430, 757×1057 at 1 unit = 1 px).
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
-- **Sender (newsletter):** universal script in the `<head>` of `index.html`; form is
-  `div.sender-form-field[data-sender-form-id="dNk3wL"]`; fallback block `[data-sender-fallback]` links to
-  `https://stats.sender.net/forms/dNk3wL/view`. Form look and the welcome/gift email are configured in
-  Sender, not here. Only touch code if the form ID changes.
+- **Sender (newsletter):** removed from the site in Nov 2026 (no script, no form). The account and form `dNk3wL` still exist in Sender; the old markup is in git history.
 - **Never break public URLs:** `/juegos/pinto/instrucciones/` (printed QR), `/juegos/pinto/modos/temporada/` (season codes live in its URL hash), `/pinto/reglas/`,
   `/regalos/pinto-modo-temporada.pdf` (sent in emails), `/privacidad/`. `reglamento.pdf` is only reached
   through the instructions page, so it may move — just update the "Reglamento" card there.

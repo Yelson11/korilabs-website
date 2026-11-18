@@ -171,7 +171,7 @@
         if (res.part.length) html += '<p class="pt-count">Quizás te sirva</p><div class="pt-rows">' + res.part.map(function (r) { return row(r, ctx, res.tk); }).join('') + '</div>';
       }
       return html + '<p class="pt-more"><button type="button" class="pt-link" data-clear>Ver todas las reglas</button> · ' +
-        '<a class="pt-link" href="../reglamento.pdf?v=3" target="_blank" rel="noopener noreferrer">Reglamento completo<span class="visually-hidden"> (se abre en una pestaña nueva)</span></a></p>';
+        '<a class="pt-link" href="../reglamento.pdf?v=4" target="_blank" rel="noopener noreferrer">Reglamento completo<span class="visually-hidden"> (se abre en una pestaña nueva)</span></a></p>';
     }
     return quickHTML(ctx) + GROUPS.map(function (g, k) {
       var inner = g.special && ctx === 'page'
