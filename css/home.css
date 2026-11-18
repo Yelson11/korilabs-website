@@ -683,8 +683,6 @@ html { scroll-behavior: smooth; }
 @media (max-width: 30rem) {
   .site-nav { gap: 0.85rem; }
   .site-nav__link { letter-spacing: 0.1em; }
-  /* Three links don't fit on phones; the subscribe section stays reachable from the page */
-  .site-nav__link[href="#suscribete"] { display: none; }
 }
 
 /* En pantallas muy angostas el enlace no cabe; la sección sigue en la portada */
