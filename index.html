@@ -29,13 +29,17 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Istok+Web:wght@400;700&amp;display=swap">
 
   <link rel="stylesheet" href="css/styles.css?v=2">
-  <link rel="stylesheet" href="css/home.css?v=13">
+  <link rel="stylesheet" href="css/home.css?v=14">
 
 </head>
 <body class="home">
 
   <!-- Iconos. Para una red social nueva, añade aquí un <symbol> (ver README). -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="icon-mail" viewBox="0 0 24 24">
+      <rect x="3" y="5" width="18" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M4 7l8 6 8-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
     <symbol id="icon-instagram" viewBox="0 0 24 24">
       <rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/>
       <circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/>
@@ -78,6 +82,7 @@
       <nav class="site-nav" aria-label="Principal">
         <a class="site-nav__link" href="#juegos">Juegos</a>
         <a class="site-nav__link" href="#taller">Taller</a>
+        <a class="site-nav__link" href="#contacto">Contacto</a>
         <a class="site-nav__icon" href="https://www.instagram.com/korilabs_cr/" target="_blank" rel="noopener noreferrer">
           <svg aria-hidden="true" focusable="false"><use href="#icon-instagram"/></svg>
           <span class="visually-hidden">Instagram de Kori Labs (se abre en una pestaña nueva)</span>
@@ -208,39 +213,33 @@
             </li>
           </ul>
         </div>
-        <p class="h-lab__note">Si quieres probar prototipos, no dudes en unirte a nuestra mesa. <a class="h-btn h-btn--small" href="https://www.instagram.com/korilabs_cr/" target="_blank" rel="noopener noreferrer">Escríbenos <span aria-hidden="true">→</span><span class="visually-hidden"> por Instagram (se abre en una pestaña nueva)</span></a></p>
+        <p class="h-lab__note">Si quieres probar prototipos, no dudes en unirte a nuestra mesa. <a class="h-btn h-btn--small" href="#contacto">Escríbenos <span aria-hidden="true">→</span></a></p>
       </section>
 
 
 
-      <!-- "Prueba PINTO ya": shortcuts to what can be used today (replaces the newsletter, Nov 2026) -->
-      <section class="h-section h-try" id="prueba" aria-labelledby="try-title">
-        <div class="h-try__card">
-          <div class="h-try__copy">
-            <p class="h-eyebrow">Prueba PINTO ya</p>
-            <h2 class="h-h2" id="try-title">Todo listo para tu <span class="accent">primera carrera.</span></h2>
-            <p class="h-try__lead">Aprende las reglas en pocos minutos y lleva el marcador de tus partidas desde el celular.</p>
+      <!-- Contacto (replaced the newsletter, Nov 2026): email + Instagram -->
+      <section class="h-section h-contact" id="contacto" aria-labelledby="contact-title">
+        <div class="h-contact__card">
+          <div class="h-contact__copy">
+            <p class="h-eyebrow">Contacto</p>
+            <h2 class="h-h2" id="contact-title">Hablemos de <span class="accent">juegos.</span></h2>
+            <p class="h-contact__lead">¿Tienes una tienda, organizas un evento o quieres probar nuestros prototipos? Escríbenos, nos encanta sumar gente a la mesa.</p>
           </div>
-          <ul class="h-try__list">
+          <ul class="h-contact__list">
             <li>
-              <a class="h-try__item" href="juegos/pinto/instrucciones/">
-                <img class="h-try__icon" src="juegos/pinto/img/icono-bandera-cuadros.svg" width="512" height="512" alt="">
-                <span class="h-try__txt"><b>Instrucciones</b><span>El reglamento oficial en PDF y una guía rápida.</span></span>
-                <span class="h-try__arrow" aria-hidden="true">→</span>
+              <a class="h-contact__item" href="mailto:info@korilabscr.com">
+                <span class="h-contact__icon" aria-hidden="true"><svg focusable="false"><use href="#icon-mail"/></svg></span>
+                <span class="h-contact__txt"><b>Correo</b><span>info@korilabscr.com</span></span>
+                <span class="h-contact__arrow" aria-hidden="true">→</span>
               </a>
             </li>
             <li>
-              <a class="h-try__item" href="juegos/pinto/tutorial/">
-                <img class="h-try__icon h-try__icon--card" src="juegos/pinto/img/cartas/vuelta-rapida.webp?v=7" width="660" height="922" alt="">
-                <span class="h-try__txt"><b>Tutoriales</b><span>Cada jugada y cada carta especial, animada.</span></span>
-                <span class="h-try__arrow" aria-hidden="true">→</span>
-              </a>
-            </li>
-            <li>
-              <a class="h-try__item h-try__item--gold" href="juegos/pinto/modos/temporada/">
-                <img class="h-try__icon" src="juegos/pinto/img/icono-trofeo.svg" width="512" height="512" alt="">
-                <span class="h-try__txt"><b>Modo Temporada</b><span>Suma puntos carrera tras carrera y corona al campeón.</span></span>
-                <span class="h-try__arrow" aria-hidden="true">→</span>
+              <a class="h-contact__item" href="https://www.instagram.com/korilabs_cr/" target="_blank" rel="noopener noreferrer">
+                <span class="h-contact__icon" aria-hidden="true"><svg focusable="false"><use href="#icon-instagram"/></svg></span>
+                <span class="h-contact__txt"><b>Instagram</b><span>@korilabs_cr · mensajes directos</span></span>
+                <span class="h-contact__arrow" aria-hidden="true">→</span>
+                <span class="visually-hidden"> (se abre en una pestaña nueva)</span>
               </a>
             </li>
           </ul>

@@ -597,11 +597,11 @@ html { scroll-behavior: smooth; }
 
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
-/* --- "Prueba PINTO ya" (replaced the newsletter, Nov 2026) ------------- */
+/* --- Contacto (replaced the newsletter, Nov 2026) --------------------- */
 
-.h-try { padding-top: 0; scroll-margin-top: 1.5rem; }
+.h-contact { padding-top: 0; scroll-margin-top: 1.5rem; }
 
-.h-try__card {
+.h-contact__card {
   display: grid;
   gap: 1.75rem;
   padding: clamp(1.75rem, 5vw, 3rem) clamp(1.25rem, 5vw, 3rem);
@@ -613,7 +613,7 @@ html { scroll-behavior: smooth; }
   box-shadow: 0 1.5rem 3rem rgb(10 30 20 / 0.35);
 }
 
-.h-try__lead {
+.h-contact__lead {
   max-width: 28rem;
   margin: 1rem 0 0;
   color: var(--cream-dim);
@@ -621,49 +621,49 @@ html { scroll-behavior: smooth; }
   text-wrap: pretty;
 }
 
-.h-try__list { display: grid; gap: 0.75rem; margin: 0; padding: 0; list-style: none; align-content: center; }
+.h-contact__list { display: grid; gap: 0.75rem; margin: 0; padding: 0; list-style: none; align-content: center; }
 
-.h-try__item {
+.h-contact__item {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 0.9rem 1.1rem;
+  padding: 1rem 1.1rem;
   border: 1px solid rgb(247 243 234 / 0.14);
   border-radius: 1rem;
-  background: var(--asphalt);
+  background: rgb(247 243 234 / 0.06);
   color: var(--cream);
   text-decoration: none;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
 }
-.h-try__item:hover { transform: translateY(-2px); border-color: var(--peach); }
-.h-try__item:focus-visible { outline: 3px solid var(--peach); outline-offset: 3px; }
-.h-try__item--gold { border-color: rgb(242 194 48 / 0.6); background: linear-gradient(135deg, rgb(242 194 48 / 0.14), transparent 70%), var(--asphalt); }
-.h-try__item--gold:hover { border-color: #f2c230; }
+.h-contact__item:hover { transform: translateY(-2px); border-color: var(--peach); background: rgb(247 243 234 / 0.1); }
+.h-contact__item:focus-visible { outline: 3px solid var(--peach); outline-offset: 3px; }
 
-.h-try__icon { flex: none; width: 2.8rem; height: 2.8rem; object-fit: contain; }
-.h-try__icon--card { width: 2.1rem; height: auto; margin-inline: 0.35rem; border-radius: 7.5%/5.35%; transform: rotate(-8deg); box-shadow: 0 0.4rem 0.8rem rgb(0 0 0 / 0.4); }
-.h-try__txt { display: grid; gap: 0.15rem; flex: 1; min-width: 0; }
-.h-try__txt b { font-size: 1.05rem; }
-.h-try__txt span { color: var(--cream-dim); font-size: 0.9rem; line-height: 1.35; }
-.h-try__arrow { flex: none; color: var(--peach); font-weight: 700; }
+.h-contact__icon { display: grid; flex: none; place-items: center; width: 2.9rem; height: 2.9rem; border-radius: 50%; background: var(--peach); color: var(--forest-deep); }
+.h-contact__icon svg { width: 1.4rem; height: 1.4rem; }
+.h-contact__txt { display: grid; gap: 0.15rem; flex: 1; min-width: 0; }
+.h-contact__txt b { font-size: 1.05rem; }
+.h-contact__txt span { overflow-wrap: anywhere; color: var(--cream-dim); font-size: 0.92rem; line-height: 1.35; }
+.h-contact__arrow { flex: none; color: var(--peach); font-weight: 700; }
 
 @media (min-width: 52rem) {
-  .h-try__card { grid-template-columns: 1fr 1.1fr; align-items: center; gap: 2.5rem; }
+  .h-contact__card { grid-template-columns: 1.1fr 1fr; align-items: center; gap: 2.5rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .h-try__item, .h-try__item:hover { transition: none; transform: none; }
+  .h-contact__item, .h-contact__item:hover { transition: none; transform: none; }
 }
 
 @media (max-width: 30rem) {
-  .site-nav { gap: 0.85rem; }
-  .site-nav__link { letter-spacing: 0.1em; }
+  .site-nav { gap: 0.8rem; }
+  .site-nav__link { font-size: 0.74rem; letter-spacing: 0.08em; }
+  /* Three links + the Instagram icon don't fit on phones: Instagram stays in Contacto and the footer */
+  .site-nav__icon { display: none; }
 }
 
-/* En pantallas muy angostas el enlace no cabe; la sección sigue en la portada */
+/* Very narrow phones (≤ 358 px): tighter nav so the three links fit */
 @media (max-width: 22.4rem) {
-  .site-nav { gap: 0.6rem; }
-  .site-nav__link { letter-spacing: 0.06em; }
+  .site-nav { gap: 0.55rem; }
+  .site-nav__link { font-size: 0.68rem; letter-spacing: 0.04em; }
 }
 
 /* --- Valores ------------------------------------------------------------ */

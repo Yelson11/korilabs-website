@@ -121,7 +121,7 @@ comments just to translate them — only translate what you are already touching
    `icon-age`, `icon-imaginar`, `icon-crear`, `icon-compartir`. Use via `<use href="#icon-…"/>`.
    The game-stat icons are duplicated in `juegos/pinto/index.html` — keep both in sync.
 2. `header.site-header` + `nav.site-nav` (shared pattern on every page; nav links are hard-coded per page).
-   Home nav: Juegos / Taller + Instagram icon (same links on /privacidad/ and /taller/pinto/). The newsletter link and section were removed in Nov 2026.
+   Home nav: Juegos / Taller / Contacto + Instagram icon (same links on /privacidad/ and /taller/pinto/). Under 30rem the Instagram icon is hidden and the links shrink so all three fit (≥320 px). The newsletter link and section were removed in Nov 2026.
 3. `section.h-hero` — `h1` "Estamos preparando la mesa…" (owner prefers this original copy), CTA to `#juegos`.
 4. `section#juegos.h-games` — "Nuestros juegos": released/upcoming games (PINTO card with a cream "Ver el juego" pill).
 5. `section#taller.h-lab` — "Otros proyectos / Taller": horizontal scroll-snap carousel (`.h-lab__track`, arrow
@@ -131,7 +131,7 @@ comments just to translate them — only translate what you are already touching
    name and game type, plus an optional status tag (`.h-lab__status`, peach pill with a slowly turning gear —
    Last of the Wilds shows "En desarrollo"); no project numbers. To add a game, copy an item and put its
    logo in `assets/taller/`.
-6. `section#prueba.h-try` — "Prueba PINTO ya" (Nov 2026, replaced the Sender newsletter form and its `.h-join*` CSS): forest card with copy on the left and three link tiles (Instrucciones, Tutoriales, Modo Temporada in gold). The "Taller" note button now says "Escríbenos" → Instagram.
+6. `section#contacto.h-contact` — "Contacto" (Nov 2026, replaced the Sender newsletter form): forest card, "Hablemos de juegos." + two tiles (Correo → mailto:info@korilabscr.com, Instagram). The "Taller" note button "Escríbenos" → `#contacto`.
 7. `section.h-values` — Imaginar / Crear / Compartir.
 8. `footer.site-footer.h-footer` — includes link to `/privacidad/`.
 9. Inline `<script>` at the end: workshop carousel arrows.
@@ -222,7 +222,7 @@ container's real width (`drawChart`, redrawn on resize); colors are the player/t
 
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
-  Current: `styles.css?v=2`, `home.css?v=13` (index, privacidad and taller/pinto),
+  Current: `styles.css?v=2`, `home.css?v=14` (index, privacidad and taller/pinto),
   `pinto.css?v=38`, card images `?v=7` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=18`, `pinto-engine.js?v=14`, `demo.js?v=21`, `multi.js?v=5`, `legal.css?v=1`, `pinto-tutorial.css?v=16`, `tutorial-data.js?v=21`, `tutorial.js?v=23`, `pinto-temporada.css?v=13`, `temporada.js?v=13`, PINTO favicons `?v=1`, `menu.js?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, `sello-hecho-en-costa-rica.svg?v=3`, box faces `?v=3` (caja-reverso `?v=4`, re-cut from the owner's Pinto_caja_ARTE.svg: back panel x 1282, y 430, 757×1057 at 1 unit = 1 px).
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
