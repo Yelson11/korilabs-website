@@ -29,27 +29,8 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Istok+Web:wght@400;700&amp;display=swap">
 
   <link rel="stylesheet" href="css/styles.css?v=2">
-  <link rel="stylesheet" href="css/home.css?v=11">
+  <link rel="stylesheet" href="css/home.css?v=12">
 
-  <!-- Sender: script universal de la cuenta (carga el formulario de suscripción). -->
-  <script>
-    (function (s, e, n, d, er) {
-      s['Sender'] = er;
-      s[er] = s[er] || function () {
-        (s[er].q = s[er].q || []).push(arguments)
-      }, s[er].l = 1 * new Date();
-      s[er].on = function(event, callback) {
-        s[er].listeners = s[er].listeners || {};
-        (s[er].listeners[event] = s[er].listeners[event] || []).push(callback);
-      };
-      var a = e.createElement(n),
-          m = e.getElementsByTagName(n)[0];
-      a.async = 1;
-      a.src = d;
-      m.parentNode.insertBefore(a, m)
-    })(window, document, 'script', 'https://cdn.sender.net/accounts_resources/universal.js', 'sender');
-    sender('8f54c30b917106')
-  </script>
 </head>
 <body class="home">
 
@@ -97,7 +78,6 @@
       <nav class="site-nav" aria-label="Principal">
         <a class="site-nav__link" href="#juegos">Juegos</a>
         <a class="site-nav__link" href="#taller">Taller</a>
-        <a class="site-nav__link" href="#suscribete">Suscríbete</a>
         <a class="site-nav__icon" href="https://www.instagram.com/korilabs_cr/" target="_blank" rel="noopener noreferrer">
           <svg aria-hidden="true" focusable="false"><use href="#icon-instagram"/></svg>
           <span class="visually-hidden">Instagram de Kori Labs (se abre en una pestaña nueva)</span>
@@ -228,38 +208,10 @@
             </li>
           </ul>
         </div>
-        <p class="h-lab__note">Si quieres probar prototipos, no dudes en unirte a nuestra mesa. <a class="h-btn h-btn--small" href="#suscribete">Únete a la mesa <span aria-hidden="true">→</span></a></p>
+        <p class="h-lab__note">Si quieres probar prototipos, no dudes en unirte a nuestra mesa. <a class="h-btn h-btn--small" href="https://www.instagram.com/korilabs_cr/" target="_blank" rel="noopener noreferrer">Escríbenos <span aria-hidden="true">→</span><span class="visually-hidden"> por Instagram (se abre en una pestaña nueva)</span></a></p>
       </section>
 
 
-      <!-- Suscripción (formulario de Sender) -->
-      <section class="h-section h-join" id="suscribete" aria-labelledby="join-title">
-        <div class="h-join__card">
-          <div class="h-join__copy">
-            <p class="h-eyebrow">Únete a la mesa</p>
-            <h2 class="h-h2" id="join-title">Entérate <span class="accent">primero.</span></h2>
-            <p class="h-join__lead">Suscríbete y recibe novedades, adelantos y contenido exclusivo de Kori Labs directo en tu correo.</p>
-            <div class="h-join__gift">
-              <img src="juegos/pinto/img/cartas/reverso.webp?v=7" width="660" height="922" alt="" loading="lazy">
-              <p><strong>De regalo:</strong> una plantilla exclusiva para jugar PINTO en modo Temporada, lista para imprimir cuando PINTO llegue a tu mesa.</p>
-            </div>
-          </div>
-
-          <div class="h-join__form">
-            <!-- Formulario incrustado de Sender. Su diseño se cambia en Sender; aquí solo va el ID. -->
-            <div style="text-align: left" class="sender-form-field" data-sender-form-id="dNk3wL"></div>
-            <!-- Respaldo: se muestra mientras carga el formulario y se queda si Sender no carga
-                 (bloqueador de anuncios, red lenta, sin JavaScript). El enlace va al formulario
-                 hospedado de Sender: Formularios → engranaje → Publishing settings → "form URL". -->
-            <div class="h-join__fallback" data-sender-fallback>
-              <p class="h-join__loading" aria-hidden="true">Cargando el formulario…</p>
-              <p class="h-join__fallback-text">¿No ves el formulario? Puede que tu navegador lo esté bloqueando.</p>
-              <a class="h-btn h-btn--primary h-join__fallback-btn" href="https://stats.sender.net/forms/dNk3wL/view" target="_blank" rel="noopener noreferrer">Suscríbete aquí <span aria-hidden="true">→</span><span class="visually-hidden"> (se abre en una pestaña nueva)</span></a>
-            </div>
-            <p class="h-join__note">Sin spam. Puedes darte de baja cuando quieras. Lee nuestra <a href="privacidad/">política de privacidad</a>.</p>
-          </div>
-        </div>
-      </section>
 
       <!-- Valores -->
       <section class="h-section h-values" aria-labelledby="valores-title">
@@ -293,31 +245,6 @@
     </footer>
   </div>
 
-  <script>
-    // Respaldo del formulario de Sender: oculta el aviso cuando el formulario aparece;
-    // si no aparece en unos segundos, muestra el enlace al formulario hospedado.
-    (function () {
-      var field = document.querySelector('.sender-form-field');
-      var fallback = document.querySelector('[data-sender-fallback]');
-      if (!field || !fallback) return;
-      var link = fallback.querySelector('a');
-      if (link && link.getAttribute('href') === 'SENDER_FORM_URL') link.hidden = true; // aún sin URL
-      fallback.classList.add('is-loading');
-
-      function rendered() { return field.offsetHeight > 40; }
-      function done() { fallback.hidden = true; observer.disconnect(); clearTimeout(timer); }
-      var observer = new MutationObserver(function () {
-        // Sender agrega el formulario y luego carga su contenido; esperamos a que tenga altura.
-        if (rendered()) done(); else setTimeout(function () { if (rendered()) done(); }, 600);
-      });
-      observer.observe(field, { childList: true, subtree: true });
-      var timer = setTimeout(function () {
-        if (rendered()) return done();
-        fallback.classList.remove('is-loading');
-        fallback.classList.add('is-failed');
-      }, 8000);
-    })();
-  </script>
   <script>
     /* Workshop carousel: arrow buttons scroll the track by one card. */
     (function () {

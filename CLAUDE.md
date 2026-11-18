@@ -50,7 +50,7 @@ comments just to translate them — only translate what you are already touching
 ├── .nojekyll                Disables Jekyll on Pages — don't delete
 ├── robots.txt               Disallows /regalos/
 ├── favicon.ico              Fallback favicon
-├── README.md                Owner how-to (Spanish): content edits, Sender, social links, OG image
+├── README.md                Owner how-to (Spanish): content edits, social links, OG image
 ├── assets/
 │   ├── favicon.svg          Cat favicon; switches color with prefers-color-scheme
 │   ├── apple-touch-icon.png
@@ -121,7 +121,7 @@ comments just to translate them — only translate what you are already touching
    `icon-age`, `icon-imaginar`, `icon-crear`, `icon-compartir`. Use via `<use href="#icon-…"/>`.
    The game-stat icons are duplicated in `juegos/pinto/index.html` — keep both in sync.
 2. `header.site-header` + `nav.site-nav` (shared pattern on every page; nav links are hard-coded per page).
-   Home nav: Juegos / Taller / Suscríbete (Suscríbete is hidden under 30rem so it fits on phones).
+   Home nav: Juegos / Taller + Instagram icon (same links on /privacidad/ and /taller/pinto/). The newsletter link and section were removed in Nov 2026.
 3. `section.h-hero` — `h1` "Estamos preparando la mesa…" (owner prefers this original copy), CTA to `#juegos`.
 4. `section#juegos.h-games` — "Nuestros juegos": released/upcoming games (PINTO card with a cream "Ver el juego" pill).
 5. `section#taller.h-lab` — "Otros proyectos / Taller": horizontal scroll-snap carousel (`.h-lab__track`, arrow
@@ -131,10 +131,10 @@ comments just to translate them — only translate what you are already touching
    name and game type, plus an optional status tag (`.h-lab__status`, peach pill with a slowly turning gear —
    Last of the Wilds shows "En desarrollo"); no project numbers. To add a game, copy an item and put its
    logo in `assets/taller/`.
-6. `section#suscribete.h-join` — Sender newsletter form (see below).
+6. (Removed Nov 2026: `section#suscribete.h-join`, the Sender newsletter form. Its `.h-join*` CSS is still in home.css, unused. The "Taller" note button now says "Escríbenos" → Instagram.)
 7. `section.h-values` — Imaginar / Crear / Compartir.
 8. `footer.site-footer.h-footer` — includes link to `/privacidad/`.
-9. Inline `<script>`s at the end: workshop carousel arrows, and the Sender form fallback ("Cargando…" → after 8 s shows a link to the hosted form).
+9. Inline `<script>` at the end: workshop carousel arrows.
 
 ### PINTO — `juegos/pinto/index.html` (`<html class="no-js">` → `js`, CSS: `styles.css` + `pinto.css`)
 Fonts: **Poppins** (display/headings) + **Saira** for body text on every PINTO page (`--font` is overridden in `.pinto`); Istok Web only for the small spaced labels (`.p-eyebrow`, `.p-soon`, `--label-font`). Every PINTO page has its **own header, not Kori Labs'**: PINTO logo on the left (`.home-link.p-brand` → `/juegos/pinto/`), nav (`.p-nav`) Inicio (→ `/juegos/pinto/`) / Instrucciones (→ instrucciones/) / Temporada (→ modos/temporada/) — each opens its own page, no same-page anchors (owner's choice) — then `.p-nav__extra` = a "Kori Labs" pill with the cat (`.p-kori`, → home page) + Instagram; `aria-current="page"` on the current one. Under 56rem the nav collapses behind a hamburger (`.p-menu-btn`, dropdown panel; `menu.js` adds `.p-header--js`, toggles `.is-open`, closes on link tap / Esc / outside tap; without JS the button stays hidden and the nav wraps); PINTO favicon set in `img/favicon/` (dark tile with the logo's "P" + red swoosh); Kori Labs appears only as the header pill and in the footer ("PINTO es un juego de Kori Labs", linked to the home page). Goal: PINTO should feel like its own site. The hero also has a gold "Jugar Modo Temporada" button (`.p-season-cta`, → `modos/temporada/`) between the facts and the seal. Section ids: `#cartas` (Cartas de ritmo), `#modos` (Modos de juego). Sections: `p-hero` (title + `#box-stage`/`#box3d` 3D box),
@@ -162,7 +162,7 @@ not a copy — never add rules that aren't in the official text: `#preparacion` 
 text + "Ver tutorial" link; the art per rule is hand-picked in the HTML), `#especiales` (leaflet order: attack cards, then defense), `#referencia` ("Qué carta puedo jugar": table with card images; same content as the tutorial's #que-jugar — keep in sync),
 `#modos` (stacked, same order and layout as the PINTO page); every rule and special card links to its tutorial subsection ("Ver tutorial").
 Minimal closing `.p-finish` ("¡Que comience la carrera!" · "PINTO · Un juego de Kori Labs" · "Conoce más de PINTO").
-The score sheet gift is never linked directly (only via the home `#suscribete` form). There are no real videos yet
+The score sheet gift is never linked directly (it was only sent to newsletter subscribers; the form is gone). There are no real videos yet
 (the "videos" are the tutorial animations); don't invent video links.
 
 ### PINTO season scorekeeper — `juegos/pinto/modos/temporada/` (CSS: `styles.css` + `pinto.css` + `pinto-temporada.css`)
@@ -219,14 +219,11 @@ container's real width (`drawChart`, redrawn on resize); colors are the player/t
 
 - **Cache busting:** CSS/JS/image links carry `?v=N`. When you change a file, bump its `N` **in every
   page that links it** (e.g. `home.css` is linked from `index.html` *and* `privacidad/index.html`).
-  Current: `styles.css?v=2`, `home.css?v=11` (index, privacidad and taller/pinto),
-  `pinto.css?v=37`, card images `?v=7` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=18`, `pinto-engine.js?v=14`, `demo.js?v=20`, `multi.js?v=5`, `legal.css?v=1`, `pinto-tutorial.css?v=16`, `tutorial-data.js?v=21`, `tutorial.js?v=22`, `pinto-temporada.css?v=12`, `temporada.js?v=12`, PINTO favicons `?v=1`, `menu.js?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, `sello-hecho-en-costa-rica.svg?v=3`, box faces `?v=3` (caja-reverso `?v=4`, re-cut from the owner's Pinto_caja_ARTE.svg: back panel x 1282, y 430, 757×1057 at 1 unit = 1 px).
+  Current: `styles.css?v=2`, `home.css?v=12` (index, privacidad and taller/pinto),
+  `pinto.css?v=37`, card images `?v=7` (also `VER` in `demo.js` and `multi.js`), `pinto-demo.css?v=18`, `pinto-engine.js?v=14`, `demo.js?v=21`, `multi.js?v=5`, `legal.css?v=1`, `pinto-tutorial.css?v=16`, `tutorial-data.js?v=21`, `tutorial.js?v=22`, `pinto-temporada.css?v=12`, `temporada.js?v=12`, PINTO favicons `?v=1`, `menu.js?v=1`, `box3d.js?v=2`, `favicon.svg?v=2`, `sello-hecho-en-costa-rica.svg?v=3`, box faces `?v=3` (caja-reverso `?v=4`, re-cut from the owner's Pinto_caja_ARTE.svg: back panel x 1282, y 430, 757×1057 at 1 unit = 1 px).
 - **Relative paths everywhere** (`../../css/…`). Pages live in folders as `index.html` so URLs are clean
   (`/juegos/pinto/`). New pages: create `folder/index.html`, copy the head/header/footer of a sibling page.
-- **Sender (newsletter):** universal script in the `<head>` of `index.html`; form is
-  `div.sender-form-field[data-sender-form-id="dNk3wL"]`; fallback block `[data-sender-fallback]` links to
-  `https://stats.sender.net/forms/dNk3wL/view`. Form look and the welcome/gift email are configured in
-  Sender, not here. Only touch code if the form ID changes.
+- **Sender (newsletter):** removed from the site in Nov 2026 (no script, no form). The account and form `dNk3wL` still exist in Sender; the old markup is in git history.
 - **Never break public URLs:** `/juegos/pinto/instrucciones/` (printed QR), `/juegos/pinto/modos/temporada/` (season codes live in its URL hash), `/pinto/reglas/`,
   `/regalos/pinto-modo-temporada.pdf` (sent in emails), `/privacidad/`. `reglamento.pdf` is only reached
   through the instructions page, so it may move — just update the "Reglamento" card there.
